@@ -2,47 +2,47 @@
 
 declare(strict_types=1);
 
-include_once __DIR__ . '/SymconValidator.php';
+include_once __DIR__ . '/../Validator.php';
 
 class SymconIOStubsValidationTest extends TestCaseSymconValidation
 {
     public function testValidateIOStubs(): void
     {
-        $this->validateLibrary(__DIR__ . '/SymconIOStubs');
+        $this->validateLibrary(__DIR__ . '/../IOStubs');
     }
 
     public function testValidateClientSocket(): void
     {
-        $this->validateModule(__DIR__ . '/SymconIOStubs/ClientSocket');
+        $this->validateModule(__DIR__ . '/../IOStubs/ClientSocket');
     }
 
     public function testValidateMulticastSocket(): void
     {
-        $this->validateModule(__DIR__ . '/SymconIOStubs/MulticastSocket');
+        $this->validateModule(__DIR__ . '/../IOStubs/MulticastSocket');
     }
 
     public function testValidateSerialPort(): void
     {
-        $this->validateModule(__DIR__ . '/SymconIOStubs/SerialPort');
+        $this->validateModule(__DIR__ . '/../IOStubs/SerialPort');
     }
 
     public function testValidateServerSocket(): void
     {
-        $this->validateModule(__DIR__ . '/SymconIOStubs/ServerSocket');
+        $this->validateModule(__DIR__ . '/../IOStubs/ServerSocket');
     }
 
     public function testValidateUDPSocket(): void
     {
-        $this->validateModule(__DIR__ . '/SymconIOStubs/UDPSocket');
+        $this->validateModule(__DIR__ . '/../IOStubs/UDPSocket');
     }
 
     public function testValidateVirtualIO(): void
     {
-        $this->validateModule(__DIR__ . '/SymconIOStubs/VirtualIO');
+        $this->validateModule(__DIR__ . '/../IOStubs/VirtualIO');
     }
 
     public function testValidateWWWReader(): void
     {
-        $this->validateModule(__DIR__ . '/SymconIOStubs/WWWReader');
+        $this->validateModule(__DIR__ . '/../IOStubs/WWWReader');
     }
 }
