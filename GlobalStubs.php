@@ -5,7 +5,7 @@ declare(strict_types=1);
 /* Global */
 function GetValue(int $VariableID)
 {
-    switch(IPS\VariableManager::getVariable($VariableID)['VariableType']) {
+    switch (IPS\VariableManager::getVariable($VariableID)['VariableType']) {
         case 0: /* Boolean */
             return IPS\VariableManager::readVariableBoolean($VariableID);
         case 1: /* Integer */
@@ -15,7 +15,7 @@ function GetValue(int $VariableID)
         case 3: /* String */
             return IPS\VariableManager::readVariableString($VariableID);
         default:
-            throw new Exception("Unsupported VariableType!");
+            throw new Exception('Unsupported VariableType!');
     }
 }
 
@@ -41,7 +41,7 @@ function GetValueString(int $VariableID)
 
 function SetValue(int $VariableID, $Value)
 {
-    switch(IPS\VariableManager::getVariable($VariableID)['VariableType']) {
+    switch (IPS\VariableManager::getVariable($VariableID)['VariableType']) {
         case 0: /* Boolean */
             IPS\VariableManager::writeVariableBoolean($VariableID, $Value);
             break;
@@ -55,7 +55,7 @@ function SetValue(int $VariableID, $Value)
             IPS\VariableManager::writeVariableString($VariableID, $Value);
             break;
         default:
-            throw new Exception("Unsupported VariableType!");
+            throw new Exception('Unsupported VariableType!');
     }
 }
 
@@ -81,7 +81,7 @@ function SetValueString(int $VariableID, string $Value)
 
 function GetValueFormatted(int $VariableID)
 {
-    throw new Exception("Not implemented");
+    throw new Exception('Not implemented');
 }
 
 /* Object Manager */
