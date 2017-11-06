@@ -2,6 +2,88 @@
 
 declare(strict_types=1);
 
+/* Global */
+function GetValue(int $VariableID)
+{
+    switch(IPS\VariableManager::getVariable($VariableID)['VariableType']) {
+        case 0: /* Boolean */
+            return IPS\VariableManager::readVariableBoolean($VariableID);
+        case 1: /* Integer */
+            return IPS\VariableManager::readVariableInteger($VariableID);
+        case 2: /* Float */
+            return IPS\VariableManager::readVariableFloat($VariableID);
+        case 3: /* String */
+            return IPS\VariableManager::readVariableString($VariableID);
+        default:
+            throw new Exception("Unsupported VariableType!");
+    }
+}
+
+function GetValueBoolean(int $VariableID)
+{
+    return IPS\VariableManager::readVariableBoolean($VariableID);
+}
+
+function GetValueInteger(int $VariableID)
+{
+    return IPS\VariableManager::readVariableInteger($VariableID);
+}
+
+function GetValueFloat(int $VariableID)
+{
+    return IPS\VariableManager::readVariableFloat($VariableID);
+}
+
+function GetValueString(int $VariableID)
+{
+    return IPS\VariableManager::readVariableString($VariableID);
+}
+
+function SetValue(int $VariableID, $Value)
+{
+    switch(IPS\VariableManager::getVariable($VariableID)['VariableType']) {
+        case 0: /* Boolean */
+            IPS\VariableManager::writeVariableBoolean($VariableID, $Value);
+            break;
+        case 1: /* Integer */
+            IPS\VariableManager::writeVariableInteger($VariableID, $Value);
+            break;
+        case 2: /* Float */
+            IPS\VariableManager::writeVariableFloat($VariableID, $Value);
+            break;
+        case 3: /* String */
+            IPS\VariableManager::writeVariableString($VariableID, $Value);
+            break;
+        default:
+            throw new Exception("Unsupported VariableType!");
+    }
+}
+
+function SetValueBoolean(int $VariableID, bool $Value)
+{
+    IPS\VariableManager::writeVariableBoolean($VariableID, $Value);
+}
+
+function SetValueInteger(int $VariableID, int $Value)
+{
+    IPS\VariableManager::writeVariableInteger($VariableID, $Value);
+}
+
+function SetValueFloat(int $VariableID, float $Value)
+{
+    IPS\VariableManager::writeVariableFloat($VariableID, $Value);
+}
+
+function SetValueString(int $VariableID, string $Value)
+{
+    IPS\VariableManager::writeVariableString($VariableID, $Value);
+}
+
+function GetValueFormatted(int $VariableID)
+{
+    throw new Exception("Not implemented");
+}
+
 /* Object Manager */
 function IPS_SetParent(int $ID, int $ParentID)
 {
@@ -282,47 +364,51 @@ function IPS_RequestAction(int $InstanceID, string $VariableIdent, $Value)
 /* Variable Manager */
 function IPS_CreateVariable(int $VariableType)
 {
-    return 0;
+    $id = IPS\Kernel::registerObject(2 /* Variable */);
+    IPS\Kernel::createVariable($id, $VariableType);
+
+    return $id;
 }
 
 function IPS_DeleteVariable(int $VariableID)
 {
-    return true;
+    IPS\Kernel::deleteVariable($VariableID);
+    IPS\Kernel::unregisterObject($VariableID);
 }
 
 function IPS_VariableExists(int $VariableID)
 {
-    return true;
+    return IPS\Kernel::variableExists($VariableID);
 }
 
 function IPS_GetVariable(int $VariableID)
 {
-    return [];
+    return IPS\Kernel::getVariable($VariableID);
 }
 
 function IPS_GetVariableEventList(int $VariableID)
 {
-    return [];
+    return []; //FIXME
 }
 
 function IPS_GetVariableIDByName(string $Name, int $ParentID)
 {
-    return 0;
+    return IPS\Kernel::getObjectIDByNameEx($Name, $ParentID, 2 /* Variable */);
 }
 
 function IPS_GetVariableList()
 {
-    return [];
+    return IPS\Kernel::getVariableList();
 }
 
 function IPS_SetVariableCustomAction(int $VariableID, int $ScriptID)
 {
-    return true;
+    IPS\Kernel::setVariableCustomAction($VariableID, $ScriptID);
 }
 
 function IPS_SetVariableCustomProfile(int $VariableID, string $ProfileName)
 {
-    return true;
+    IPS\Kernel::setVariableCustomProfile($VariableID, $ProfileName);
 }
 
 /* Script Manager */
