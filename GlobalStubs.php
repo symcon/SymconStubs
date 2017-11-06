@@ -130,14 +130,14 @@ function IPS_GetCategoryList()
 
 function IPS_GetCategoryIDByName(string $Name, int $ParentID)
 {
-    return IPS\Kernel::getCategoryIDByName($Name, $ParentID);
+    return IPS\Kernel::getObjectIDByNameEx($Name, $ParentID, 0 /* Category */);
 }
 
 /* Instance Manager */
 function IPS_CreateInstance(string $ModuleID)
 {
     $module = IPS\Kernel::getModule($ModuleID);
-    $id = IPS\Kernel::registerObject(0 /* Category */);
+    $id = IPS\Kernel::registerObject(1 /* Instance */);
     IPS\Kernel::createInstance($id, $module);
 
     return $id;

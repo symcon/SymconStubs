@@ -460,16 +460,6 @@ namespace IPS {
         {
             return array_keys(self::$categories);
         }
-
-        public static function getCategoryIDByName(string $Name, int $ParentID): int
-        {
-            $id = 0;
-            if ($id == 0) {
-                throw new \Exception(sprintf('Category with name %s could not be found', $Name));
-            }
-
-            return $id;
-        }
     }
 
     trait InstanceManager
