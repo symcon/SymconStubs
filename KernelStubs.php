@@ -585,9 +585,9 @@ namespace IPS {
     {
         private static $variables = [];
 
-        public static function createVariable(int $VariableID, int $VariableType): void {
-
-            switch($VariableType) {
+        public static function createVariable(int $VariableID, int $VariableType): void
+        {
+            switch ($VariableType) {
                 case 0: /* Boolean */
                     $VariableValue = false;
                     break;
@@ -598,17 +598,17 @@ namespace IPS {
                     $VariableValue = 0.0;
                     break;
                 case 3: /* String */
-                    $VariableValue = "";
+                    $VariableValue = '';
                     break;
                 default:
-                    throw new \Exception("Unsupported VariableType!");
+                    throw new \Exception('Unsupported VariableType!');
             }
 
             self::$variables[$VariableID] = [
                 'VariableID'            => $VariableID,
-                'VariableProfile'       => "",
+                'VariableProfile'       => '',
                 'VariableAction'        => 0,
-                'VariableCustomProfile' => "",
+                'VariableCustomProfile' => '',
                 'VariableCustomAction'  => 0,
                 'VariableUpdated'       => 0,
                 'VariableChanged'       => 0,
@@ -616,101 +616,117 @@ namespace IPS {
                 'VariableValue'         => $VariableValue,
                 'VariableIsLocked'      => false
             ];
-
         }
 
-        public static function deleteVariable(int $VariableID): void {
+        public static function deleteVariable(int $VariableID): void
+        {
             self::checkVariable($VariableID);
             unset(self::$variables[$VariableID]);
         }
 
-        public static function readVariableBoolean(int $VariableID): bool {
+        public static function readVariableBoolean(int $VariableID): bool
+        {
             self::checkVariable($VariableID);
 
             return self::$variables[$VariableID]['VariableValue'];
         }
 
-        public static function writeVariableBoolean(int $VariableID, bool $VariableValue): void {
+        public static function writeVariableBoolean(int $VariableID, bool $VariableValue): void
+        {
             self::checkVariable($VariableID);
 
             self::$variables[$VariableID]['VariableValue'] = $VariableValue;
         }
 
-        public static function readVariableInteger(int $VariableID): int {
+        public static function readVariableInteger(int $VariableID): int
+        {
             self::checkVariable($VariableID);
 
             return self::$variables[$VariableID]['VariableValue'];
         }
 
-        public static function writeVariableInteger(int $VariableID, int $VariableValue): void {
+        public static function writeVariableInteger(int $VariableID, int $VariableValue): void
+        {
             self::checkVariable($VariableID);
 
             self::$variables[$VariableID]['VariableValue'] = $VariableValue;
         }
 
-        public static function readVariableFloat(int $VariableID): float {
+        public static function readVariableFloat(int $VariableID): float
+        {
             self::checkVariable($VariableID);
 
             return self::$variables[$VariableID]['VariableValue'];
         }
 
-        public static function writeVariableFloat(int $VariableID, double $VariableValue): void {
+        public static function writeVariableFloat(int $VariableID, double $VariableValue): void
+        {
             self::checkVariable($VariableID);
 
             self::$variables[$VariableID]['VariableValue'] = $VariableValue;
         }
 
-        public static function readVariableString(int $VariableID): string {
+        public static function readVariableString(int $VariableID): string
+        {
             self::checkVariable($VariableID);
 
             return self::$variables[$VariableID]['VariableValue'];
         }
 
-        public static function writeVariableString(int $VariableID, String $VariableValue): void {
+        public static function writeVariableString(int $VariableID, String $VariableValue): void
+        {
             self::checkVariable($VariableID);
 
             self::$variables[$VariableID]['VariableValue'] = $VariableValue;
         }
 
-        public static function variableExists(int $VariableID): bool {
+        public static function variableExists(int $VariableID): bool
+        {
             return isset(self::$variables[$VariableID]);
         }
 
-        public static function checkVariable(int $VariableID): void {
+        public static function checkVariable(int $VariableID): void
+        {
             if (!self::variableExists($VariableID)) {
                 throw new \Exception(sprintf('Variable #%d does not exist', $VariableID));
             }
         }
 
-        public static function getVariable(int $VariableID): array {
+        public static function getVariable(int $VariableID): array
+        {
             self::checkVariable($VariableID);
 
             return self::$variables[$VariableID];
         }
 
-        public static function getVariableList(): array {
+        public static function getVariableList(): array
+        {
             return array_keys(self::$variables);
         }
 
-        public static function setVariableCustomProfile(int $VariableID, string $ProfileName): void {
+        public static function setVariableCustomProfile(int $VariableID, string $ProfileName): void
+        {
             self::checkVariable($VariableID);
 
             self::$variables[$VariableID]['VariableCustomProfile'] = $ProfileName;
         }
 
-        public static function setVariableCustomAction(int $VariableID, int $ScriptID): void {
+        public static function setVariableCustomAction(int $VariableID, int $ScriptID): void
+        {
             self::checkVariable($VariableID);
 
             self::$variables[$VariableID]['VariableCustomAction'] = $ScriptID;
         }
 
-        public static function setVariableProfile(int $VariableID, string $ProfileName): void {
+        public static function setVariableProfile(int $VariableID, string $ProfileName): void
+        {
             self::checkVariable($VariableID);
 
             self::$variables[$VariableID]['VariableProfile'] = $ProfileName;
         }
 
-        public static function setVariableAction(int $VariableID, int $InstanceID): void {
+        public static function setVariableAction(int $VariableID, int $InstanceID): void
+        {
             self::checkVariable($VariableID);
 
             self::$variables[$VariableID]['VariableAction'] = $InstanceID;
