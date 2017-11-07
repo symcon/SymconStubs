@@ -87,235 +87,235 @@ function GetValueFormatted(int $VariableID)
 /* Object Manager */
 function IPS_SetParent(int $ID, int $ParentID)
 {
-    IPS\Kernel::setParent($ID, $ParentID);
+    IPS\ObjectManager::setParent($ID, $ParentID);
 }
 
 function IPS_SetIdent(int $ID, string $Ident)
 {
-    IPS\Kernel::setIdent($ID, $Ident);
+    IPS\ObjectManager::setIdent($ID, $Ident);
 }
 
 function IPS_SetName(int $ID, string $Name)
 {
-    IPS\Kernel::setName($ID, $Name);
+    IPS\ObjectManager::setName($ID, $Name);
 }
 
 function IPS_SetInfo(int $ID, string $Info)
 {
-    IPS\Kernel::setInfo($ID, $Info);
+    IPS\ObjectManager::setInfo($ID, $Info);
 }
 
 function IPS_SetIcon(int $ID, string $Icon)
 {
-    IPS\Kernel::setIcon($ID, $Icon);
+    IPS\ObjectManager::setIcon($ID, $Icon);
 }
 
 function IPS_SetPosition(int $ID, int $Position)
 {
-    IPS\Kernel::setPosition($ID, $Position);
+    IPS\ObjectManager::setPosition($ID, $Position);
 }
 
 function IPS_SetHidden(int $ID, bool $Hidden)
 {
-    IPS\Kernel::setHidden($ID, $Hidden);
+    IPS\ObjectManager::setHidden($ID, $Hidden);
 }
 
 function IPS_SetDisabled(int $ID, bool $Disabled)
 {
-    IPS\Kernel::setDisabled($ID, $Disabled);
+    IPS\ObjectManager::setDisabled($ID, $Disabled);
 }
 
 function IPS_ObjectExists(int $ID)
 {
-    return IPS\Kernel::objectExists($ID);
+    return IPS\ObjectManager::objectExists($ID);
 }
 
 function IPS_GetObject(int $ID)
 {
-    return IPS\Kernel::getObject($ID);
+    return IPS\ObjectManager::getObject($ID);
 }
 
 function IPS_GetObjectList()
 {
-    return IPS\Kernel::getObjectList();
+    return IPS\ObjectManager::getObjectList();
 }
 
 function IPS_GetObjectIDByName(string $Name, int $ParentID)
 {
-    return IPS\Kernel::getObjectIDByName($Name, $ParentID);
+    return IPS\ObjectManager::getObjectIDByName($Name, $ParentID);
 }
 
 function IPS_GetObjectIDByIdent(string $Ident, int $ParentID)
 {
-    return IPS\Kernel::getObjectIDByIdent($Ident, $ParentID);
+    return IPS\ObjectManager::getObjectIDByIdent($Ident, $ParentID);
 }
 
 function IPS_HasChildren(int $ID)
 {
-    return IPS\Kernel::hasChildren($ID);
+    return IPS\ObjectManager::hasChildren($ID);
 }
 
 function IPS_IsChild(int $ID, int $ParentID, bool $Recursive)
 {
-    return IPS\Kernel::isChild($ID, $ParentID, $Recursive);
+    return IPS\ObjectManager::isChild($ID, $ParentID, $Recursive);
 }
 
 function IPS_GetChildrenIDs(int $ID)
 {
-    return IPS\Kernel::getChildrenIDs($ID);
+    return IPS\ObjectManager::getChildrenIDs($ID);
 }
 
 function IPS_GetName(int $ID)
 {
-    return IPS\Kernel::getName($ID);
+    return IPS\ObjectManager::getName($ID);
 }
 
 function IPS_GetParent(int $ID)
 {
-    return IPS\Kernel::getParent($ID);
+    return IPS\ObjectManager::getParent($ID);
 }
 
 function IPS_GetLocation(int $ID)
 {
-    return IPS\Kernel::getLocation($ID);
+    return IPS\ObjectManager::getLocation($ID);
 }
 
 /* Category Manager */
 function IPS_CreateCategory()
 {
-    $id = IPS\Kernel::registerObject(0 /* Category */);
-    IPS\Kernel::createCategory($id);
+    $id = IPS\ObjectManager::registerObject(0 /* Category */);
+    IPS\CategoryManager::createCategory($id);
 
     return $id;
 }
 
 function IPS_DeleteCategory(int $CategoryID)
 {
-    IPS\Kernel::deleteCategory($CategoryID);
-    IPS\Kernel::unregisterObject($CategoryID);
+    IPS\CategoryManager::deleteCategory($CategoryID);
+    IPS\ObjectManager::unregisterObject($CategoryID);
 }
 
 function IPS_CategoryExists(int $CategoryID)
 {
-    return IPS\Kernel::categoryExists($CategoryID);
+    return IPS\CategoryManager::categoryExists($CategoryID);
 }
 
 function IPS_GetCategory(int $CategoryID)
 {
-    return IPS\Kernel::getCategory($CategoryID);
+    return IPS\CategoryManager::getCategory($CategoryID);
 }
 
 function IPS_GetCategoryList()
 {
-    return IPS\Kernel::getCategoryList();
+    return IPS\CategoryManager::getCategoryList();
 }
 
 function IPS_GetCategoryIDByName(string $Name, int $ParentID)
 {
-    return IPS\Kernel::getObjectIDByNameEx($Name, $ParentID, 0 /* Category */);
+    return IPS\ObjectManager::getObjectIDByNameEx($Name, $ParentID, 0 /* Category */);
 }
 
 /* Instance Manager */
 function IPS_CreateInstance(string $ModuleID)
 {
-    $module = IPS\Kernel::getModule($ModuleID);
-    $id = IPS\Kernel::registerObject(1 /* Instance */);
-    IPS\Kernel::createInstance($id, $module);
+    $module = IPS\ModuleLoader::getModule($ModuleID);
+    $id = IPS\ObjectManager::registerObject(1 /* Instance */);
+    IPS\InstanceManager::createInstance($id, $module);
 
     return $id;
 }
 
 function IPS_DeleteInstance(int $InstanceID)
 {
-    IPS\Kernel::deleteInstance($InstanceID);
-    IPS\Kernel::unregisterObject($InstanceID);
+    IPS\InstanceManager::deleteInstance($InstanceID);
+    IPS\ObjectManager::unregisterObject($InstanceID);
 }
 
 function IPS_InstanceExists(int $InstanceID)
 {
-    return IPS\Kernel::instanceExists($InstanceID);
+    return IPS\InstanceManager::instanceExists($InstanceID);
 }
 
 function IPS_GetInstance(int $InstanceID)
 {
-    return IPS\Kernel::getInstance($InstanceID);
+    return IPS\InstanceManager::getInstance($InstanceID);
 }
 
 function IPS_GetInstanceList()
 {
-    return IPS\Kernel::getInstanceList();
+    return IPS\InstanceManager::getInstanceList();
 }
 
 function IPS_GetInstanceIDByName(string $Name, int $ParentID)
 {
-    return IPS\Kernel::getObjectIDByNameEx($Name, $ParentID, 1 /* Instance */);
+    return IPS\ObjectManager::getObjectIDByNameEx($Name, $ParentID, 1 /* Instance */);
 }
 
 function IPS_GetInstanceListByModuleType(int $ModuleType)
 {
-    return IPS\Kernel::getInstanceListByModuleType($ModuleType);
+    return IPS\InstanceManager::getInstanceListByModuleType($ModuleType);
 }
 
 function IPS_GetInstanceListByModuleID(string $ModuleID)
 {
-    return IPS\Kernel::getInstanceListByModuleID($ModuleID);
+    return IPS\InstanceManager::getInstanceListByModuleID($ModuleID);
 }
 
 /* Instance Manager - Configuration */
 function IPS_HasChanges(int $InstanceID)
 {
-    return IPS\Kernel::getInstanceInterface($InstanceID)->HasChanges();
+    return IPS\InstanceManager::getInstanceInterface($InstanceID)->HasChanges();
 }
 
 function IPS_ResetChanges(int $InstanceID)
 {
-    IPS\Kernel::getInstanceInterface($InstanceID)->ResetChanges();
+    IPS\InstanceManager::getInstanceInterface($InstanceID)->ResetChanges();
 }
 
 function IPS_ApplyChanges(int $InstanceID)
 {
-    IPS\Kernel::getInstanceInterface($InstanceID)->ApplyChanges();
+    IPS\InstanceManager::getInstanceInterface($InstanceID)->ApplyChanges();
 }
 
 function IPS_GetProperty(int $InstanceID, string $Name)
 {
-    return IPS\Kernel::getInstanceInterface($InstanceID)->GetProperty($Name);
+    return IPS\InstanceManager::getInstanceInterface($InstanceID)->GetProperty($Name);
 }
 
 function IPS_GetConfiguration(int $InstanceID)
 {
-    return IPS\Kernel::getInstanceInterface($InstanceID)->GetConfiguration();
+    return IPS\InstanceManager::getInstanceInterface($InstanceID)->GetConfiguration();
 }
 
 function IPS_GetConfigurationForParent(int $InstanceID)
 {
-    return IPS\Kernel::getInstanceInterface($InstanceID)->GetConfigurationForParent();
+    return IPS\InstanceManager::getInstanceInterface($InstanceID)->GetConfigurationForParent();
 }
 
 function IPS_GetConfigurationForm(int $InstanceID)
 {
-    return IPS\Kernel::getInstanceInterface($InstanceID)->GetConfigurationForm();
+    return IPS\InstanceManager::getInstanceInterface($InstanceID)->GetConfigurationForm();
 }
 
 function IPS_SetProperty(int $InstanceID, string $Name, $Value)
 {
-    IPS\Kernel::getInstanceInterface($InstanceID)->SetProperty($Name, $Value);
+    IPS\InstanceManager::getInstanceInterface($InstanceID)->SetProperty($Name, $Value);
 }
 
 function IPS_SetConfiguration(int $InstanceID, string $Configuration)
 {
-    IPS\Kernel::getInstanceInterface($InstanceID)->SetConfiguration($Configuration);
+    IPS\InstanceManager::getInstanceInterface($InstanceID)->SetConfiguration($Configuration);
 }
 
 /* Instance Manager - Connections */
 function IPS_ConnectInstance(int $InstanceID, int $ParentID)
 {
-    IPS\Kernel::connectInstance($InstanceID, $ParentID);
+    IPS\InstanceManager::connectInstance($InstanceID, $ParentID);
 }
 
 function IPS_DisconnectInstance(int $InstanceID)
 {
-    IPS\Kernel::disconnectInstance($InstanceID);
+    IPS\InstanceManager::disconnectInstance($InstanceID);
 }
 
 /* Instance Manager - Searching */
@@ -342,17 +342,17 @@ function IPS_IsSearching(int $InstanceID)
 /* Instance Manager - Debugging */
 function IPS_DisableDebug(int $ID)
 {
-    IPS\Kernel::disableDebug($ID);
+    IPS\DebugServer::disableDebug($ID);
 }
 
 function IPS_EnableDebug(int $ID, int $Duration)
 {
-    IPS\Kernel::enableDebug($ID, $Duration);
+    IPS\DebugServer::enableDebug($ID, $Duration);
 }
 
 function IPS_SendDebug(int $SenderID, string $Message, string $Data, int $Format)
 {
-    IPS\Kernel::sendDebug($SenderID, $Message, $Data, $Format);
+    IPS\DebugServer::sendDebug($SenderID, $Message, $Data, $Format);
 }
 
 /* Instance Manager - Actions */
@@ -364,26 +364,26 @@ function IPS_RequestAction(int $InstanceID, string $VariableIdent, $Value)
 /* Variable Manager */
 function IPS_CreateVariable(int $VariableType)
 {
-    $id = IPS\Kernel::registerObject(2 /* Variable */);
-    IPS\Kernel::createVariable($id, $VariableType);
+    $id = IPS\ObjectManager::registerObject(2 /* Variable */);
+    IPS\VariableManager::createVariable($id, $VariableType);
 
     return $id;
 }
 
 function IPS_DeleteVariable(int $VariableID)
 {
-    IPS\Kernel::deleteVariable($VariableID);
-    IPS\Kernel::unregisterObject($VariableID);
+    IPS\VariableManager::deleteVariable($VariableID);
+    IPS\ObjectManager::unregisterObject($VariableID);
 }
 
 function IPS_VariableExists(int $VariableID)
 {
-    return IPS\Kernel::variableExists($VariableID);
+    return IPS\VariableManager::variableExists($VariableID);
 }
 
 function IPS_GetVariable(int $VariableID)
 {
-    return IPS\Kernel::getVariable($VariableID);
+    return IPS\VariableManager::getVariable($VariableID);
 }
 
 function IPS_GetVariableEventList(int $VariableID)
@@ -393,22 +393,22 @@ function IPS_GetVariableEventList(int $VariableID)
 
 function IPS_GetVariableIDByName(string $Name, int $ParentID)
 {
-    return IPS\Kernel::getObjectIDByNameEx($Name, $ParentID, 2 /* Variable */);
+    return IPS\ObjectManager::getObjectIDByNameEx($Name, $ParentID, 2 /* Variable */);
 }
 
 function IPS_GetVariableList()
 {
-    return IPS\Kernel::getVariableList();
+    return IPS\VariableManager::getVariableList();
 }
 
 function IPS_SetVariableCustomAction(int $VariableID, int $ScriptID)
 {
-    IPS\Kernel::setVariableCustomAction($VariableID, $ScriptID);
+    IPS\VariableManager::setVariableCustomAction($VariableID, $ScriptID);
 }
 
 function IPS_SetVariableCustomProfile(int $VariableID, string $ProfileName)
 {
-    IPS\Kernel::setVariableCustomProfile($VariableID, $ProfileName);
+    IPS\VariableManager::setVariableCustomProfile($VariableID, $ProfileName);
 }
 
 /* Script Manager */
@@ -973,42 +973,42 @@ function IPS_GetTimers(array $Parameter)
 /* Module Loader */
 function IPS_LibraryExists(string $LibraryID)
 {
-    return IPS\Kernel::libraryExists($LibraryID);
+    return IPS\ModuleLoader::libraryExists($LibraryID);
 }
 
 function IPS_GetLibrary(string $LibraryID)
 {
-    return IPS\Kernel::getLibrary($LibraryID);
+    return IPS\ModuleLoader::getLibrary($LibraryID);
 }
 
 function IPS_GetLibraryList()
 {
-    return IPS\Kernel::getLibraryList();
+    return IPS\ModuleLoader::getLibraryList();
 }
 
 function IPS_GetLibraryModules(string $LibraryID)
 {
-    return IPS\Kernel::getLibraryModules($LibraryID);
+    return IPS\ModuleLoader::getLibraryModules($LibraryID);
 }
 
 function IPS_ModuleExists(string $ModuleID)
 {
-    return IPS\Kernel::moduleExists($ModuleID);
+    return IPS\ModuleLoader::moduleExists($ModuleID);
 }
 
 function IPS_GetModule(string $ModuleID)
 {
-    return IPS\Kernel::getModule($ModuleID);
+    return IPS\ModuleLoader::getModule($ModuleID);
 }
 
 function IPS_GetModuleList()
 {
-    return IPS\Kernel::getModuleList();
+    return IPS\ModuleLoader::getModuleList();
 }
 
 function IPS_GetModuleListByType(int $ModuleType)
 {
-    return IPS\Kernel::getModuleListByType($ModuleType);
+    return IPS\ModuleLoader::getModuleListByType($ModuleType);
 }
 
 function IPS_IsModuleCompatible(string $ModuleID, string $ParentModuleID)

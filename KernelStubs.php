@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace IPS {
 
-    trait ModuleLoader
+    class ModuleLoader
     {
         private static $libraries = [];
         private static $modules = [];
@@ -127,9 +127,15 @@ namespace IPS {
             //Include module class file
             require_once $folder . '/module.php';
         }
+
+        public static function reset()
+        {
+            self::$libraries = [];
+            self::$modules = [];
+        }
     }
 
-    trait ObjectManager
+    class ObjectManager
     {
         private static $availableIDs = [];
 
@@ -420,9 +426,33 @@ namespace IPS {
 
             return $result;
         }
+
+        public static function reset()
+        {
+            self::$availableIDs = [];
+            self::$objects = [
+                0 => [
+                    'ObjectID'         => 0,
+                    'ObjectType'       => 0 /* Category */,
+                    'ObjectName'       => 'IP-Symcon',
+                    'ObjectIcon'       => '',
+                    'ObjectInfo'       => '',
+                    'ObjectIdent'      => '',
+                    'ObjectSummary'    => '',
+                    'ObjectIsHidden'   => false,
+                    'ObjectIsDisabled' => false,
+                    'ObjectIsLocked'   => false,
+                    'ObjectIsReadOnly' => false,
+                    'ObjectPosition'   => 0,
+                    'ParentID'         => 0,
+                    'ChildrenIDs'      => [],
+                    'HasChildren'      => false
+                ]
+            ];
+        }
     }
 
-    trait CategoryManager
+    class CategoryManager
     {
         private static $categories = [];
 
@@ -460,9 +490,14 @@ namespace IPS {
         {
             return array_keys(self::$categories);
         }
+
+        public static function reset()
+        {
+            self::$categories = [];
+        }
     }
 
-    trait InstanceManager
+    class InstanceManager
     {
         private static $instances = [];
         private static $interfaces = [];
@@ -579,9 +614,15 @@ namespace IPS {
             self::checkInstance($InstanceID);
             self::$instances[$InstanceID]['ConnectionID'] = 0;
         }
+
+        public static function reset()
+        {
+            self::$instances = [];
+            self::$interfaces = [];
+        }
     }
 
-    trait VariableManager
+    class VariableManager
     {
         private static $variables = [];
 
@@ -731,34 +772,64 @@ namespace IPS {
 
             self::$variables[$VariableID]['VariableAction'] = $InstanceID;
         }
+
+        public static function reset()
+        {
+            self::$variables = [];
+        }
     }
 
-    trait ScriptManager
+    class ScriptManager
     {
         private static $scripts = [];
+
+        public static function reset()
+        {
+            self::$scripts = [];
+        }
     }
 
-    trait EventManager
+    class EventManager
     {
         private static $events = [];
+
+        public static function reset()
+        {
+            self::$events = [];
+        }
     }
 
-    trait MediaManager
+    class MediaManager
     {
         private static $medias = [];
+
+        public static function reset()
+        {
+            self::$medias = [];
+        }
     }
 
-    trait LinkManager
+    class LinkManager
     {
         private static $links = [];
+
+        public static function reset()
+        {
+            self::$links = [];
+        }
     }
 
-    trait ProfileManager
+    class ProfileManager
     {
         private static $profiles = [];
+
+        public static function reset()
+        {
+            self::$profiles = [];
+        }
     }
 
-    trait DebugServer
+    class DebugServer
     {
         private static $debug = [];
 
@@ -788,56 +859,28 @@ namespace IPS {
 
             echo 'DEBUG: ' . $Message . ' | ' . $Data;
         }
+
+        public static function reset()
+        {
+            self::$debug = [];
+        }
     }
 
     class Kernel
     {
-        use ModuleLoader;
-        use ObjectManager;
-        use CategoryManager;
-        use InstanceManager;
-        use VariableManager;
-        use ScriptManager;
-        use EventManager;
-        use MediaManager;
-        use LinkManager;
-        use ProfileManager;
-        use DebugServer;
-
         public static function reset()
         {
-            self::$libraries = [];
-            self::$modules = [];
-            self::$availableIDs = [];
-            self::$objects = [
-                0 => [
-                    'ObjectID'         => 0,
-                    'ObjectType'       => 0 /* Category */,
-                    'ObjectName'       => 'IP-Symcon',
-                    'ObjectIcon'       => '',
-                    'ObjectInfo'       => '',
-                    'ObjectIdent'      => '',
-                    'ObjectSummary'    => '',
-                    'ObjectIsHidden'   => false,
-                    'ObjectIsDisabled' => false,
-                    'ObjectIsLocked'   => false,
-                    'ObjectIsReadOnly' => false,
-                    'ObjectPosition'   => 0,
-                    'ParentID'         => 0,
-                    'ChildrenIDs'      => [],
-                    'HasChildren'      => false
-                ]
-            ];
-            self::$categories = [];
-            self::$instances = [];
-            self::$interfaces = [];
-            self::$variables = [];
-            self::$scripts = [];
-            self::$events = [];
-            self::$medias = [];
-            self::$links = [];
-            self::$profiles = [];
-            self::$debug = [];
+            ModuleLoader::reset();
+            ObjectManager::reset();
+            CategoryManager::reset();
+            InstanceManager::reset();
+            VariableManager::reset();
+            ScriptManager::reset();
+            EventManager::reset();
+            MediaManager::reset();
+            LinkManager::reset();
+            ProfileManager::reset();
+            DebugServer::reset();
         }
     }
 }

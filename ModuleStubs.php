@@ -220,7 +220,11 @@ class IPSModule
 
     public function SetConfiguration($Configuration)
     {
-        foreach ($Configuration as $name => $value) {
+        $json = json_decode($Configuration);
+        if($json == NULL) {
+            throw new \Exception("Cannot parse configuration json");
+        }
+        foreach ($json as $name => $value) {
             if (isset($this->properties[$name])) {
                 $this->properties[$name]['Pending'] = $value;
             }
@@ -283,7 +287,7 @@ class IPSModule
     {
         //FIXME: We could validate something here
         $connectionID = IPS_GetInstance($this->InstanceID)['ConnectionID'];
-        $interface = IPS\Kernel::getInstanceInterface($connectionID);
+        $interface = IPS\InstanceManager::getInstanceInterface($connectionID);
         $interface->ForwardData($Data);
     }
 
@@ -293,7 +297,7 @@ class IPSModule
         $ids = IPS_GetInstanceList();
         foreach ($ids as $id) {
             if (IPS_GetInstance($id)['ConnectionID'] == $this->InstanceID) {
-                $interface = IPS\Kernel::getInstanceInterface($id);
+                $interface = IPS\InstanceManager::getInstanceInterface($id);
                 $interface->ReceiveData($Data);
             }
         }
@@ -353,12 +357,12 @@ class IPSModule
 
     protected function SetStatus($Status)
     {
-        IPS\Kernel::setStatus($this->InstanceID, $Status);
+        IPS\InstanceManager::setStatus($this->InstanceID, $Status);
     }
 
     protected function SetSummary($Summary)
     {
-        IPS\Kernel::setSummary($Summary);
+        IPS\InstanceManager::setSummary($Summary);
     }
 
     protected function SetBuffer($Name, $Data)
