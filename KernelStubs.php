@@ -782,6 +782,62 @@ namespace IPS {
     class ScriptManager
     {
         private static $scripts = [];
+        private static $content = [];
+
+        public static function createScript(int $ScriptID, int $ScriptType): void {
+            self::$scripts[$ScriptID] = [
+                'ScriptID'       => $ScriptID,
+                'ScriptType'     => $ScriptType,
+                'ScriptFile'     => $ScriptID . '.ips.php',
+                'ScriptExecuted' => 0,
+                'ScriptIsBroken' => false
+            ];
+
+            self::$content[$ScriptID] = "<?php " . PHP_EOL . PHP_EOL . "//Start writing your scripts between the brackets" . PHP_EOL . PHP_EOL . "?>";
+        }
+
+        public static function deleteScript(int $ScriptID, bool $DeleteFile): void {
+            self::checkScript($ScriptID);
+            unset(self::$scripts[$ScriptID]);
+        }
+
+        public static function setScriptFile(int $ScriptID, String $FilePath): void {
+            self::$scripts[$ScriptID]['ScriptFile'] = $FilePath;
+        }
+
+        public static function setScriptContent(int $ScriptID, String $Content): void {
+            self::$content[$ScriptID] = $Content;
+        }
+
+        public static function scriptExists(int $ScriptID): bool {
+            return isset(self::$scripts[$ScriptID]);
+        }
+
+        public static function checkScript(int $ScriptID): void {
+            if (!self::scriptExists($ScriptID)) {
+                throw new \Exception(sprintf('Script #%d does not exist', $ScriptID));
+            }
+        }
+
+        public static function getScript(int $ScriptID): array {
+            self::checkScript($ScriptID);
+
+            return self::$scripts[$ScriptID];
+        }
+
+        public static function getScriptList(): array {
+            return array_keys(self::$scripts);
+        }
+
+        public static function getScriptFile(int $ScriptID): string {
+            self::checkScript($ScriptID);
+
+            return self::$scripts[$ScriptID]['ScriptFile'];
+        }
+
+        public static function getScriptContent(int $ScriptID): string {
+            return self::$content[$ScriptID];
+        }
 
         public static function reset()
         {

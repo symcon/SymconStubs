@@ -414,57 +414,66 @@ function IPS_SetVariableCustomProfile(int $VariableID, string $ProfileName)
 /* Script Manager */
 function IPS_CreateScript(int $ScriptType)
 {
-    return 0;
+    $id = IPS\ObjectManager::registerObject(3 /* Script */);
+    IPS\ScriptManager::createScript($id, $ScriptType);
+
+    return $id;
 }
 
 function IPS_DeleteScript(int $ScriptID, bool $DeleteFile)
 {
-    return true;
+    IPS\ScriptManager::deleteScript($ScriptID, $DeleteFile);
+    IPS\ObjectManager::unregisterObject($ScriptID);
+}
+
+function IPS_ScriptExists(int $ScriptID)
+{
+    return IPS\ScriptManager::scriptExists($ScriptID);
 }
 
 function IPS_SetScriptContent(int $ScriptID, string $Content)
 {
-    return true;
+    IPS\ScriptManager::setScriptContent($ScriptID, $Content);
 }
 
 function IPS_SetScriptFile(int $ScriptID, string $FilePath)
 {
-    return true;
+    IPS\ScriptManager::setScriptFile($ScriptID, $FilePath);
 }
 
 function IPS_GetScript(int $ScriptID)
 {
-    return [];
+    return IPS\ScriptManager::getScript($ScriptID);
 }
 
 function IPS_GetScriptContent(int $ScriptID)
 {
-    return '';
+    return IPS\ScriptManager::getScriptContent($ScriptID);
 }
 
 function IPS_GetScriptEventList(int $ScriptID)
 {
-    return [];
+    throw new Exception("Not implemented");
 }
 
 function IPS_GetScriptFile(int $ScriptID)
 {
-    return '';
+    IPS\ScriptManager::getScriptFile($ScriptID);
 }
 
 function IPS_GetScriptIDByFile(string $FilePath)
 {
-    return 0;
+    throw new Exception("Not implemented");
 }
 
 function IPS_GetScriptIDByName(string $Name, int $ParentID)
 {
-    return 0;
+    return IPS\ObjectManager::getObjectIDByNameEx($Name, $ParentID, 3 /* Script */);
 }
 
 function IPS_GetScriptList()
 {
-    return [];
+    return IPS\ScriptManager::getScriptList();
 }
 
 /* Event Manager */
@@ -846,47 +855,46 @@ function IPS_SetLicense(string $Licensee, string $LicenseContent)
 /* Script Engine */
 function IPS_RunScript(int $ScriptID)
 {
-    throw new Exception('Not implemented');
+    IPS_RunScriptEx($ScriptID, []);
 }
 
 function IPS_RunScriptEx(int $ScriptID, array $Parameters)
 {
-    throw new Exception('Not implemented');
-}
-
-function IPS_RunScriptText(string $ScriptText)
-{
-    throw new Exception('Not implemented');
-}
-
-function IPS_RunScriptTextEx(string $ScriptText, array $Parameters)
-{
-    throw new Exception('Not implemented');
-}
-
-function IPS_RunScriptTextWait(string $ScriptText)
-{
-    throw new Exception('Not implemented');
-}
-
-function IPS_RunScriptTextWaitEx(string $ScriptText, array $Parameters)
-{
-    throw new Exception('Not implemented');
+    IPS_RunScriptWaitEx($ScriptID, $Parameters);
 }
 
 function IPS_RunScriptWait(int $ScriptID)
 {
-    throw new Exception('Not implemented');
+    return IPS_RunScriptWaitEx($ScriptID, []);
 }
 
 function IPS_RunScriptWaitEx(int $ScriptID, array $Parameters)
 {
-    throw new Exception('Not implemented');
+    return IPS_RunScriptTextWaitEx(IPS\ScriptManager::getScriptContent($ScriptID), $Parameters);
 }
 
-function IPS_ScriptExists(int $ScriptID)
+function IPS_RunScriptText(string $ScriptText)
 {
-    throw new Exception('Not implemented');
+    IPS_RunScriptTextEx($ScriptText, []);
+}
+
+function IPS_RunScriptTextEx(string $ScriptText, array $Parameters)
+{
+    IPS_RunScriptTextWaitEx($ScriptText, $Parameters);
+}
+
+function IPS_RunScriptTextWait(string $ScriptText)
+{
+    return IPS_RunScriptTextWaitEx($ScriptText, []);
+}
+
+function IPS_RunScriptTextWaitEx(string $ScriptText, array $Parameters)
+{
+    $ScriptText = str_replace("<?php", "", $ScriptText);
+    $ScriptText = str_replace("<?", "", $ScriptText);
+    $ScriptText = str_replace("?>", "", $ScriptText);
+    $ScriptText = "\$_IPS = " . var_export($Parameters, true) . ";" . PHP_EOL . $ScriptText;
+    return eval($ScriptText);
 }
 
 function IPS_SemaphoreEnter(string $Name, int $Milliseconds)
