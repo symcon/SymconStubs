@@ -453,7 +453,7 @@ function IPS_GetScriptContent(int $ScriptID)
 
 function IPS_GetScriptEventList(int $ScriptID)
 {
-    throw new Exception("Not implemented");
+    throw new Exception('Not implemented');
 }
 
 function IPS_GetScriptFile(int $ScriptID)
@@ -463,7 +463,7 @@ function IPS_GetScriptFile(int $ScriptID)
 
 function IPS_GetScriptIDByFile(string $FilePath)
 {
-    throw new Exception("Not implemented");
+    throw new Exception('Not implemented');
 }
 
 function IPS_GetScriptIDByName(string $Name, int $ParentID)
@@ -890,10 +890,10 @@ function IPS_RunScriptTextWait(string $ScriptText)
 
 function IPS_RunScriptTextWaitEx(string $ScriptText, array $Parameters)
 {
-    $ScriptText = str_replace("<?php", "", $ScriptText);
-    $ScriptText = str_replace("<?", "", $ScriptText);
-    $ScriptText = str_replace("?>", "", $ScriptText);
-    $ScriptText = "\$_IPS = " . var_export($Parameters, true) . ";" . PHP_EOL . $ScriptText;
+    $ScriptText = str_replace('<?php', '', $ScriptText);
+    $ScriptText = str_replace('<?', '', $ScriptText);
+    $ScriptText = str_replace('?>', '', $ScriptText);
+    $ScriptText = '$_IPS = ' . var_export($Parameters, true) . ';' . PHP_EOL . $ScriptText;
     return eval($ScriptText);
 }
 
