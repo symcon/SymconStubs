@@ -946,7 +946,6 @@ namespace IPS {
         public static function setVariableProfileAssociation(string $ProfileName, float $AssociationValue, string $AssociationName, string $AssociationIcon, int $AssociationColor)
         {
             self::checkVariableProfile($ProfileName);
-
         }
 
         public static function variableProfileExists(string $ProfileName): bool
