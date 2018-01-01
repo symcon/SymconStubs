@@ -697,57 +697,57 @@ function IPS_SetLinkTargetID(int $LinkID, int $ChildID)
 /* Profile Manager */
 function IPS_CreateVariableProfile(string $ProfileName, int $ProfileType)
 {
-    return true;
+    IPS\ProfileManager::createVariableProfile($ProfileName, $ProfileType);
 }
 
 function IPS_DeleteVariableProfile(string $ProfileName)
 {
-    return true;
+    IPS\ProfileManager::deleteVariableProfile($ProfileName);
 }
 
 function IPS_VariableProfileExists(string $ProfileName)
 {
-    return true;
+    return IPS\ProfileManager::variableProfileExists($ProfileName);
 }
 
 function IPS_GetVariableProfile(string $ProfileName)
 {
-    return [];
+    return IPS\ProfileManager::getVariableProfile($ProfileName);
 }
 
 function IPS_GetVariableProfileList()
 {
-    return false;
+    return IPS\ProfileManager::getVariableProfileList();
 }
 
 function IPS_GetVariableProfileListByType(int $ProfileType)
 {
-    return [];
+    return IPS\ProfileManager::getVariableProfileListByType($ProfileType);
 }
 
 function IPS_SetVariableProfileAssociation(string $ProfileName, float $AssociationValue, string $AssociationName, string $AssociationIcon, int $AssociationColor)
 {
-    return true;
+    IPS\ProfileManager::setVariableProfileAssociation($ProfileName, $AssociationValue, $AssociationName, $AssociationIcon, $AssociationColor);
 }
 
 function IPS_SetVariableProfileDigits(string $ProfileName, int $Digits)
 {
-    return true;
+    IPS\ProfileManager::setVariableProfileDigits($ProfileName, $Digits);
 }
 
 function IPS_SetVariableProfileIcon(string $ProfileName, string $Icon)
 {
-    return true;
+    IPS\ProfileManager::setVariableProfileIcon($ProfileName, $Icon);
 }
 
 function IPS_SetVariableProfileText(string $ProfileName, string $Prefix, string $Suffix)
 {
-    return true;
+    IPS\ProfileManager::setVariableProfileText($ProfileName, $Prefix, $Suffix);
 }
 
 function IPS_SetVariableProfileValues(string $ProfileName, float $MinValue, float $MaxValue, float $StepSize)
 {
-    return true;
+    IPS\ProfileManager::setVariableProfileValues($ProfileName, $MinValue, $MaxValue, $StepSize);
 }
 
 /* Kernel */

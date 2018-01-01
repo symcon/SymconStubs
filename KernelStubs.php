@@ -889,6 +889,102 @@ namespace IPS {
     {
         private static $profiles = [];
 
+        public static function createVariableProfile(string $ProfileName, int $ProfileType): void
+        {
+            self::$profiles[$ProfileName] = [
+                'ProfileName'  => $ProfileName,
+                'ProfileType'  => $ProfileType,
+                'Icon'         => '',
+                'Prefix'       => '',
+                'Suffix'       => '',
+                'MaxValue'     => 0,
+                'MinValue'     => 0,
+                'Digits'       => 0,
+                'StepSize'     => 0,
+                'IsReadOnly'   => false,
+                'Associations' => []
+            ];
+        }
+
+        public static function deleteVariableProfile(string $ProfileName): void
+        {
+            self::checkVariableProfile($ProfileName);
+            unset(self::$profiles[$ProfileName]);
+        }
+
+        public static function setVariableProfileText(string $ProfileName, string $Prefix, string $Suffix): void
+        {
+            self::checkVariableProfile($ProfileName);
+
+            self::$profiles[$ProfileName]['Prefix'] = $Prefix;
+            self::$profiles[$ProfileName]['Suffix'] = $Suffix;
+        }
+
+        public static function setVariableProfileValues(string $ProfileName, float $MinValue, float $MaxValue, float $StepSize): void
+        {
+            self::checkVariableProfile($ProfileName);
+
+            self::$profiles[$ProfileName]['MinValue'] = $MinValue;
+            self::$profiles[$ProfileName]['MaxValue'] = $MaxValue;
+            self::$profiles[$ProfileName]['StepSize'] = $StepSize;
+        }
+
+        public static function setVariableProfileDigits(string $ProfileName, int $Digits): void
+        {
+            self::checkVariableProfile($ProfileName);
+
+            self::$profiles[$ProfileName]['Digits'] = $Digits;
+        }
+
+        public static function setVariableProfileIcon(string $ProfileName, string $Icon): void
+        {
+            self::checkVariableProfile($ProfileName);
+
+            self::$profiles[$ProfileName]['Icon'] = $Icon;
+        }
+
+        public static function setVariableProfileAssociation(string $ProfileName, float $AssociationValue, string $AssociationName, string $AssociationIcon, int $AssociationColor)
+        {
+            self::checkVariableProfile($ProfileName);
+
+        }
+
+        public static function variableProfileExists(string $ProfileName): bool
+        {
+            return isset(self::$profiles[$ProfileName]);
+        }
+
+        public static function checkVariableProfile(string $ProfileName): void
+        {
+            if (!self::variableProfileExists($ProfileName)) {
+                throw new \Exception(sprintf('Profile #%s does not exist', $ProfileName));
+            }
+        }
+
+        public static function getVariableProfile(string $ProfileName): array
+        {
+            self::checkVariableProfile($ProfileName);
+
+            return self::$profiles[$ProfileName];
+        }
+
+        public static function getVariableProfileList(): array
+        {
+            return array_keys(self::$profiles);
+        }
+
+        public static function getVariableProfileListByType(int $ProfileType): array
+        {
+            $result = [];
+            foreach (self::$profiles as $profile) {
+                if ($profile['ProfileType'] == $ProfileType) {
+                    $result[] = $profile;
+                }
+            }
+
+            return $result;
+        }
+
         public static function reset()
         {
             self::$profiles = [];
