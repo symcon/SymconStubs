@@ -700,7 +700,7 @@ namespace IPS {
             return self::$variables[$VariableID]['VariableValue'];
         }
 
-        public static function writeVariableFloat(int $VariableID, double $VariableValue): void
+        public static function writeVariableFloat(int $VariableID, float $VariableValue): void
         {
             self::checkVariable($VariableID);
 
