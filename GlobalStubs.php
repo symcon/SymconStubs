@@ -855,12 +855,13 @@ function IPS_SetLicense(string $Licensee, string $LicenseContent)
 /* Script Engine */
 function IPS_RunScript(int $ScriptID)
 {
-    IPS_RunScriptEx($ScriptID, []);
+    return IPS_RunScriptEx($ScriptID, []);
 }
 
 function IPS_RunScriptEx(int $ScriptID, array $Parameters)
 {
     IPS_RunScriptWaitEx($ScriptID, $Parameters);
+    return true;
 }
 
 function IPS_RunScriptWait(int $ScriptID)
@@ -875,12 +876,13 @@ function IPS_RunScriptWaitEx(int $ScriptID, array $Parameters)
 
 function IPS_RunScriptText(string $ScriptText)
 {
-    IPS_RunScriptTextEx($ScriptText, []);
+    return IPS_RunScriptTextEx($ScriptText, []);
 }
 
 function IPS_RunScriptTextEx(string $ScriptText, array $Parameters)
 {
     IPS_RunScriptTextWaitEx($ScriptText, $Parameters);
+    return true;
 }
 
 function IPS_RunScriptTextWait(string $ScriptText)
@@ -894,7 +896,11 @@ function IPS_RunScriptTextWaitEx(string $ScriptText, array $Parameters)
     $ScriptText = str_replace('<?', '', $ScriptText);
     $ScriptText = str_replace('?>', '', $ScriptText);
     $ScriptText = '$_IPS = ' . var_export($Parameters, true) . ';' . PHP_EOL . $ScriptText;
-    return eval($ScriptText);
+    ob_start();
+    eval($ScriptText);
+    $out = ob_get_contents();
+    ob_end_clean();
+    return $out;
 }
 
 function IPS_SemaphoreEnter(string $Name, int $Milliseconds)
