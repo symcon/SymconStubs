@@ -751,11 +751,6 @@ function IPS_SetVariableProfileValues(string $ProfileName, float $MinValue, floa
 }
 
 /* Kernel */
-function IPS_GetKernelDate()
-{
-    return time();
-}
-
 function IPS_GetKernelDir()
 {
     return sys_get_temp_dir();
@@ -776,9 +771,24 @@ function IPS_GetKernelStartTime()
     return time();
 }
 
+function IPS_GetKernelPlatform()
+{
+    return "Stubs";
+}
+
 function IPS_GetKernelVersion()
 {
-    return '4.3';
+    return '5.0';
+}
+
+function IPS_GetKernelRevision()
+{
+    return 'db699d5ae3b27a113672ce7e957180b7811b3429';
+}
+
+function IPS_GetKernelDate()
+{
+    return 1519165921;
 }
 
 function IPS_GetLogDir()
