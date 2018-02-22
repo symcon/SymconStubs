@@ -221,7 +221,7 @@ class IPSModule
     public function SetConfiguration($Configuration)
     {
         $json = json_decode($Configuration);
-        if ($json == null) {
+        if ($json === null) {
             throw new \Exception('Cannot parse configuration json');
         }
         foreach ($json as $name => $value) {
