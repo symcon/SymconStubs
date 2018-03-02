@@ -676,6 +676,10 @@ namespace IPS {
         {
             self::checkVariable($VariableID);
 
+            self::$variables[$VariableID]['VariableUpdated'] = time();
+            if (self::$variables[$VariableID]['VariableValue'] != $VariableValue) {
+                self::$variables[$VariableID]['VariableChanged'] = time();
+            }
             self::$variables[$VariableID]['VariableValue'] = $VariableValue;
         }
 
@@ -690,6 +694,10 @@ namespace IPS {
         {
             self::checkVariable($VariableID);
 
+            self::$variables[$VariableID]['VariableUpdated'] = time();
+            if (self::$variables[$VariableID]['VariableValue'] != $VariableValue) {
+                self::$variables[$VariableID]['VariableChanged'] = time();
+            }
             self::$variables[$VariableID]['VariableValue'] = $VariableValue;
         }
 
@@ -704,6 +712,10 @@ namespace IPS {
         {
             self::checkVariable($VariableID);
 
+            self::$variables[$VariableID]['VariableUpdated'] = time();
+            if (self::$variables[$VariableID]['VariableValue'] != $VariableValue) {
+                self::$variables[$VariableID]['VariableChanged'] = time();
+            }
             self::$variables[$VariableID]['VariableValue'] = $VariableValue;
         }
 
@@ -718,6 +730,10 @@ namespace IPS {
         {
             self::checkVariable($VariableID);
 
+            self::$variables[$VariableID]['VariableUpdated'] = time();
+            if (self::$variables[$VariableID]['VariableValue'] != $VariableValue) {
+                self::$variables[$VariableID]['VariableChanged'] = time();
+            }
             self::$variables[$VariableID]['VariableValue'] = $VariableValue;
         }
 
