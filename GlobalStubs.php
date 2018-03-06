@@ -773,7 +773,7 @@ function IPS_GetKernelStartTime()
 
 function IPS_GetKernelPlatform()
 {
-    return "Stubs";
+    return 'Stubs';
 }
 
 function IPS_GetKernelVersion()
