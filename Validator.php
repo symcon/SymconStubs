@@ -123,4 +123,9 @@ class TestCaseSymconValidation extends TestCase
             $this->assertTrue(json_decode(file_get_contents($folder . '/locale.json')) !== null);
         }
     }
+
+    public function testNop(): void
+    {
+        $this->assertTrue(true);
+    }
 }
