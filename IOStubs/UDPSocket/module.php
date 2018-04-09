@@ -1,9 +1,9 @@
 <?php
 
 declare(strict_types=1);
-include_once __DIR__ . '/../VirtualIO/module.php';
+include_once __DIR__ . '/../ServerSocket/module.php';
 
-class UDPSocket extends VirtualIO
+class UDPSocket extends ServerSocketBase
 {
     public function Create()
     {

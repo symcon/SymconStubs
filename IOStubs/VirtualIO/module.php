@@ -54,9 +54,9 @@ class VirtualIO extends IPSModule
 
     public function PushText($Text)
     {
-        $this->SendDataToChildren([
+        $this->SendDataToChildren(json_encode([
             'DataID' => '{018EF6B5-AB94-40C6-AA53-46943E824ACF}',
             'Buffer' => utf8_encode($Text)
-        ]);
+        ]));
     }
 }
