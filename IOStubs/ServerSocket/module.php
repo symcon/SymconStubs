@@ -17,7 +17,7 @@ class ServerSocketBase extends VirtualIO
 
         if ($data['DataID'] == '{C8792760-65CF-4C53-B5C7-A30FCC84FEFE}') {
             $this->packetQueue[] = [
-                'Type'       => $data['Type'] == null ? 0 /* Data */ : $data['Type'],
+                'Type'       => isset($data['Type']) ? $data['Type'] : 0 /* Data */,
                 'Buffer'     => utf8_decode($data['Buffer']),
                 'ClientIP'   => $data['ClientIP'],
                 'ClientPort' => $data['ClientPort']
