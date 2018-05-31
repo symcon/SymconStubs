@@ -370,6 +370,10 @@ class IPSModule
         $this->buffer[$Name] = $Data;
     }
 
+    protected function GetBufferList() {
+        return array_keys($this->buffer);
+    }
+
     protected function GetBuffer($Name)
     {
         if (isset($this->buffer[$Name])) {
