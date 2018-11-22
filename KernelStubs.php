@@ -615,6 +615,12 @@ namespace IPS {
             self::$instances[$InstanceID]['ConnectionID'] = 0;
         }
 
+        public static function getReferenceList($InstanceID) {
+            self::checkInstance($InstanceID);
+
+            return self::$instances[$InstanceID]->GetReferenceList();
+        }
+
         public static function reset()
         {
             self::$instances = [];

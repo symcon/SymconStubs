@@ -7,6 +7,8 @@ class IPSModule
     protected $InstanceID;
 
     private $properties = [];
+    private $attributes = [];
+    private $references = [];
 
     private $buffer = [];
 
@@ -61,6 +63,35 @@ class IPSModule
     protected function RegisterPropertyString($Name, $DefaultValue)
     {
         $this->RegisterProperty($Name, $DefaultValue, 3);
+    }
+
+    private function RegisterAttribute($Name, $DefaultValue, $Type)
+    {
+        $this->attributes[$Name] = [
+            'Type'    => $Type,
+            'Default' => $DefaultValue,
+            'Current' => $DefaultValue
+        ];
+    }
+
+    protected function RegisterAttributeBoolean($Name, $DefaultValue)
+    {
+        $this->RegisterAttribute($Name, $DefaultValue, 0);
+    }
+
+    protected function RegisterAttributeInteger($Name, $DefaultValue)
+    {
+        $this->RegisterAttribute($Name, $DefaultValue, 1);
+    }
+
+    protected function RegisterAttributeFloat($Name, $DefaultValue)
+    {
+        $this->RegisterAttribute($Name, $DefaultValue, 2);
+    }
+
+    protected function RegisterAttributeString($Name, $DefaultValue)
+    {
+        $this->RegisterAttribute($Name, $DefaultValue, 3);
     }
 
     protected function RegisterTimer($Ident, $Milliseconds, $ScriptText)
@@ -283,6 +314,110 @@ class IPSModule
         return $this->properties[$Name]['Current'];
     }
 
+    protected function ReadAttributeBoolean($Name)
+    {
+        if (!isset($this->attributes[$Name])) {
+            throw new Exception(sprintf('Attribute %s not found', $Name));
+        }
+
+        if ($this->attributes[$Name]['Type'] != 0) {
+            throw new Exception(sprintf('Attribute %s is not of type Boolean', $Name));
+        }
+
+        return $this->attributes[$Name]['Current'];
+    }
+
+    protected function ReadAttributeInteger($Name)
+    {
+        if (!isset($this->attributes[$Name])) {
+            throw new Exception(sprintf('Attribute %s not found', $Name));
+        }
+
+        if ($this->attributes[$Name]['Type'] != 1) {
+            throw new Exception(sprintf('Attribute %s is not of type Integer', $Name));
+        }
+
+        return $this->attributes[$Name]['Current'];
+    }
+
+    protected function ReadAttributeFloat($Name)
+    {
+        if (!isset($this->attributes[$Name])) {
+            throw new Exception(sprintf('Attribute %s not found', $Name));
+        }
+
+        if ($this->attributes[$Name]['Type'] != 2) {
+            throw new Exception(sprintf('Attribute %s is not of type Float', $Name));
+        }
+
+        return $this->attributes[$Name]['Current'];
+    }
+
+    protected function ReadAttributeString($Name)
+    {
+        if (!isset($this->attributes[$Name])) {
+            throw new Exception(sprintf('Attribute %s not found', $Name));
+        }
+
+        if ($this->attributes[$Name]['Type'] != 3) {
+            throw new Exception(sprintf('Attribute %s is not of type String', $Name));
+        }
+
+        return $this->attributes[$Name]['Current'];
+    }
+
+    protected function WriteAttributeBoolean($Name, bool $Value)
+    {
+        if (!isset($this->attributes[$Name])) {
+            throw new Exception(sprintf('Attribute %s not found', $Name));
+        }
+
+        if ($this->attributes[$Name]['Type'] != 0) {
+            throw new Exception(sprintf('Attribute %s is not of type Boolean', $Name));
+        }
+
+        $this->attributes[$Name]['Current'] = $Value;
+    }
+
+    protected function WriteAttributeInteger($Name, bool $Value)
+    {
+        if (!isset($this->attributes[$Name])) {
+            throw new Exception(sprintf('Attribute %s not found', $Name));
+        }
+
+        if ($this->attributes[$Name]['Type'] != 1) {
+            throw new Exception(sprintf('Attribute %s is not of type Integer', $Name));
+        }
+
+        $this->attributes[$Name]['Current'] = $Value;
+    }
+
+    protected function WriteAttributeFloat($Name, bool $Value)
+    {
+        if (!isset($this->attributes[$Name])) {
+            throw new Exception(sprintf('Attribute %s not found', $Name));
+        }
+
+        if ($this->attributes[$Name]['Type'] != 2) {
+            throw new Exception(sprintf('Attribute %s is not of type Float', $Name));
+        }
+
+        $this->attributes[$Name]['Current'] = $Value;
+    }
+
+    protected function WriteAttributeString($Name, bool $Value)
+    {
+        if (!isset($this->attributes[$Name])) {
+            throw new Exception(sprintf('Attribute %s not found', $Name));
+        }
+
+        if ($this->attributes[$Name]['Type'] != 3) {
+            throw new Exception(sprintf('Attribute %s is not of type String', $Name));
+        }
+
+        $this->attributes[$Name]['Current'] = $Value;
+    }
+
     protected function SendDataToParent($Data)
     {
         //FIXME: We could validate something here
@@ -470,5 +605,21 @@ class IPSModule
     public function Translate($Text)
     {
         return $Text;
+    }
+
+    protected function RegisterReference(int $ID) {
+        if (!in_array($ID, $this->references)) {
+            $this->references[] = $ID;
+        }
+    }
+
+    protected function UnregisterReference(int $ID) {
+        if (in_array($ID, $this->references)) {
+            array_splice($this->references, array_search($ID, $this->references), 1);
+        }
+    }
+
+    public function GetReferenceList() {
+        return $this->references;
     }
 }
