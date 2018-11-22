@@ -618,7 +618,7 @@ namespace IPS {
         public static function getReferenceList($InstanceID) {
             self::checkInstance($InstanceID);
 
-            return self::$instances[$InstanceID]->GetReferenceList();
+            return self::$interfaces[$InstanceID]->GetReferenceList();
         }
 
         public static function reset()
