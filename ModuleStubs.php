@@ -607,19 +607,22 @@ class IPSModule
         return $Text;
     }
 
-    protected function RegisterReference(int $ID) {
+    protected function RegisterReference(int $ID)
+    {
         if (!in_array($ID, $this->references)) {
             $this->references[] = $ID;
         }
     }
 
-    protected function UnregisterReference(int $ID) {
+    protected function UnregisterReference(int $ID)
+    {
         if (in_array($ID, $this->references)) {
             array_splice($this->references, array_search($ID, $this->references), 1);
         }
     }
 
-    public function GetReferenceList() {
+    public function GetReferenceList()
+    {
         return $this->references;
     }
 }

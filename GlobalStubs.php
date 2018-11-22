@@ -261,7 +261,8 @@ function IPS_GetInstanceListByModuleID(string $ModuleID)
     return IPS\InstanceManager::getInstanceListByModuleID($ModuleID);
 }
 
-function IPS_GetReferenceList(int $InstanceID) {
+function IPS_GetReferenceList(int $InstanceID)
+{
     return IPS\InstanceManager::getReferenceList($InstanceID);
 }
 
