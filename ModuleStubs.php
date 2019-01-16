@@ -524,6 +524,12 @@ class IPSModule
         IPS_SendDebug($this->InstanceID, $Message, $Data, $Format);
     }
 
+    protected function GetMessageList()
+    {
+        // TODO: Some implementation here would be nice, but this suffices for the time being
+        return [];
+    }
+
     protected function RegisterMessage($SenderID, $Message)
     {
     }
