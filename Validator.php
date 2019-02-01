@@ -31,38 +31,38 @@ class TestCaseSymconValidation extends TestCase
         $library = json_decode(file_get_contents($folder . '/library.json'), true);
 
         $this->assertArrayHasKey('id', $library);
-        $this->assertInternalType('string', $library['id']);
+        $this->assertIsString($library['id']);
         $this->assertTrue($this->isValidGUID($library['id']));
 
         $this->assertArrayHasKey('author', $library);
-        $this->assertInternalType('string', $library['author']);
+        $this->assertIsString($library['author']);
 
         $this->assertArrayHasKey('name', $library);
-        $this->assertInternalType('string', $library['name']);
+        $this->assertIsString($library['name']);
 
         $this->assertArrayHasKey('url', $library);
-        $this->assertInternalType('string', $library['url']);
+        $this->assertIsString($library['url']);
 
         $this->assertArrayHasKey('version', $library);
-        $this->assertInternalType('string', $library['version']);
+        $this->assertIsString($library['version']);
 
         $this->assertArrayHasKey('build', $library);
-        $this->assertInternalType('int', $library['build']);
+        $this->assertIsInt($library['build']);
 
         $this->assertArrayHasKey('date', $library);
-        $this->assertInternalType('int', $library['date']);
+        $this->assertIsInt($library['date']);
 
         //This is purely optional
         if (!isset($library['compatibility'])) {
             $this->assertCount(7, $library);
         } else {
             $this->assertCount(8, $library);
-            $this->assertInternalType('array', $library['compatibility']);
+            $this->assertIsArray($library['compatibility']);
             if (isset($library['compatibility']['version'])) {
-                $this->assertInternalType('string', $library['compatibility']['version']);
+                $this->assertIsString($library['compatibility']['version']);
             }
             if (isset($library['compatibility']['date'])) {
-                $this->assertInternalType('int', $library['compatibility']['date']);
+                $this->assertIsInt($library['compatibility']['date']);
             }
         }
     }
@@ -72,47 +72,47 @@ class TestCaseSymconValidation extends TestCase
         $module = json_decode(file_get_contents($folder . '/module.json'), true);
 
         $this->assertArrayHasKey('id', $module);
-        $this->assertInternalType('string', $module['id']);
+        $this->assertIsString($module['id']);
         $this->assertTrue($this->isValidGUID($module['id']));
 
         $this->assertArrayHasKey('name', $module);
-        $this->assertInternalType('string', $module['name']);
+        $this->assertIsString($module['name']);
         $this->assertTrue($this->isValidName($module['name']));
 
         $this->assertArrayHasKey('type', $module);
-        $this->assertInternalType('int', $module['type']);
+        $this->assertIsInt($module['type']);
         $this->assertGreaterThanOrEqual(0, $module['type']);
         $this->assertLessThanOrEqual(4, $module['type']);
 
         $this->assertArrayHasKey('vendor', $module);
-        $this->assertInternalType('string', $module['vendor']);
+        $this->assertIsString($module['vendor']);
 
         $this->assertArrayHasKey('aliases', $module);
-        $this->assertInternalType('array', $module['aliases']);
+        $this->assertIsArray($module['aliases']);
 
         $this->assertArrayHasKey('parentRequirements', $module);
-        $this->assertInternalType('array', $module['parentRequirements']);
+        $this->assertIsArray($module['parentRequirements']);
         foreach ($module['parentRequirements'] as $parentRequirement) {
-            $this->assertInternalType('string', $parentRequirement);
+            $this->assertIsString($parentRequirement);
             $this->assertTrue($this->isValidGUID($parentRequirement));
         }
 
         $this->assertArrayHasKey('childRequirements', $module);
-        $this->assertInternalType('array', $module['childRequirements']);
+        $this->assertIsArray($module['childRequirements']);
         foreach ($module['childRequirements'] as $childRequirement) {
-            $this->assertInternalType('string', $childRequirement);
+            $this->assertIsString($childRequirement);
             $this->assertTrue($this->isValidGUID($childRequirement));
         }
 
         $this->assertArrayHasKey('implemented', $module);
-        $this->assertInternalType('array', $module['implemented']);
+        $this->assertIsArray($module['implemented']);
         foreach ($module['implemented'] as $implemented) {
-            $this->assertInternalType('string', $implemented);
+            $this->assertIsString($implemented);
             $this->assertTrue($this->isValidGUID($implemented));
         }
 
         $this->assertArrayHasKey('prefix', $module);
-        $this->assertInternalType('string', $module['prefix']);
+        $this->assertIsString($module['prefix']);
         $this->assertTrue($this->isValidPrefix($module['prefix']));
 
         if (file_exists($folder . '/form.json')) {
