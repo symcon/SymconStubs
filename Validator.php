@@ -82,7 +82,7 @@ class TestCaseSymconValidation extends TestCase
         $this->assertArrayHasKey('type', $module);
         $this->assertIsInt($module['type']);
         $this->assertGreaterThanOrEqual(0, $module['type']);
-        $this->assertLessThanOrEqual(4, $module['type']);
+        $this->assertLessThanOrEqual(5, $module['type']);
 
         $this->assertArrayHasKey('vendor', $module);
         $this->assertIsString($module['vendor']);
