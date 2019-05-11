@@ -591,7 +591,7 @@ class IPSModule
     public function ForwardData($JSONString)
     {
         //Has to be overwritten by implementing module
-        return "";
+        return '';
     }
 
     public function RequestAction($Ident, $Value)
