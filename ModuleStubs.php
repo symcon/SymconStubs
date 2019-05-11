@@ -423,7 +423,7 @@ class IPSModule
         //FIXME: We could validate something here
         $connectionID = IPS_GetInstance($this->InstanceID)['ConnectionID'];
         $interface = IPS\InstanceManager::getInstanceInterface($connectionID);
-        $interface->ForwardData($Data);
+        return $interface->ForwardData($Data);
     }
 
     protected function SendDataToChildren($Data)
