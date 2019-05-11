@@ -109,7 +109,7 @@ class IPSModule
         //How and why do we want to test this?
     }
 
-    private function RegisterVariable($Ident, $Name, $Type, $Profile = '', $Position = 0)
+    private function RegisterVariable($Ident, $Name, $Type, $Profile, $Position)
     {
         if ($Profile != '') {
             //prefer system profiles
@@ -163,22 +163,22 @@ class IPSModule
         return $vid;
     }
 
-    protected function RegisterVariableBoolean($Ident, $Name, $Profile, $Position)
+    protected function RegisterVariableBoolean($Ident, $Name, $Profile = '', $Position = 0)
     {
         return $this->RegisterVariable($Ident, $Name, 0, $Profile, $Position);
     }
 
-    protected function RegisterVariableInteger($Ident, $Name, $Profile, $Position)
+    protected function RegisterVariableInteger($Ident, $Name, $Profile = '', $Position = 0)
     {
         return $this->RegisterVariable($Ident, $Name, 1, $Profile, $Position);
     }
 
-    protected function RegisterVariableFloat($Ident, $Name, $Profile, $Position)
+    protected function RegisterVariableFloat($Ident, $Name, $Profile = '', $Position = 0)
     {
         return $this->RegisterVariable($Ident, $Name, 2, $Profile, $Position);
     }
 
-    protected function RegisterVariableString($Ident, $Name, $Profile, $Position)
+    protected function RegisterVariableString($Ident, $Name, $Profile = '', $Position = 0)
     {
         return $this->RegisterVariable($Ident, $Name, 3, $Profile, $Position);
     }
