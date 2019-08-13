@@ -632,4 +632,15 @@ class IPSModule
     {
         return $this->references;
     }
+
+    protected function ReloadForm()
+    {
+
+    }
+
+    protected function UpdateFormField($Field, $Parameter, $Value)
+    {
+        
+    }
+
 }
