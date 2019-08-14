@@ -733,7 +733,7 @@ namespace IPS {
             return self::$variables[$VariableID]['VariableValue'];
         }
 
-        public static function writeVariableString(int $VariableID, String $VariableValue): void
+        public static function writeVariableString(int $VariableID, string $VariableValue): void
         {
             self::checkVariable($VariableID);
 
@@ -826,12 +826,12 @@ namespace IPS {
             unset(self::$scripts[$ScriptID]);
         }
 
-        public static function setScriptFile(int $ScriptID, String $FilePath): void
+        public static function setScriptFile(int $ScriptID, string $FilePath): void
         {
             self::$scripts[$ScriptID]['ScriptFile'] = $FilePath;
         }
 
-        public static function setScriptContent(int $ScriptID, String $Content): void
+        public static function setScriptContent(int $ScriptID, string $Content): void
         {
             self::$content[$ScriptID] = $Content;
         }
