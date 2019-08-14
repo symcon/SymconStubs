@@ -90,6 +90,9 @@ class TestCaseSymconValidation extends TestCase
         $this->assertArrayHasKey('aliases', $module);
         $this->assertIsArray($module['aliases']);
 
+        $this->assertArrayHasKey('url', $module);
+        $this->assertIsString($module['url']);
+
         $this->assertArrayHasKey('parentRequirements', $module);
         $this->assertIsArray($module['parentRequirements']);
         foreach ($module['parentRequirements'] as $parentRequirement) {
