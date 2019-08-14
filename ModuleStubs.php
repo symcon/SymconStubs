@@ -635,12 +635,9 @@ class IPSModule
 
     protected function ReloadForm()
     {
-
     }
 
     protected function UpdateFormField($Field, $Parameter, $Value)
     {
-        
     }
-
 }
