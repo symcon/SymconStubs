@@ -104,7 +104,7 @@ class IPSModule
         //How and why do we want to test this?
     }
 
-    protected function RegisterScript($Ident, $Name, $Content, $Position)
+    protected function RegisterScript($Ident, $Name, $Content = "", $Position = 0)
     {
         //How and why do we want to test this?
     }
