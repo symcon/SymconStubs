@@ -13,7 +13,7 @@ class TestCaseSymconValidation extends TestCase
 
     private function isValidName($name): bool
     {
-        return preg_match('/^[A-Za-z0-9 _]*$/', $name) == 1;
+        return preg_match('/^[A-Za-z0-9](?:[A-Za-z0-9 _]*[A-Za-z0-9])?$/', $name) == 1;
     }
 
     private function isValidPrefix($name): bool
