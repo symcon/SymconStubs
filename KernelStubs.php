@@ -213,8 +213,7 @@ namespace IPS {
             self::checkObject($ID);
 
             self::$objects[$ID]['ParentID'] = $ParentID;
-
-            //FIXME: Update ChildrenIDs
+            self::$objects[$ParentID]['ChildrenIDs'][] = $ID;      
         }
 
         public static function setIdent(int $ID, string $Ident): void
