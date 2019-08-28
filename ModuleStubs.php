@@ -379,7 +379,7 @@ class IPSModule
         $this->attributes[$Name]['Current'] = $Value;
     }
 
-    protected function WriteAttributeInteger($Name, bool $Value)
+    protected function WriteAttributeInteger($Name, int $Value)
     {
         if (!isset($this->attributes[$Name])) {
             throw new Exception(sprintf('Attribute %s not found', $Name));
@@ -392,7 +392,7 @@ class IPSModule
         $this->attributes[$Name]['Current'] = $Value;
     }
 
-    protected function WriteAttributeFloat($Name, bool $Value)
+    protected function WriteAttributeFloat($Name, float $Value)
     {
         if (!isset($this->attributes[$Name])) {
             throw new Exception(sprintf('Attribute %s not found', $Name));
@@ -405,7 +405,7 @@ class IPSModule
         $this->attributes[$Name]['Current'] = $Value;
     }
 
-    protected function WriteAttributeString($Name, bool $Value)
+    protected function WriteAttributeString($Name, str $Value)
     {
         if (!isset($this->attributes[$Name])) {
             throw new Exception(sprintf('Attribute %s not found', $Name));
