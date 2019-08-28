@@ -84,6 +84,43 @@ function GetValueFormatted(int $VariableID)
     throw new Exception('Not implemented');
 }
 
+function HasAction(int $VariableID)
+{
+    $v = IPS\VariableManager::getVariable($VariableID);
+    if ($v['VariableCustomAction'] > 0) {
+        $actionID = $v['VariableCustomAction'];
+    } else {
+        $actionID = $v['VariableAction'];
+    }
+    return $actionID >= 10000;
+}
+
+function RequestAction(int $VariableID, $Value)
+{
+    $v = IPS\VariableManager::getVariable($VariableID);
+    if ($v['VariableCustomAction'] > 0) {
+        $actionID = $v['VariableCustomAction'];
+    } else {
+        $actionID = $v['VariableAction'];
+    }
+    if (IPS_InstanceExists($actionID)) {
+        $o = IPS\ObjectManager::getObject($VariableID);
+        $interface = IPS\InstanceManager::getInstanceInterface($actionID);
+        $interface->RequestAction($o['ObjectIdent'], $Value);
+    } elseif (IPS_ScriptExists($actionID)) {
+        $result = IPS_RunScriptWaitEx($actionID, [
+            'VARIABLE' => $VariableID,
+            'VALUE'    => $Value,
+            'SENDER'   => 'Action'
+        ]);
+        if (strlen($result) > 0) {
+            echo $result;
+        }
+    } else {
+        throw new Exception('Action is invalid');
+    }
+}
+
 /* Object Manager */
 function IPS_SetParent(int $ID, int $ParentID)
 {
