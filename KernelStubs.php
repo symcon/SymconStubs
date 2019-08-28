@@ -212,8 +212,9 @@ namespace IPS {
             self::checkRoot($ID);
             self::checkObject($ID);
 
+            self::$objects[self::$objects[$ID]['ParentID']]['ChildrenIDs'] = array_diff(self::$objects[self::$objects[$ID]['ParentID']]['ChildrenIDs'], [$ID]);
             self::$objects[$ID]['ParentID'] = $ParentID;
-            self::$objects[$ParentID]['ChildrenIDs'][] = $ID;      
+            self::$objects[$ParentID]['ChildrenIDs'][] = $ID;
         }
 
         public static function setIdent(int $ID, string $Ident): void
