@@ -820,17 +820,17 @@ function IPS_GetKernelPlatform()
 
 function IPS_GetKernelVersion()
 {
-    return '5.0';
+    return '5.2';
 }
 
 function IPS_GetKernelRevision()
 {
-    return 'db699d5ae3b27a113672ce7e957180b7811b3429';
+    return 'e4b85ff1670f4c936db014d8b6540b2a38776e50';
 }
 
 function IPS_GetKernelDate()
 {
-    return 1519165921;
+    return 1566980315;
 }
 
 function IPS_GetLogDir()
