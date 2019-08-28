@@ -405,7 +405,7 @@ class IPSModule
         $this->attributes[$Name]['Current'] = $Value;
     }
 
-    protected function WriteAttributeString($Name, str $Value)
+    protected function WriteAttributeString($Name, string $Value)
     {
         if (!isset($this->attributes[$Name])) {
             throw new Exception(sprintf('Attribute %s not found', $Name));
