@@ -370,7 +370,7 @@ namespace IPS {
             throw new \Exception(sprintf('Object with name %s could not be found', $Name));
         }
 
-        public static function getObjectIDByIdent(string $Ident, int $ParentID): int
+        public static function getObjectIDByIdent(string $Ident, int $ParentID)
         {
             if ($Ident == '') {
                 throw new \Exception('Ident cannot be empty');
@@ -384,7 +384,8 @@ namespace IPS {
                 }
             }
 
-            throw new \Exception(sprintf('Object with ident %s could not be found', $Ident));
+            trigger_error(sprintf('Object with ident %s could not be found', $Ident));
+            return false;
         }
 
         public static function hasChildren(int $ID): bool
