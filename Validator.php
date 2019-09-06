@@ -21,6 +21,11 @@ class TestCaseSymconValidation extends TestCase
         return preg_match('/^[A-Z0-9]+$/', $name) == 1;
     }
 
+    private function isValidURL($name): bool
+    {
+        return preg_match('/^(?:$|http:\/\/|https:\/\/)/', $name) == 1;
+    }
+
     private function ignoreFolders(): array
     {
         return ['..', '.', 'libs', 'docs', 'imgs', 'tests'];
@@ -42,6 +47,7 @@ class TestCaseSymconValidation extends TestCase
 
         $this->assertArrayHasKey('url', $library);
         $this->assertIsString($library['url']);
+        $this->assertTrue($this->isValidURL($library['url']));
 
         $this->assertArrayHasKey('version', $library);
         $this->assertIsString($library['version']);
@@ -92,6 +98,7 @@ class TestCaseSymconValidation extends TestCase
 
         $this->assertArrayHasKey('url', $module);
         $this->assertIsString($module['url']);
+        $this->assertTrue($this->isValidURL($module['url']));
 
         $this->assertArrayHasKey('parentRequirements', $module);
         $this->assertIsArray($module['parentRequirements']);
