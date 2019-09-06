@@ -18,7 +18,7 @@ class TestCaseSymconValidation extends TestCase
 
     private function isValidPrefix($name): bool
     {
-        return preg_match('/^[A-Z0-9]*$/', $name) == 1;
+        return preg_match('/^[A-Z0-9]+$/', $name) == 1;
     }
 
     private function ignoreFolders(): array
