@@ -499,7 +499,7 @@ class IPSModule
     {
         return IPS\InstanceManager::getStatus($this->InstanceID);
     }
-    
+
     protected function SetSummary($Summary)
     {
         IPS\InstanceManager::setSummary($Summary);
