@@ -495,11 +495,6 @@ class IPSModule
         IPS\InstanceManager::setStatus($this->InstanceID, $Status);
     }
 
-    protected function GetStatus()
-    {
-        return IPS\InstanceManager::getStatus($this->InstanceID);
-    }
-
     protected function SetSummary($Summary)
     {
         IPS\InstanceManager::setSummary($Summary);

@@ -1,6 +1,6 @@
-# Stubs für IP-Symcon 5.x
+# Stubs für IP-Symcon 5.2
 
-[![IP-Symcon is awesome!](https://img.shields.io/badge/IP--Symcon-5.x-blue.svg)](https://www.symcon.de)
+[![IP-Symcon is awesome!](https://img.shields.io/badge/IP--Symcon-5.2-blue.svg)](https://www.symcon.de)
 [![Check Style](https://github.com/symcon/SymconStubs/workflows/Check%20Style/badge.svg)](https://github.com/symcon/SymconStubs/actions)
 [![Run Tests](https://github.com/symcon/SymconStubs/workflows/Run%20Tests/badge.svg)](https://github.com/symcon/SymconStubs/actions)
 

@@ -604,13 +604,6 @@ namespace IPS {
             self::$instances[$InstanceID]['InstanceStatus'] = $Status;
         }
 
-        public static function getStatus($InstanceID): int
-        {
-            self::checkInstance($InstanceID);
-
-            return self::$instances[$InstanceID]['InstanceStatus'];
-        }
-
         public static function connectInstance(int $InstanceID, int $ParentID): void
         {
             self::checkInstance($InstanceID);
