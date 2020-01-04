@@ -1,14 +1,20 @@
 {
 	"id": "{A5F663AB-C400-4FE5-B207-4D67CC030564}",
-	"name": "ModbusGateway",
-	"type": 1,
-	"vendor": "Symcon GmbH",
+	"name": "Modbus Gateway",
+	"type": 2,
+	"vendor": "ModBus",
 	"aliases": [
-		"Modbus Gateway"
 	],
 	"url": "https://www.symcon.de/service/dokumentation/modulreferenz/modbus-rtu-tcp/",
-	"parentRequirements": [],
-	"childRequirements": ["{018EF6B5-AB94-40C6-AA53-46943E824ACF}"],
-	"implemented": ["{79827379-F36E-4ADA-8A95-5F8D1DC92FA9}"],
+	"parentRequirements": [
+		"{79827379-F36E-4ADA-8A95-5F8D1DC92FA9}"
+	],
+	"childRequirements": [
+		"{77B31ABB-18FA-4B91-BB63-E5B2AB5588F4}"
+	],
+	"implemented": [
+		"{018EF6B5-AB94-40C6-AA53-46943E824ACF}",
+		"{E310B701-4AE7-458E-B618-EC13A1A6F6A8}"
+	],
 	"prefix": "MBGT"
 }
