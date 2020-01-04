@@ -13,6 +13,6 @@ class ModBusGateway extends VirtualIO
         $this->RegisterPropertyInteger('GatewayMode', 0);
         $this->RegisterPropertyInteger('DeviceID', 1);
         // "Swap LSW/MSW for 32Bit/64Bit values"
-        $this->RegisterPropertyBoolean('SwapWords', false);
+        $this->RegisterPropertyBoolean('SwapWords', true);
     }
 }
