@@ -645,7 +645,7 @@ class IPSModule
     protected function UpdateFormField($Field, $Parameter, $Value)
     {
     }
-    
+
     protected function LogMessage($Message, $Typ)
     {
     }
