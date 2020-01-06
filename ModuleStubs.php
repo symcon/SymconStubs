@@ -502,7 +502,7 @@ class IPSModule
 
     protected function SetSummary($Summary)
     {
-        IPS\InstanceManager::setSummary($Summary);
+        IPS\ObjectManager::setSummary($this->InstanceID, $Summary);
     }
 
     protected function SetBuffer($Name, $Data)
@@ -643,6 +643,10 @@ class IPSModule
     }
 
     protected function UpdateFormField($Field, $Parameter, $Value)
+    {
+    }
+
+    protected function LogMessage($Message, $Type)
     {
     }
 }
