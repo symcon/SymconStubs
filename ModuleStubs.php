@@ -646,7 +646,7 @@ class IPSModule
     {
     }
 
-    protected function LogMessage($Message, $Typ)
+    protected function LogMessage($Message, $Type)
     {
     }
 }
