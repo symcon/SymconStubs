@@ -81,7 +81,69 @@ function SetValueString(int $VariableID, string $Value)
 
 function GetValueFormatted(int $VariableID)
 {
-    throw new Exception('Not implemented');
+    $variable = IPS_GetVariable($VariableID);
+    $profileName = $variable['VariableCustomProfile'];
+    if ($profileName == '') {
+        $profileName = $variable['VariableProfile'];
+    }
+
+    if ($profileName == '') {
+        return strval($variable['VariableValue']);
+    }
+
+    if (!IPS_VariableProfileExists($profileName)) {
+        return 'Invalid profile';
+    }
+
+    $profile = IPS_GetVariableProfile($profileName);
+
+    if ($profile['ProfileType'] !== $variable['VariableType']) {
+        return 'Invalid profile type';
+    }
+
+    switch ($profileName) {
+        case '~UnixTimestamp':
+        case '~UnixTimestampTime':
+        case '~UnixTimestampDate':
+            throw new Exception('TimestampProfiles not implemented yet');
+
+        case '~HexColor':
+            return '';
+
+        default:
+            if (count($profile['Associations']) == 0) {
+                throw new Exception('Profiles without associations not implemented yet');    
+            }
+            else {
+                switch ($profile['ProfileType']) {
+                    case 0: //Boolean
+                        if (count($profile['Associations']) < 2) {
+                            return '-';
+                        }
+
+                        if ($variable['VariableValue'] === true) {
+                            return $profile['Associations'][0]['Name'];
+                        } elseif ($variable['VariableValue'] === false) {
+                            return $profile['Associations'][1]['Name'];
+                        } else {
+                            return '-';
+                        }
+
+                        // FIXME: No break. Please add proper comment if intentional
+                    case 1: //Integer
+                    case 2: //Float
+                        for ($i = count($profile['Associations']) - 1; $i >= 0; $i--) {
+                            if ($variable['VariableValue'] >= $profile['Associations'][$i]['Value']) {
+                                return $profile['Prefix'] . sprintf($profile['Associations'][$i]['Name'], $variable['VariableValue']) . $profile['Suffix'];
+                            }
+                        }
+                        return '-';
+
+                    case 3: //String
+                        return '-';
+                }
+            }
+    }
 }
 
 function HasAction(int $VariableID)
