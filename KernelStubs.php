@@ -993,12 +993,13 @@ namespace IPS {
 
             self::$profiles[$ProfileName]['Associations'][] = [
                 'Value' => $AssociationValue,
-                'Name' => $AssociationName,
-                'Icon' => $AssociationIcon,
+                'Name'  => $AssociationName,
+                'Icon'  => $AssociationIcon,
                 'Color' => $AssociationColor
             ];
 
-            usort(self::$profiles[$ProfileName]['Associations'], function($a, $b) {
+            usort(self::$profiles[$ProfileName]['Associations'], function ($a, $b)
+            {
                 return $a['Value'] - $b['Value'];
             });
         }

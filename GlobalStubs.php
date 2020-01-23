@@ -112,9 +112,8 @@ function GetValueFormatted(int $VariableID)
 
         default:
             if (count($profile['Associations']) == 0) {
-                throw new Exception('Profiles without associations not implemented yet');    
-            }
-            else {
+                throw new Exception('Profiles without associations not implemented yet');
+            } else {
                 switch ($profile['ProfileType']) {
                     case 0: //Boolean
                         if (count($profile['Associations']) < 2) {
