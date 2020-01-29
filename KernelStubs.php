@@ -126,6 +126,37 @@ namespace IPS {
 
             //Include module class file
             require_once $folder . '/module.php';
+
+            self::registerFunctions($module['name'], $module['prefix']);
+        }
+
+        private static function registerFunctions($moduleName, $modulePrefix)
+        {
+            $class = new \ReflectionClass(str_replace(' ', '', $moduleName));
+            foreach ($class->GetMethods() as $method) {
+                if (!$method->isPublic()) {
+                    continue;
+                }
+                if (in_array($method->GetName(), ['__construct', '__destruct', '__call', '__callStatic', '__get', '__set', '__isset', '__sleep', '__wakeup', '__toString', '__invoke', '__set_state', '__clone', '__debuginfo', 'Create', 'Destroy', 'ApplyChanges', 'ReceiveData', 'ForwardData', 'RequestAction', 'MessageSink', 'GetConfigurationForm', 'GetConfigurationForParent', 'Translate'])) {
+                    continue;
+                }
+                $params = ['int $InstanceID'];
+                $fwdparams = [];
+                foreach ($method->getParameters() as $parameter) {
+                    $type = @$parameter->GetClass();
+                    if ($type !== false && $type !== null) {
+                        $type = strtolower($type->GetName());
+                    } else {
+                        $type = $parameter->GetType();
+                    }
+                    $params[] = $type . ' $' . $parameter->GetName();
+                    $fwdparams[] = '$' . $parameter->GetName();
+                }
+                $function = sprintf('function %s_%s(%s){return IPS\InstanceManager::getInstanceInterface($InstanceID)->%s(%s);}', $modulePrefix, $method->GetName(), implode(', ', $params), $method->GetName(), implode(', ', $fwdparams));
+                if (!\function_exists($modulePrefix . '_' . $method->GetName())) {
+                    eval($function);
+                }
+            }
         }
 
         public static function reset()
