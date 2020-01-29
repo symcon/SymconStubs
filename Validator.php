@@ -23,7 +23,7 @@ class TestCaseSymconValidation extends TestCase
 
     private function isValidURL($name): bool
     {
-        return preg_match('/^(?:$|http:\/\/|https:\/\/)/', $name) == 1;
+        return preg_match('/^(?:http:\/\/|https:\/\/)/', $name) == 1;
     }
 
     private function ignoreFolders(): array

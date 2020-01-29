@@ -495,9 +495,14 @@ class IPSModule
         IPS\InstanceManager::setStatus($this->InstanceID, $Status);
     }
 
+    protected function GetStatus()
+    {
+        return IPS\InstanceManager::getStatus($this->InstanceID);
+    }
+
     protected function SetSummary($Summary)
     {
-        IPS\InstanceManager::setSummary($Summary);
+        IPS\ObjectManager::setSummary($this->InstanceID, $Summary);
     }
 
     protected function SetBuffer($Name, $Data)
@@ -649,5 +654,9 @@ class IPSModule
     protected function SetValue(string $Ident, $Value)
     {
         return SetValue(SetValue(IPS_GetObjectIDByIdent($Ident, $this->InstanceID), $Value));
+    }
+    
+    protected function LogMessage($Message, $Type)
+    {
     }
 }

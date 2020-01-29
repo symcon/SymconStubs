@@ -635,6 +635,13 @@ namespace IPS {
             self::$instances[$InstanceID]['InstanceStatus'] = $Status;
         }
 
+        public static function getStatus($InstanceID): int
+        {
+            self::checkInstance($InstanceID);
+
+            return self::$instances[$InstanceID]['InstanceStatus'];
+        }
+
         public static function connectInstance(int $InstanceID, int $ParentID): void
         {
             self::checkInstance($InstanceID);
@@ -1001,6 +1008,31 @@ namespace IPS {
         public static function setVariableProfileAssociation(string $ProfileName, float $AssociationValue, string $AssociationName, string $AssociationIcon, int $AssociationColor)
         {
             self::checkVariableProfile($ProfileName);
+
+            if (($AssociationName == '') && ($AssociationIcon == '')) {
+                throw new \Exception('Removing associations is not implemented yet');
+            }
+
+            foreach (self::$profiles[$ProfileName]['Associations'] as &$association) {
+                if ($association['Value'] == $AssociationValue) {
+                    $association['Name'] = $AssociationName;
+                    $association['Icon'] = $AssociationIcon;
+                    $association['Color'] = $AssociationColor;
+                    return;
+                }
+            }
+
+            self::$profiles[$ProfileName]['Associations'][] = [
+                'Value' => $AssociationValue,
+                'Name'  => $AssociationName,
+                'Icon'  => $AssociationIcon,
+                'Color' => $AssociationColor
+            ];
+
+            usort(self::$profiles[$ProfileName]['Associations'], function ($a, $b)
+            {
+                return $a['Value'] - $b['Value'];
+            });
         }
 
         public static function variableProfileExists(string $ProfileName): bool
