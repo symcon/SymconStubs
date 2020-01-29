@@ -640,4 +640,14 @@ class IPSModule
     protected function UpdateFormField($Field, $Parameter, $Value)
     {
     }
+
+    protected function GetValue(string $Ident)
+    {
+        return GetValue(IPS_GetObjectIDByIdent($Ident, $this->InstanceID));
+    }
+
+    protected function SetValue(string $Ident, $Value)
+    {
+        return SetValue(SetValue(IPS_GetObjectIDByIdent($Ident, $this->InstanceID), $Value));
+    }
 }
