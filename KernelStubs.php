@@ -1105,7 +1105,7 @@ namespace IPS {
                 $Data = bin2hex($Data);
             }
 
-            echo 'DEBUG: ' . $Message . ' | ' . $Data;
+            echo 'DEBUG: ' . $Message . ' | ' . $Data . PHP_EOL;
         }
 
         public static function reset()
