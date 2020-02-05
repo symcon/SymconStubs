@@ -6,11 +6,6 @@ class ArchiveControl extends IPSModule
 {
     private $Archive = [];
 
-    public function Create()
-    {
-        parent::Create();
-    }
-
     private function GetVariableData($VariableID)
     {
         if (!isset($this->Archive[$VariableID])) {
