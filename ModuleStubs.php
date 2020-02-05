@@ -206,10 +206,12 @@ class IPSModule
 
     protected function EnableAction($Ident)
     {
+        IPS\VariableManager::setVariableAction(IPS_GetObjectIDByIdent($Ident, $this->InstanceID), $this->InstanceID);
     }
 
     protected function DisableAction($Ident)
     {
+        IPS\VariableManager::setVariableAction(IPS_GetObjectIDByIdent($Ident, $this->InstanceID), 0);
     }
 
     protected function MaintainAction($Ident, $Keep)
