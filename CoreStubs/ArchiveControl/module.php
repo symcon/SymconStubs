@@ -25,15 +25,16 @@ class ArchiveControl extends IPSModule
 
     public function AddLoggedValues(int $VariableID, array $NewData)
     {
-        usort($NewData, function($a, $b){
+        usort($NewData, function ($a, $b)
+        {
             return $a['TimeStamp'] <=> $b['TimeStamp'];
         });
         $ArchivedData = $this->GetVariableData($VariableID);
-        if ((sizeof($ArchivedData['Data']) > 0) && (sizeof($NewData) > 0) &&
-                ($NewData[0]['TimeStamp'] < $ArchivedData['Data'][sizeof($ArchivedData['Data'])-1]['TimeStamp'])) {
+        if ((count($ArchivedData['Data']) > 0) && (count($NewData) > 0) &&
+                ($NewData[0]['TimeStamp'] < $ArchivedData['Data'][count($ArchivedData['Data']) - 1]['TimeStamp'])) {
             throw new Exception('It is not yet possible to add values before the newest');
         }
-        
+
         foreach ($NewData as $dataset) {
             $ArchivedData['Data'][] = $dataset;
         }
