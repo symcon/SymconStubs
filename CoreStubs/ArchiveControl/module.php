@@ -23,18 +23,6 @@ class ArchiveControl extends IPSModule
         $this->Archive[$VariableID] = $Data;
     }
 
-    public function SetLoggingStatus(int $VariableID, bool $Active)
-    {
-        $data = $this->GetVariableData($VariableID);
-        $data['Logged'] = $Active;
-        $this->SetVariableData($VariableID, $data);
-    }
-
-    public function GetLoggingStatus(int $VariableID)
-    {
-        return $this->GetVariableData($VariableID)['Logged'];
-    }
-
     public function AddLoggedValues(int $VariableID, array $NewData)
     {
         usort($NewData, function($a, $b){
@@ -50,6 +38,36 @@ class ArchiveControl extends IPSModule
             $ArchivedData['Data'][] = $dataset;
         }
         $this->SetVariableData($VariableID, $ArchivedData);
+    }
+
+    public function ChangeVariableID(int $OldVariableID, int $NewVariableID)
+    {
+        throw new Exception('Not implemented');
+    }
+
+    public function DeleteVariableData(int $VariableID, int $StartTime, int $EndTime)
+    {
+        throw new Exception('Not implemented');
+    }
+
+    public function GetAggregatedValues(int $VariableID, int $AggregationLevel, int $StartTime, $EndTime, $Limit)
+    {
+        throw new Exception('Not implemented');
+    }
+
+    public function GetAggregationType(int $VariableID)
+    {
+        throw new Exception('Not implemented');
+    }
+
+    public function GetAggregationVariables(bool $DatabaseRequest)
+    {
+        throw new Exception('Not implemented');
+    }
+
+    public function GetGraphStatus(int $VariableID)
+    {
+        throw new Exception('Not implemented');
     }
 
     public function GetLoggedValues(int $VariableID, int $StartTime, int $EndTime, int $Limit = 10000)
@@ -69,5 +87,32 @@ class ArchiveControl extends IPSModule
             }
         }
         return $return;
+    }
+
+    public function GetLoggingStatus(int $VariableID)
+    {
+        return $this->GetVariableData($VariableID)['Logged'];
+    }
+
+    public function ReAggregateVariable(int $VariableID)
+    {
+        throw new Exception('Not implemented');
+    }
+
+    public function SetAggregationType(int $VariableID, int $AggregationType)
+    {
+        throw new Exception('Not implemented');
+    }
+
+    public function SetGraphStatus(int $VariableID)
+    {
+        throw new Exception('Not implemented');
+    }
+
+    public function SetLoggingStatus(int $VariableID, bool $Active)
+    {
+        $data = $this->GetVariableData($VariableID);
+        $data['Logged'] = $Active;
+        $this->SetVariableData($VariableID, $data);
     }
 }
