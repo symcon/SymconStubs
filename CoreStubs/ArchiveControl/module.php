@@ -25,6 +25,9 @@ class ArchiveControl extends IPSModule
 
     public function AddLoggedValues(int $VariableID, array $NewData)
     {
+        if (!$this->GetLoggingStatus($VariableID)){
+            throw new Exception('Adding logged data requires active logging');
+        }
         usort($NewData, function ($a, $b)
         {
             return $a['TimeStamp'] <=> $b['TimeStamp'];
