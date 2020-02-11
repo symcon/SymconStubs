@@ -764,37 +764,40 @@ function IPS_SendMediaEvent(int $MediaID)
 /* Link Manager */
 function IPS_CreateLink()
 {
-    return 0;
+    $id = IPS\ObjectManager::registerObject(6 /* Link */);
+    IPS\LinkManager::createLink($id);
+    return $id;
 }
 
 function IPS_DeleteLink(int $LinkID)
 {
-    return true;
+    IPS\LinkManager::deleteLink($LinkID);
+    IPS\ObjectManager::unregisterObject($LinkID);
 }
 
 function IPS_LinkExists(int $LinkID)
 {
-    return false;
+    return IPS\LinkManager::linkExists($LinkID);
 }
 
 function IPS_GetLink(int $LinkID)
 {
-    return [];
+    return IPS\LinkManager::getLink($LinkID);
 }
 
 function IPS_GetLinkIDByName(string $Name, int $ParentID)
 {
-    return 0;
+    return IPS\LinkManager::getLinkIdByName($Name, $ParentID);
 }
 
 function IPS_GetLinkList()
 {
-    return [];
+    return IPS\LinkManager::getLinkList();
 }
 
 function IPS_SetLinkTargetID(int $LinkID, int $ChildID)
 {
-    return true;
+    IPS\LinkManager::setLinkTargetID($LinkID, $ChildID);
 }
 
 /* Profile Manager */
