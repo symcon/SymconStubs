@@ -941,6 +941,55 @@ namespace IPS {
     {
         private static $links = [];
 
+        private static function checkLink(int $LinkID)
+        {
+            if (!self::linkExists($LinkID)) {
+                throw new \Exception(sprintf('Link #%d does not exist', $LinkID));
+            }
+        }
+
+        public static function createLink(int $LinkID)
+        {
+            self::$links[$LinkID] = [
+                'LinkID'   => $LinkID,
+                'TargetID' => 0
+            ];
+        }
+
+        public static function deleteLink(int $LinkID)
+        {
+            self::checkLink($LinkID);
+            unset(self::$links[$LinkID]);
+        }
+
+        public static function getLink(int $LinkID)
+        {
+            self::checkLink($LinkID);
+            return self::$links[$LinkID];
+        }
+
+        public static function getLinkIdByName(string $LinkName, int $ParentID)
+        {
+            throw new \Exception('Getting link by name is not implemented yet');
+        }
+
+        public static function getLinkList()
+        {
+            self::checkLink($LinkID);
+            return array_keys(self::$links);
+        }
+
+        public static function linkExists(int $LinkID)
+        {
+            return isset(self::$links[$LinkID]);
+        }
+
+        public static function setLinkTargetID(int $LinkID, int $TargetID)
+        {
+            self::checkLink($LinkID);
+            self::$links[$LinkID]['TargetID'] = $TargetID;
+        }
+
         public static function reset()
         {
             self::$links = [];
