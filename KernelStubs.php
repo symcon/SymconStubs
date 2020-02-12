@@ -951,7 +951,7 @@ namespace IPS {
         public static function createLink(int $LinkID)
         {
             self::$links[$LinkID] = [
-                'LinkID' => $LinkID,
+                'LinkID'   => $LinkID,
                 'TargetID' => 0
             ];
         }
@@ -961,12 +961,11 @@ namespace IPS {
             self::checkLink($LinkID);
             unset(self::$links[$LinkID]);
         }
-        
+
         public static function getLink(int $LinkID)
         {
             self::checkLink($LinkID);
             return self::$links[$LinkID];
-
         }
 
         public static function getLinkIdByName(string $LinkName, int $ParentID)
