@@ -295,7 +295,7 @@ namespace IPS {
             self::$objects[$ID]['ObjectIcon'] = $Icon;
         }
 
-        public static function setSummary(int $ID, bool $Summary): void
+        public static function setSummary(int $ID, string $Summary): void
         {
             self::checkRoot($ID);
 
