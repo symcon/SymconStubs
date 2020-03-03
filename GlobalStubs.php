@@ -1232,3 +1232,9 @@ function IPS_Sleep(int $Milliseconds)
 {
     usleep($Milliseconds * 1000);
 }
+
+/* System Information */ 
+function Sys_Ping(string $Host, int $Timeout)
+{
+    return true;
+}
