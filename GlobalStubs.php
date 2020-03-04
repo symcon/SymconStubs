@@ -128,7 +128,6 @@ function GetValueFormatted(int $VariableID)
                             return '-';
                         }
 
-                        // no break
                         // FIXME: No break. Please add proper comment if intentional
                     case 1: //Integer
                     case 2: //Float
@@ -700,7 +699,7 @@ function IPS_SetScriptTimer(int $ScriptID, int $Interval)
 function IPS_CreateMedia(int $MediaType)
 {
     $id = IPS\ObjectManager::registerObject(5 /* Media */);
-    IPS\MediaManager::createMedia($id);
+    IPS\MediaManager::createMedia($id, $MediaType);
     return $id;
 }
 
