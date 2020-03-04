@@ -931,6 +931,38 @@ namespace IPS {
     {
         private static $medias = [];
 
+        public static function createMedia(int $MediaID, int $MediaType): void
+        {
+            self::$medias[$MediaID] = [
+                'MediaID'          => $MediaID,
+                'MediaType'        => $MediaType,
+                'MediaIsAvailable' => false,
+                'MediaFile'        => '',
+                'MediaCRC'         => '',
+                'MediaIsCached'    => false,
+                'MediaSize'        => 0,
+                'MediaUpdated'     => 0
+            ];
+        }
+
+        public static function deleteMedia(int $MediaID, bool $DeleteFile): void
+        {
+            self::checkMedia($MediaID);
+            unset(self::$medias[$MediaID]);
+        }
+
+        public static function mediaExists(int $MediaID): bool
+        {
+            return isset(self::$medias[$MediaID]);
+        }
+
+        public static function checkMedia(int $MediaID): void
+        {
+            if (!self::mediaExists($MediaID)) {
+                throw new \Exception(sprintf('Media #%d does not exist', $MediaID));
+            }
+        }
+
         public static function reset()
         {
             self::$medias = [];

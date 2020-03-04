@@ -698,17 +698,20 @@ function IPS_SetScriptTimer(int $ScriptID, int $Interval)
 /* Media Manager */
 function IPS_CreateMedia(int $MediaType)
 {
-    return 0;
+    $id = IPS\ObjectManager::registerObject(5 /* Media */);
+    IPS\MediaManager::createMedia($id, $MediaType);
+    return $id;
 }
 
 function IPS_DeleteMedia(int $MediaID, bool $DeleteFile)
 {
-    return true;
+    IPS\MediaManager::deleteMedia($MediaID, $DeleteFile);
+    IPS\ObjectManager::unregisterObject($MediaID);
 }
 
 function IPS_MediaExists(int $MediaID)
 {
-    return false;
+    return IPS\MediaManager::mediaExists($MediaID);
 }
 
 function IPS_GetMedia(int $MediaID)
