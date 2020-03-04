@@ -941,7 +941,7 @@ namespace IPS {
                 'MediaCRC'         => '',
                 'MediaIsCached'    => false,
                 'MediaSize'        => 0,
-                'MediaUpdated'     => time()
+                'MediaUpdated'     => 0
             ];
         }
 
