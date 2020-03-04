@@ -128,8 +128,8 @@ function GetValueFormatted(int $VariableID)
                             return '-';
                         }
 
-                        // FIXME: No break. Please add proper comment if intentional
                         // no break
+                        // FIXME: No break. Please add proper comment if intentional
                     case 1: //Integer
                     case 2: //Float
                         for ($i = count($profile['Associations']) - 1; $i >= 0; $i--) {
