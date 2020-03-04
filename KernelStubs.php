@@ -158,7 +158,7 @@ namespace IPS {
                 }
             }
         }
-        
+
         public static function reset()
         {
             self::$libraries = [];
@@ -510,7 +510,7 @@ namespace IPS {
                 throw new \Exception(sprintf('Category #%d does not exist', $CategoryID));
             }
         }
-        
+
         public static function getCategory(int $CategoryID): array
         {
             self::checkCategory($CategoryID);
@@ -576,6 +576,13 @@ namespace IPS {
         public static function instanceExists(int $InstanceID): bool
         {
             return isset(self::$instances[$InstanceID]);
+        }
+
+        private static function checkInstance(int $InstanceID): void
+        {
+            if (!self::instanceExists($InstanceID)) {
+                throw new \Exception(sprintf('Instance #%d does not exist', $InstanceID));
+            }
         }
 
         public static function getInstance(int $InstanceID): array
@@ -658,13 +665,6 @@ namespace IPS {
         {
             self::$instances = [];
             self::$interfaces = [];
-        }
-
-        private static function checkInstance(int $InstanceID): void
-        {
-            if (!self::instanceExists($InstanceID)) {
-                throw new \Exception(sprintf('Instance #%d does not exist', $InstanceID));
-            }
         }
     }
 
@@ -973,6 +973,13 @@ namespace IPS {
     {
         private static $links = [];
 
+        private static function checkLink(int $LinkID)
+        {
+            if (!self::linkExists($LinkID)) {
+                throw new \Exception(sprintf('Link #%d does not exist', $LinkID));
+            }
+        }
+
         public static function createLink(int $LinkID)
         {
             self::$links[$LinkID] = [
@@ -1018,13 +1025,6 @@ namespace IPS {
         public static function reset()
         {
             self::$links = [];
-        }
-
-        private static function checkLink(int $LinkID)
-        {
-            if (!self::linkExists($LinkID)) {
-                throw new \Exception(sprintf('Link #%d does not exist', $LinkID));
-            }
         }
     }
 
