@@ -930,7 +930,32 @@ namespace IPS {
     class MediaManager
     {
         private static $medias = [];
+        
+        public static function createMedia(int $MediaID): void
+        {
+            self::$medias[$MediaID] = [
+                'MediaID' => $MediaID
+            ];
+        }
 
+        public static function deleteMedia(int $MediaID, bool $DeleteFile): void
+        {
+            self::checkMedia($MediaID);
+            unset(self::$medias[$MediaID]);
+        }
+
+        public static function mediaExists(int $MediaID): bool
+        {
+            return isset(self::$medias[$MediaID]);
+        }
+
+        public static function checkMedia(int $MediaID): void
+        {
+            if (!self::mediaExists($MediaID)) {
+                throw new \Exception(sprintf('Media #%d does not exist', $MediaID));
+            }
+        }
+        
         public static function reset()
         {
             self::$medias = [];
@@ -1078,8 +1103,7 @@ namespace IPS {
                 'Color' => $AssociationColor
             ];
 
-            usort(self::$profiles[$ProfileName]['Associations'], function ($a, $b)
-            {
+            usort(self::$profiles[$ProfileName]['Associations'], function ($a, $b) {
                 return $a['Value'] - $b['Value'];
             });
         }

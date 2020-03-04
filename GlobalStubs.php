@@ -129,6 +129,7 @@ function GetValueFormatted(int $VariableID)
                         }
 
                         // FIXME: No break. Please add proper comment if intentional
+                        // no break
                     case 1: //Integer
                     case 2: //Float
                         for ($i = count($profile['Associations']) - 1; $i >= 0; $i--) {
@@ -698,17 +699,20 @@ function IPS_SetScriptTimer(int $ScriptID, int $Interval)
 /* Media Manager */
 function IPS_CreateMedia(int $MediaType)
 {
-    return 0;
+    $id = IPS\ObjectManager::registerObject(5 /* Media */);
+    IPS\MediaManager::createMedia($id);
+    return $id;
 }
 
 function IPS_DeleteMedia(int $MediaID, bool $DeleteFile)
 {
-    return true;
+    IPS\MediaManager::deleteMedia($MediaID, $DeleteFile);
+    IPS\ObjectManager::unregisterObject($MediaID);
 }
 
 function IPS_MediaExists(int $MediaID)
 {
-    return false;
+    return IPS\MediaManager::mediaExists($MediaID);
 }
 
 function IPS_GetMedia(int $MediaID)
