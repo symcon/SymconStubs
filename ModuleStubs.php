@@ -655,7 +655,7 @@ class IPSModule
 
     protected function SetValue(string $Ident, $Value)
     {
-        return SetValue(SetValue(IPS_GetObjectIDByIdent($Ident, $this->InstanceID), $Value));
+        return SetValue(IPS_GetObjectIDByIdent($Ident, $this->InstanceID), $Value);
     }
 
     protected function LogMessage($Message, $Type)
