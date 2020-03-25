@@ -5,6 +5,7 @@ declare(strict_types=1);
 class ArchiveControl extends IPSModule
 {
     private $Archive = [];
+    private $AggregatedArchive = [];
 
     private function GetVariableData($VariableID)
     {
@@ -21,6 +22,15 @@ class ArchiveControl extends IPSModule
     private function SetVariableData($VariableID, $Data)
     {
         $this->Archive[$VariableID] = $Data;
+    }
+
+    public function StubsAddAggregatedValues(int $VariableID, int $AggregationLevel, array $AggregationData)
+    {
+        if (isset($this->AggregatedArchive[$VariableID][$AggregationLevel])) {
+            $this->AggregatedArchive[$VariableID][$AggregationLevel] = array_merge($this->AggregatedArchive[$VariableID][$AggregationLevel], $AggregationData);
+        } else {
+            $this->AggregatedArchive[$VariableID][$AggregationLevel] = $AggregationData;
+        }
     }
 
     public function AddLoggedValues(int $VariableID, array $NewData)
@@ -54,9 +64,23 @@ class ArchiveControl extends IPSModule
         throw new Exception('Not implemented');
     }
 
-    public function GetAggregatedValues(int $VariableID, int $AggregationLevel, int $StartTime, $EndTime, $Limit)
+    public function GetAggregatedValues(int $VariableID, int $AggregationLevel, int $StartTime, int $EndTime, int $Limit)
     {
-        throw new Exception('Not implemented');
+        if ($Limit > 10000 || $Limit == 0) {
+            $Limit = 10000;
+        }
+        $ArchivedData = array_reverse($this->AggregatedArchive[$VariableID][$AggregationLevel]);
+        $return = [];
+        foreach ($ArchivedData as $data) {
+            if (count($return) < $Limit) {
+                if (($data['TimeStamp'] >= $StartTime) && (($data['TimeStamp'] + $data['Duration'] - 1) <= $EndTime)) {
+                    $return[] = $data;
+                }
+            } else {
+                return $return;
+            }
+        }
+        return $return;
     }
 
     public function GetAggregationType(int $VariableID)
