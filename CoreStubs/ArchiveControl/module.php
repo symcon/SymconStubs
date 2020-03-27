@@ -71,6 +71,9 @@ class ArchiveControl extends IPSModule
 
     public function GetAggregatedValues(int $VariableID, int $AggregationLevel, int $StartTime, int $EndTime, int $Limit)
     {
+        if ($this->AggregatedArchive == []) {
+            throw new Exception('Aggregated data has to be added through the function AC_StubsAddAggregatedValues()');
+        }
         if ($Limit > 10000 || $Limit == 0) {
             $Limit = 10000;
         }
