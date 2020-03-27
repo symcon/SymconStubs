@@ -32,7 +32,12 @@ class ArchiveControl extends IPSModule
         });
 
         if (isset($this->AggregatedArchive[$VariableID][$AggregationLevel])) {
-            $this->AggregatedArchive[$VariableID][$AggregationLevel] = array_merge($this->AggregatedArchive[$VariableID][$AggregationLevel], $AggregationData);
+            $AggregatedArchiveData = $this->AggregatedArchive[$VariableID][$AggregationLevel];
+            if ((count($AggregatedArchiveData) > 0) && (count($AggregationData) > 0) &&
+                ($AggregationData[0]['TimeStamp'] < $AggregatedArchiveData[count($AggregatedArchiveData) - 1]['TimeStamp'])) {
+                throw new Exception('It is not yet possible to addaggregated  values before the newest');
+            }
+            $this->AggregatedArchive[$VariableID][$AggregationLevel] = array_merge($AggregatedArchiveData, $AggregationData);
         } else {
             $this->AggregatedArchive[$VariableID][$AggregationLevel] = $AggregationData;
         }
