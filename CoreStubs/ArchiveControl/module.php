@@ -26,6 +26,11 @@ class ArchiveControl extends IPSModule
 
     public function StubsAddAggregatedValues(int $VariableID, int $AggregationLevel, array $AggregationData)
     {
+        usort($AggregationData, function ($a, $b)
+        {
+            return $a['TimeStamp'] <=> $b['TimeStamp'];
+        });
+
         if (isset($this->AggregatedArchive[$VariableID][$AggregationLevel])) {
             $this->AggregatedArchive[$VariableID][$AggregationLevel] = array_merge($this->AggregatedArchive[$VariableID][$AggregationLevel], $AggregationData);
         } else {
