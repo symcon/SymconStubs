@@ -66,11 +66,7 @@ class ArchiveControl extends IPSModule
             throw new Exception('It is not yet possible to add values before the newest');
         }
 
-        foreach ($NewData as $dataset) {
-            $LoggedArchiveData[] = $dataset;
-        }
-        $ArchivedData['Values'] = $LoggedArchiveData;
-        $this->SetVariableData($VariableID, $ArchivedData);
+        $archivedData['Values'] = array_merge($loggedArchiveData, $NewData);
     }
 
     public function ChangeVariableID(int $OldVariableID, int $NewVariableID)
