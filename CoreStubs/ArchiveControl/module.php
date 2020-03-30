@@ -26,6 +26,9 @@ class ArchiveControl extends IPSModule
 
     public function StubsAddAggregatedValues(int $VariableID, int $AggregationLevel, array $AggregationData)
     {
+        if (!$this->GetLoggingStatus($VariableID)) {
+            throw new Exception('Adding aggregated data requires active logging');
+        }
         usort($AggregationData, function ($a, $b)
         {
             return $a['TimeStamp'] <=> $b['TimeStamp'];
