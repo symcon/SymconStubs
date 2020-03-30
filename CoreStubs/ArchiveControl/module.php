@@ -6,20 +6,22 @@ class ArchiveControl extends IPSModule
 {
     private $Archive = [];
 
-    private function GetVariableData($VariableID, $AggregationSpan = -1)
+    private function GetVariableData($VariableID)
     {
         if (empty($this->Archive[$VariableID])) {
             $this->Archive[$VariableID] = [
                 'Logged'             => false,
                 'Values'             => [],
-                'AggregatedValues'   => []
+                'AggregatedValues'   => [
+                    0 /* Hourly */  => [],
+                    1 /* Daily */   => [],
+                    2 /* Weekly */  => [],
+                    3 /* Monthly */ => [],
+                    4 /* Yearly */  => [],
+                    5 /* 5-Mintue */=> [],
+                    6 /* 1-Mintue */=> []
+                ]
             ];
-        }
-
-        if ($AggregationSpan != -1) {
-            if (empty($this->Archive[$VariableID]['AggregatedValues'][$AggregationSpan])) {
-                $this->Archive[$VariableID]['AggregatedValues'][$AggregationSpan] = [];
-            }
         }
         return $this->Archive[$VariableID];
     }
