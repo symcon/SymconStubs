@@ -124,9 +124,10 @@ class ArchiveControl extends IPSModule
         if ($Limit > 10000 || $Limit == 0) {
             $Limit = 10000;
         }
-        $ArchivedData = array_reverse($this->GetVariableData($VariableID)['Values']);
+        $ArchivedData = $this->GetVariableData($VariableID);
+        $LoggedArchiveData = $ArchivedData['Values'];
         $return = [];
-        foreach ($ArchivedData as $data) {
+        foreach (array_reverse($LoggedArchiveData) as $data) {
             if (count($return) < $Limit) {
                 if (($data['TimeStamp'] >= $StartTime) && ($data['TimeStamp'] <= $EndTime)) {
                     $return[] = $data;
