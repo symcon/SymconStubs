@@ -60,14 +60,16 @@ class ArchiveControl extends IPSModule
             return $a['TimeStamp'] <=> $b['TimeStamp'];
         });
         $ArchivedData = $this->GetVariableData($VariableID);
-        if ((count($ArchivedData['Values']) > 0) && (count($NewData) > 0) &&
-                ($NewData[0]['TimeStamp'] < $ArchivedData['Values'][count($ArchivedData['Values']) - 1]['TimeStamp'])) {
+        $LoggedArchiveData = $ArchivedData['Values'];
+        if ((count($LoggedArchiveData) > 0) && (count($NewData) > 0) &&
+                ($NewData[0]['TimeStamp'] < $LoggedArchiveData[count($LoggedArchiveData) - 1]['TimeStamp'])) {
             throw new Exception('It is not yet possible to add values before the newest');
         }
 
         foreach ($NewData as $dataset) {
-            $ArchivedData['Values'][] = $dataset;
+            $LoggedArchiveData[] = $dataset;
         }
+        $ArchivedData['Values'] = $LoggedArchiveData;
         $this->SetVariableData($VariableID, $ArchivedData);
     }
 
