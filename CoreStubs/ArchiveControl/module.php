@@ -5,17 +5,22 @@ declare(strict_types=1);
 class ArchiveControl extends IPSModule
 {
     private $Archive = [];
-    private $AggregatedArchive = [];
 
-    private function GetVariableData($VariableID)
+    private function GetVariableData($VariableID, $AggregationSpan = -1)
     {
-        if (!isset($this->Archive[$VariableID])) {
+        if (empty($this->Archive[$VariableID])) {
             $this->Archive[$VariableID] = [
-                'Logged' => false,
-                'Data'   => []
+                'Logged'             => false,
+                'Values'             => [],
+                'AggregatedValues'   => []
             ];
         }
 
+        if ($AggregationSpan != -1) {
+            if (empty($this->Archive[$VariableID]['AggregatedValues'][$AggregationSpan])) {
+                $this->Archive[$VariableID]['AggregatedValues'][$AggregationSpan] = [];
+            }
+        }
         return $this->Archive[$VariableID];
     }
 
@@ -24,7 +29,7 @@ class ArchiveControl extends IPSModule
         $this->Archive[$VariableID] = $Data;
     }
 
-    public function StubsAddAggregatedValues(int $VariableID, int $AggregationLevel, array $AggregationData)
+    public function StubsAddAggregatedValues(int $VariableID, int $AggregationSpan, array $AggregationData)
     {
         if (!$this->GetLoggingStatus($VariableID)) {
             throw new Exception('Adding aggregated data requires active logging');
@@ -34,16 +39,14 @@ class ArchiveControl extends IPSModule
             return $a['TimeStamp'] <=> $b['TimeStamp'];
         });
 
-        if (isset($this->AggregatedArchive[$VariableID][$AggregationLevel])) {
-            $AggregatedArchiveData = $this->AggregatedArchive[$VariableID][$AggregationLevel];
-            if ((count($AggregatedArchiveData) > 0) && (count($AggregationData) > 0) &&
+        $AggregatedArchiveData = $this->GetVariableData($VariableID, $AggregationSpan)['AggregatedValues'][$AggregationSpan];
+
+        if ((count($AggregatedArchiveData) > 0) && (count($AggregationData) > 0) &&
                 ($AggregationData[0]['TimeStamp'] < $AggregatedArchiveData[count($AggregatedArchiveData) - 1]['TimeStamp'])) {
-                throw new Exception('It is not yet possible to addaggregated  values before the newest');
-            }
-            $this->AggregatedArchive[$VariableID][$AggregationLevel] = array_merge($AggregatedArchiveData, $AggregationData);
-        } else {
-            $this->AggregatedArchive[$VariableID][$AggregationLevel] = $AggregationData;
+            throw new Exception('It is not yet possible to add aggregated values before the newest');
         }
+
+        $this->Archive[$VariableID]['AggregatedValues'][$AggregationSpan] = array_merge($AggregatedArchiveData, $AggregationData);
     }
 
     public function AddLoggedValues(int $VariableID, array $NewData)
@@ -56,13 +59,13 @@ class ArchiveControl extends IPSModule
             return $a['TimeStamp'] <=> $b['TimeStamp'];
         });
         $ArchivedData = $this->GetVariableData($VariableID);
-        if ((count($ArchivedData['Data']) > 0) && (count($NewData) > 0) &&
-                ($NewData[0]['TimeStamp'] < $ArchivedData['Data'][count($ArchivedData['Data']) - 1]['TimeStamp'])) {
+        if ((count($ArchivedData['Values']) > 0) && (count($NewData) > 0) &&
+                ($NewData[0]['TimeStamp'] < $ArchivedData['Values'][count($ArchivedData['Values']) - 1]['TimeStamp'])) {
             throw new Exception('It is not yet possible to add values before the newest');
         }
 
         foreach ($NewData as $dataset) {
-            $ArchivedData['Data'][] = $dataset;
+            $ArchivedData['Values'][] = $dataset;
         }
         $this->SetVariableData($VariableID, $ArchivedData);
     }
@@ -77,15 +80,15 @@ class ArchiveControl extends IPSModule
         throw new Exception('Not implemented');
     }
 
-    public function GetAggregatedValues(int $VariableID, int $AggregationLevel, int $StartTime, int $EndTime, int $Limit)
+    public function GetAggregatedValues(int $VariableID, int $AggregationSpan, int $StartTime, int $EndTime, int $Limit)
     {
-        if ($this->AggregatedArchive == []) {
+        if ($this->Archive[$VariableID]['AggregatedValues'] == []) {
             throw new Exception('Aggregated data has to be added through the function AC_StubsAddAggregatedValues()');
         }
         if ($Limit > 10000 || $Limit == 0) {
             $Limit = 10000;
         }
-        $ArchivedData = array_reverse($this->AggregatedArchive[$VariableID][$AggregationLevel]);
+        $ArchivedData = array_reverse($this->GetVariableData($VariableID, $AggregationSpan)['AggregatedValues'][$AggregationSpan]);
         $return = [];
         foreach ($ArchivedData as $data) {
             if (count($return) < $Limit) {
@@ -119,7 +122,7 @@ class ArchiveControl extends IPSModule
         if ($Limit > 10000 || $Limit == 0) {
             $Limit = 10000;
         }
-        $ArchivedData = array_reverse($this->GetVariableData($VariableID)['Data']);
+        $ArchivedData = array_reverse($this->GetVariableData($VariableID)['Values']);
         $return = [];
         foreach ($ArchivedData as $data) {
             if (count($return) < $Limit) {
