@@ -105,7 +105,7 @@ class ArchiveControl extends IPSModule
 
     public function GetAggregationType(int $VariableID)
     {
-        throw new Exception('Not implemented');
+        return $this->GetVariableData($VariableID)['AggregationType'];
     }
 
     public function GetAggregationVariables(bool $DatabaseRequest)
@@ -149,7 +149,9 @@ class ArchiveControl extends IPSModule
 
     public function SetAggregationType(int $VariableID, int $AggregationType)
     {
-        throw new Exception('Not implemented');
+        $data = $this->GetVariableData($VariableID);
+        $data['AggregationType'] = $AggregationType;
+        $this->SetVariableData($VariableID, $data);
     }
 
     public function SetGraphStatus(int $VariableID)
@@ -157,6 +159,8 @@ class ArchiveControl extends IPSModule
         throw new Exception('Not implemented');
     }
 
+    // Status will be updated without ApplyChanges() unlike current (5.4) IP-Symcon implementation
+    // However, this will change in IP-Symcon with the archive rebuild
     public function SetLoggingStatus(int $VariableID, bool $Active)
     {
         $data = $this->GetVariableData($VariableID);
