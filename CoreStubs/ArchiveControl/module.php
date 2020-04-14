@@ -10,9 +10,10 @@ class ArchiveControl extends IPSModule
     {
         if (empty($this->Archive[$VariableID])) {
             $this->Archive[$VariableID] = [
-                'Logged'             => false,
-                'Values'             => [],
-                'AggregatedValues'   => [
+                'AggregationActive' => false,
+                'Values'            => [],
+                'AggregationType'   => 0,
+                'AggregatedValues'  => [
                     0 /* Hourly */  => [],
                     1 /* Daily */   => [],
                     2 /* Weekly */  => [],
@@ -139,7 +140,7 @@ class ArchiveControl extends IPSModule
 
     public function GetLoggingStatus(int $VariableID)
     {
-        return $this->GetVariableData($VariableID)['Logged'];
+        return $this->GetVariableData($VariableID)['AggregationActive'];
     }
 
     public function ReAggregateVariable(int $VariableID)
@@ -164,7 +165,7 @@ class ArchiveControl extends IPSModule
     public function SetLoggingStatus(int $VariableID, bool $Active)
     {
         $data = $this->GetVariableData($VariableID);
-        $data['Logged'] = $Active;
+        $data['AggregationActive'] = $Active;
         $this->SetVariableData($VariableID, $data);
     }
 }
