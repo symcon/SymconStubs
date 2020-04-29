@@ -1098,7 +1098,7 @@ namespace IPS {
                         break;
                     }
                 }
-                if(isset($keyFound)) {
+                if (isset($keyFound)) {
                     unset(self::$profiles[$ProfileName]['Associations'][$keyFound]);
                     usort(self::$profiles[$ProfileName]['Associations'], function ($a, $b)
                     {
