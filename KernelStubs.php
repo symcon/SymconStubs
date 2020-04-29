@@ -1103,7 +1103,7 @@ namespace IPS {
                     usort(self::$profiles[$ProfileName]['Associations'], function ($a, $b)
                     {
                         return $a['Value'] - $b['Value'];
-                    });                    
+                    });
                 }
             }
 
