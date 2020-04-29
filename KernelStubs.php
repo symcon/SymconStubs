@@ -1091,7 +1091,20 @@ namespace IPS {
             self::checkVariableProfile($ProfileName);
 
             if (($AssociationName == '') && ($AssociationIcon == '')) {
-                throw new \Exception('Removing associations is not implemented yet');
+                unset($keyFound);
+                foreach (self::$profiles[$ProfileName]['Associations'] as $key => $association) {
+                    if ($association['Value'] == $AssociationValue) {
+                        $keyFound = $key;
+                        break;
+                    }
+                }
+                if(isset($keyFound)) {
+                    unset(self::$profiles[$ProfileName]['Associations'][$keyFound]);
+                    usort(self::$profiles[$ProfileName]['Associations'], function ($a, $b)
+                    {
+                        return $a['Value'] - $b['Value'];
+                    });                    
+                }
             }
 
             foreach (self::$profiles[$ProfileName]['Associations'] as &$association) {
