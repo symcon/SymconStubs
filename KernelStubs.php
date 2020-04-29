@@ -1105,6 +1105,7 @@ namespace IPS {
                         return $a['Value'] - $b['Value'];
                     });
                 }
+                return;
             }
 
             foreach (self::$profiles[$ProfileName]['Associations'] as &$association) {
