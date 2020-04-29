@@ -1104,6 +1104,8 @@ namespace IPS {
                     {
                         return $a['Value'] - $b['Value'];
                     });
+                } else {
+                    trigger_error(sprintf('Cannot find association for deletion with value %f', $AssociationValue), E_USER_WARNING);
                 }
                 return;
             }
