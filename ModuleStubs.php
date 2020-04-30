@@ -425,7 +425,10 @@ class IPSModule
         //FIXME: We could validate something here
         $connectionID = IPS_GetInstance($this->InstanceID)['ConnectionID'];
         $interface = IPS\InstanceManager::getInstanceInterface($connectionID);
-        return $interface->ForwardData($Data);
+        // check if forwardDataFilter applys
+        if (preg_match('/' . $interface->GetForwardDataFilter() . '/', $Data) == 1) {
+            return $interface->ForwardData($Data);
+        }
     }
 
     protected function SendDataToChildren($Data)
@@ -435,7 +438,10 @@ class IPSModule
         foreach ($ids as $id) {
             if (IPS_GetInstance($id)['ConnectionID'] == $this->InstanceID) {
                 $interface = IPS\InstanceManager::getInstanceInterface($id);
-                $interface->ReceiveData($Data);
+                // check if receiveDataFilter applys
+                if (preg_match('/' . $interface->GetReceiveDataFilter() . '/', $Data) == 1) {
+                    $interface->ReceiveData($Data);
+                }
             }
         }
     }
@@ -585,6 +591,13 @@ class IPSModule
         $this->receiveDataFilter = $RequiredRegexMatch;
     }
 
+    public function GetReceiveDataFilter( )
+    {
+        // This getter function is only availabe in Stub, not in PHP-SDK
+        // It is required to utilize the ReceiveDataFilter
+        return $this->receiveDataFilter;
+    }
+
     public function ReceiveData($JSONString)
     {
         //Has to be overwritten by implementing module
@@ -599,6 +612,13 @@ class IPSModule
     {
         //Has to be overwritten by implementing module
         return '';
+    }
+
+    public function GetForwardDataFilter( )
+    {
+        // This getter function is only availabe in Stub, not in PHP-SDK
+        // It is required to utilize the ForwardDataFilter
+        return $this->forwardDataFilter;
     }
 
     public function RequestAction($Ident, $Value)
