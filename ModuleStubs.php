@@ -435,15 +435,20 @@ class IPSModule
     {
         //FIXME: We could validate something here
         $ids = IPS_GetInstanceList();
+        $return = [];
         foreach ($ids as $id) {
             if (IPS_GetInstance($id)['ConnectionID'] == $this->InstanceID) {
                 $interface = IPS\InstanceManager::getInstanceInterface($id);
                 // check if receiveDataFilter applys
                 if (preg_match('/' . $interface->GetReceiveDataFilter() . '/', $Data) == 1) {
-                    $interface->ReceiveData($Data);
+                    $singleReturn = $interface->ReceiveData($Data);
+                    if ($singleReturn != '') {
+                        $return[] = $singleReturn;
+                    }
                 }
             }
         }
+        return $return;
     }
 
     protected function ConnectParent($ModuleID)
