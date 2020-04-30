@@ -591,7 +591,7 @@ class IPSModule
         $this->receiveDataFilter = $RequiredRegexMatch;
     }
 
-    public function GetReceiveDataFilter( )
+    public function GetReceiveDataFilter()
     {
         // This getter function is only availabe in Stub, not in PHP-SDK
         // It is required to utilize the ReceiveDataFilter
@@ -614,7 +614,7 @@ class IPSModule
         return '';
     }
 
-    public function GetForwardDataFilter( )
+    public function GetForwardDataFilter()
     {
         // This getter function is only availabe in Stub, not in PHP-SDK
         // It is required to utilize the ForwardDataFilter
