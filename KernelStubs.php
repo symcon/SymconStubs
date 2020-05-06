@@ -14,13 +14,6 @@ namespace IPS {
             return isset(self::$libraries[$LibraryID]);
         }
 
-        private static function checkLibrary(string $LibraryID): void
-        {
-            if (!self::libraryExists($LibraryID)) {
-                throw new \Exception(sprintf('Library #%s does not exist', $LibraryID));
-            }
-        }
-
         public static function getLibrary(string $LibraryID): array
         {
             self::checkLibrary($LibraryID);
@@ -48,13 +41,6 @@ namespace IPS {
         public static function moduleExists(string $ModuleID): bool
         {
             return isset(self::$modules[$ModuleID]);
-        }
-
-        private static function checkModule(string $ModuleID): void
-        {
-            if (!self::moduleExists($ModuleID)) {
-                throw new \Exception(sprintf('Module #%s does not exist', $ModuleID));
-            }
         }
 
         public static function getModule(string $ModuleID): array
@@ -94,6 +80,26 @@ namespace IPS {
                 'Date'      => $library['date'],
             ];
             self::loadModules(dirname($file), $library['id']);
+        }
+
+        public static function reset()
+        {
+            self::$libraries = [];
+            self::$modules = [];
+        }
+
+        private static function checkLibrary(string $LibraryID): void
+        {
+            if (!self::libraryExists($LibraryID)) {
+                throw new \Exception(sprintf('Library #%s does not exist', $LibraryID));
+            }
+        }
+
+        private static function checkModule(string $ModuleID): void
+        {
+            if (!self::moduleExists($ModuleID)) {
+                throw new \Exception(sprintf('Module #%s does not exist', $ModuleID));
+            }
         }
 
         private static function loadModules(string $folder, string $libraryID): void
@@ -157,12 +163,6 @@ namespace IPS {
                     eval($function);
                 }
             }
-        }
-
-        public static function reset()
-        {
-            self::$libraries = [];
-            self::$modules = [];
         }
     }
 
@@ -339,20 +339,6 @@ namespace IPS {
             return isset(self::$objects[$ID]);
         }
 
-        private static function checkRoot(int $ID): void
-        {
-            if ($ID == 0) {
-                throw new \Exception('Cannot change root');
-            }
-        }
-
-        private static function checkObject(int $ID): void
-        {
-            if (!self::objectExists($ID)) {
-                throw new \Exception(sprintf('Object #%d does not exist', $ID));
-            }
-        }
-
         public static function getObject(int $ID): array
         {
             self::checkObject($ID);
@@ -482,6 +468,20 @@ namespace IPS {
                 ]
             ];
         }
+
+        private static function checkRoot(int $ID): void
+        {
+            if ($ID == 0) {
+                throw new \Exception('Cannot change root');
+            }
+        }
+
+        private static function checkObject(int $ID): void
+        {
+            if (!self::objectExists($ID)) {
+                throw new \Exception(sprintf('Object #%d does not exist', $ID));
+            }
+        }
     }
 
     class CategoryManager
@@ -504,13 +504,6 @@ namespace IPS {
             return isset(self::$categories[$CategoryID]);
         }
 
-        private static function checkCategory(int $CategoryID): void
-        {
-            if (!self::categoryExists($CategoryID)) {
-                throw new \Exception(sprintf('Category #%d does not exist', $CategoryID));
-            }
-        }
-
         public static function getCategory(int $CategoryID): array
         {
             self::checkCategory($CategoryID);
@@ -526,6 +519,13 @@ namespace IPS {
         public static function reset()
         {
             self::$categories = [];
+        }
+
+        private static function checkCategory(int $CategoryID): void
+        {
+            if (!self::categoryExists($CategoryID)) {
+                throw new \Exception(sprintf('Category #%d does not exist', $CategoryID));
+            }
         }
     }
 
@@ -576,13 +576,6 @@ namespace IPS {
         public static function instanceExists(int $InstanceID): bool
         {
             return isset(self::$instances[$InstanceID]);
-        }
-
-        private static function checkInstance(int $InstanceID): void
-        {
-            if (!self::instanceExists($InstanceID)) {
-                throw new \Exception(sprintf('Instance #%d does not exist', $InstanceID));
-            }
         }
 
         public static function getInstance(int $InstanceID): array
@@ -665,6 +658,13 @@ namespace IPS {
         {
             self::$instances = [];
             self::$interfaces = [];
+        }
+
+        private static function checkInstance(int $InstanceID): void
+        {
+            if (!self::instanceExists($InstanceID)) {
+                throw new \Exception(sprintf('Instance #%d does not exist', $InstanceID));
+            }
         }
     }
 
@@ -973,13 +973,6 @@ namespace IPS {
     {
         private static $links = [];
 
-        private static function checkLink(int $LinkID)
-        {
-            if (!self::linkExists($LinkID)) {
-                throw new \Exception(sprintf('Link #%d does not exist', $LinkID));
-            }
-        }
-
         public static function createLink(int $LinkID)
         {
             self::$links[$LinkID] = [
@@ -1025,6 +1018,13 @@ namespace IPS {
         public static function reset()
         {
             self::$links = [];
+        }
+
+        private static function checkLink(int $LinkID)
+        {
+            if (!self::linkExists($LinkID)) {
+                throw new \Exception(sprintf('Link #%d does not exist', $LinkID));
+            }
         }
     }
 

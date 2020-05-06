@@ -6,32 +6,6 @@ class ArchiveControl extends IPSModule
 {
     private $Archive = [];
 
-    private function GetVariableData($VariableID)
-    {
-        if (empty($this->Archive[$VariableID])) {
-            $this->Archive[$VariableID] = [
-                'AggregationActive' => false,
-                'Values'            => [],
-                'AggregationType'   => 0,
-                'AggregatedValues'  => [
-                    0 /* Hourly */  => [],
-                    1 /* Daily */   => [],
-                    2 /* Weekly */  => [],
-                    3 /* Monthly */ => [],
-                    4 /* Yearly */  => [],
-                    5 /* 5-Minute */=> [],
-                    6 /* 1-Minute */=> []
-                ]
-            ];
-        }
-        return $this->Archive[$VariableID];
-    }
-
-    private function SetVariableData($VariableID, $Data)
-    {
-        $this->Archive[$VariableID] = $Data;
-    }
-
     public function StubsAddAggregatedValues(int $VariableID, int $AggregationSpan, array $AggregationData)
     {
         if (!$this->GetLoggingStatus($VariableID)) {
@@ -167,5 +141,31 @@ class ArchiveControl extends IPSModule
         $data = $this->GetVariableData($VariableID);
         $data['AggregationActive'] = $Active;
         $this->SetVariableData($VariableID, $data);
+    }
+
+    private function GetVariableData($VariableID)
+    {
+        if (empty($this->Archive[$VariableID])) {
+            $this->Archive[$VariableID] = [
+                'AggregationActive' => false,
+                'Values'            => [],
+                'AggregationType'   => 0,
+                'AggregatedValues'  => [
+                    0 /* Hourly */  => [],
+                    1 /* Daily */   => [],
+                    2 /* Weekly */  => [],
+                    3 /* Monthly */ => [],
+                    4 /* Yearly */  => [],
+                    5 /* 5-Minute */=> [],
+                    6 /* 1-Minute */=> []
+                ]
+            ];
+        }
+        return $this->Archive[$VariableID];
+    }
+
+    private function SetVariableData($VariableID, $Data)
+    {
+        $this->Archive[$VariableID] = $Data;
     }
 }
