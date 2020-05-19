@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 include_once __DIR__ . '/../Validator.php';
 
-class SymconIOStubsValidationTest extends TestCaseSymconValidation
+class IOStubsValidationTest extends TestCaseSymconValidation
 {
     public function testValidateIOStubs(): void
     {

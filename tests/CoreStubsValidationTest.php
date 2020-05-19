@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 include_once __DIR__ . '/../Validator.php';
 
-class SymconCoreStubsValidationTest extends TestCaseSymconValidation
+class CoreStubsValidationTest extends TestCaseSymconValidation
 {
     public function testValidateCoreStubs(): void
     {
