@@ -81,7 +81,68 @@ function SetValueString(int $VariableID, string $Value)
 
 function GetValueFormatted(int $VariableID)
 {
-    throw new Exception('Not implemented');
+    $variable = IPS_GetVariable($VariableID);
+    $profileName = $variable['VariableCustomProfile'];
+    if ($profileName == '') {
+        $profileName = $variable['VariableProfile'];
+    }
+
+    if ($profileName == '') {
+        return strval($variable['VariableValue']);
+    }
+
+    if (!IPS_VariableProfileExists($profileName)) {
+        return 'Invalid profile';
+    }
+
+    $profile = IPS_GetVariableProfile($profileName);
+
+    if ($profile['ProfileType'] !== $variable['VariableType']) {
+        return 'Invalid profile type';
+    }
+
+    switch ($profileName) {
+        case '~UnixTimestamp':
+        case '~UnixTimestampTime':
+        case '~UnixTimestampDate':
+            throw new Exception('TimestampProfiles not implemented yet');
+
+        case '~HexColor':
+            return '';
+
+        default:
+            if (count($profile['Associations']) == 0) {
+                throw new Exception('Profiles without associations not implemented yet');
+            } else {
+                switch ($profile['ProfileType']) {
+                    case 0: //Boolean
+                        if (count($profile['Associations']) < 2) {
+                            return '-';
+                        }
+
+                        if ($variable['VariableValue'] === true) {
+                            return $profile['Associations'][0]['Name'];
+                        } elseif ($variable['VariableValue'] === false) {
+                            return $profile['Associations'][1]['Name'];
+                        } else {
+                            return '-';
+                        }
+
+                        // FIXME: No break. Please add proper comment if intentional
+                    case 1: //Integer
+                    case 2: //Float
+                        for ($i = count($profile['Associations']) - 1; $i >= 0; $i--) {
+                            if ($variable['VariableValue'] >= $profile['Associations'][$i]['Value']) {
+                                return $profile['Prefix'] . sprintf($profile['Associations'][$i]['Name'], $variable['VariableValue']) . $profile['Suffix'];
+                            }
+                        }
+                        return '-';
+
+                    case 3: //String
+                        return '-';
+                }
+            }
+    }
 }
 
 function HasAction(int $VariableID)
@@ -637,17 +698,20 @@ function IPS_SetScriptTimer(int $ScriptID, int $Interval)
 /* Media Manager */
 function IPS_CreateMedia(int $MediaType)
 {
-    return 0;
+    $id = IPS\ObjectManager::registerObject(5 /* Media */);
+    IPS\MediaManager::createMedia($id, $MediaType);
+    return $id;
 }
 
 function IPS_DeleteMedia(int $MediaID, bool $DeleteFile)
 {
-    return true;
+    IPS\MediaManager::deleteMedia($MediaID, $DeleteFile);
+    IPS\ObjectManager::unregisterObject($MediaID);
 }
 
 function IPS_MediaExists(int $MediaID)
 {
-    return false;
+    return IPS\MediaManager::mediaExists($MediaID);
 }
 
 function IPS_GetMedia(int $MediaID)
@@ -703,37 +767,40 @@ function IPS_SendMediaEvent(int $MediaID)
 /* Link Manager */
 function IPS_CreateLink()
 {
-    return 0;
+    $id = IPS\ObjectManager::registerObject(6 /* Link */);
+    IPS\LinkManager::createLink($id);
+    return $id;
 }
 
 function IPS_DeleteLink(int $LinkID)
 {
-    return true;
+    IPS\LinkManager::deleteLink($LinkID);
+    IPS\ObjectManager::unregisterObject($LinkID);
 }
 
 function IPS_LinkExists(int $LinkID)
 {
-    return false;
+    return IPS\LinkManager::linkExists($LinkID);
 }
 
 function IPS_GetLink(int $LinkID)
 {
-    return [];
+    return IPS\LinkManager::getLink($LinkID);
 }
 
 function IPS_GetLinkIDByName(string $Name, int $ParentID)
 {
-    return 0;
+    return IPS\LinkManager::getLinkIdByName($Name, $ParentID);
 }
 
 function IPS_GetLinkList()
 {
-    return [];
+    return IPS\LinkManager::getLinkList();
 }
 
 function IPS_SetLinkTargetID(int $LinkID, int $ChildID)
 {
-    return true;
+    IPS\LinkManager::setLinkTargetID($LinkID, $ChildID);
 }
 
 /* Profile Manager */
@@ -1167,4 +1234,10 @@ function IPS_ExecuteEx(string $Filename, string $Parameter, bool $ShowWindow, bo
 function IPS_Sleep(int $Milliseconds)
 {
     usleep($Milliseconds * 1000);
+}
+
+/* System Information */
+function Sys_Ping(string $Host, int $Timeout)
+{
+    return true;
 }

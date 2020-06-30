@@ -14,13 +14,6 @@ namespace IPS {
             return isset(self::$libraries[$LibraryID]);
         }
 
-        private static function checkLibrary(string $LibraryID): void
-        {
-            if (!self::libraryExists($LibraryID)) {
-                throw new \Exception(sprintf('Library #%s does not exist', $LibraryID));
-            }
-        }
-
         public static function getLibrary(string $LibraryID): array
         {
             self::checkLibrary($LibraryID);
@@ -48,13 +41,6 @@ namespace IPS {
         public static function moduleExists(string $ModuleID): bool
         {
             return isset(self::$modules[$ModuleID]);
-        }
-
-        private static function checkModule(string $ModuleID): void
-        {
-            if (!self::moduleExists($ModuleID)) {
-                throw new \Exception(sprintf('Module #%s does not exist', $ModuleID));
-            }
         }
 
         public static function getModule(string $ModuleID): array
@@ -96,6 +82,26 @@ namespace IPS {
             self::loadModules(dirname($file), $library['id']);
         }
 
+        public static function reset()
+        {
+            self::$libraries = [];
+            self::$modules = [];
+        }
+
+        private static function checkLibrary(string $LibraryID): void
+        {
+            if (!self::libraryExists($LibraryID)) {
+                throw new \Exception(sprintf('Library #%s does not exist', $LibraryID));
+            }
+        }
+
+        private static function checkModule(string $ModuleID): void
+        {
+            if (!self::moduleExists($ModuleID)) {
+                throw new \Exception(sprintf('Module #%s does not exist', $ModuleID));
+            }
+        }
+
         private static function loadModules(string $folder, string $libraryID): void
         {
             $modules = glob($folder . '/*', GLOB_ONLYDIR);
@@ -126,12 +132,37 @@ namespace IPS {
 
             //Include module class file
             require_once $folder . '/module.php';
+
+            self::registerFunctions($module['name'], $module['prefix']);
         }
 
-        public static function reset()
+        private static function registerFunctions($moduleName, $modulePrefix)
         {
-            self::$libraries = [];
-            self::$modules = [];
+            $class = new \ReflectionClass(str_replace(' ', '', $moduleName));
+            foreach ($class->GetMethods() as $method) {
+                if (!$method->isPublic()) {
+                    continue;
+                }
+                if (in_array($method->GetName(), ['__construct', '__destruct', '__call', '__callStatic', '__get', '__set', '__isset', '__sleep', '__wakeup', '__toString', '__invoke', '__set_state', '__clone', '__debuginfo', 'Create', 'Destroy', 'ApplyChanges', 'ReceiveData', 'ForwardData', 'RequestAction', 'MessageSink', 'GetConfigurationForm', 'GetConfigurationForParent', 'Translate'])) {
+                    continue;
+                }
+                $params = ['int $InstanceID'];
+                $fwdparams = [];
+                foreach ($method->getParameters() as $parameter) {
+                    $type = @$parameter->GetClass();
+                    if ($type !== false && $type !== null) {
+                        $type = strtolower($type->GetName());
+                    } else {
+                        $type = $parameter->GetType();
+                    }
+                    $params[] = $type . ' $' . $parameter->GetName();
+                    $fwdparams[] = '$' . $parameter->GetName();
+                }
+                $function = sprintf('function %s_%s(%s){return IPS\InstanceManager::getInstanceInterface($InstanceID)->%s(%s);}', $modulePrefix, $method->GetName(), implode(', ', $params), $method->GetName(), implode(', ', $fwdparams));
+                if (!\function_exists($modulePrefix . '_' . $method->GetName())) {
+                    eval($function);
+                }
+            }
         }
     }
 
@@ -264,7 +295,7 @@ namespace IPS {
             self::$objects[$ID]['ObjectIcon'] = $Icon;
         }
 
-        public static function setSummary(int $ID, bool $Summary): void
+        public static function setSummary(int $ID, string $Summary): void
         {
             self::checkRoot($ID);
 
@@ -306,20 +337,6 @@ namespace IPS {
         public static function objectExists(int $ID): bool
         {
             return isset(self::$objects[$ID]);
-        }
-
-        private static function checkRoot(int $ID): void
-        {
-            if ($ID == 0) {
-                throw new \Exception('Cannot change root');
-            }
-        }
-
-        private static function checkObject(int $ID): void
-        {
-            if (!self::objectExists($ID)) {
-                throw new \Exception(sprintf('Object #%d does not exist', $ID));
-            }
         }
 
         public static function getObject(int $ID): array
@@ -451,6 +468,20 @@ namespace IPS {
                 ]
             ];
         }
+
+        private static function checkRoot(int $ID): void
+        {
+            if ($ID == 0) {
+                throw new \Exception('Cannot change root');
+            }
+        }
+
+        private static function checkObject(int $ID): void
+        {
+            if (!self::objectExists($ID)) {
+                throw new \Exception(sprintf('Object #%d does not exist', $ID));
+            }
+        }
     }
 
     class CategoryManager
@@ -473,13 +504,6 @@ namespace IPS {
             return isset(self::$categories[$CategoryID]);
         }
 
-        private static function checkCategory(int $CategoryID): void
-        {
-            if (!self::categoryExists($CategoryID)) {
-                throw new \Exception(sprintf('Category #%d does not exist', $CategoryID));
-            }
-        }
-
         public static function getCategory(int $CategoryID): array
         {
             self::checkCategory($CategoryID);
@@ -495,6 +519,13 @@ namespace IPS {
         public static function reset()
         {
             self::$categories = [];
+        }
+
+        private static function checkCategory(int $CategoryID): void
+        {
+            if (!self::categoryExists($CategoryID)) {
+                throw new \Exception(sprintf('Category #%d does not exist', $CategoryID));
+            }
         }
     }
 
@@ -545,13 +576,6 @@ namespace IPS {
         public static function instanceExists(int $InstanceID): bool
         {
             return isset(self::$instances[$InstanceID]);
-        }
-
-        private static function checkInstance(int $InstanceID): void
-        {
-            if (!self::instanceExists($InstanceID)) {
-                throw new \Exception(sprintf('Instance #%d does not exist', $InstanceID));
-            }
         }
 
         public static function getInstance(int $InstanceID): array
@@ -634,6 +658,13 @@ namespace IPS {
         {
             self::$instances = [];
             self::$interfaces = [];
+        }
+
+        private static function checkInstance(int $InstanceID): void
+        {
+            if (!self::instanceExists($InstanceID)) {
+                throw new \Exception(sprintf('Instance #%d does not exist', $InstanceID));
+            }
         }
     }
 
@@ -900,6 +931,38 @@ namespace IPS {
     {
         private static $medias = [];
 
+        public static function createMedia(int $MediaID, int $MediaType): void
+        {
+            self::$medias[$MediaID] = [
+                'MediaID'          => $MediaID,
+                'MediaType'        => $MediaType,
+                'MediaIsAvailable' => false,
+                'MediaFile'        => '',
+                'MediaCRC'         => '',
+                'MediaIsCached'    => false,
+                'MediaSize'        => 0,
+                'MediaUpdated'     => 0
+            ];
+        }
+
+        public static function deleteMedia(int $MediaID, bool $DeleteFile): void
+        {
+            self::checkMedia($MediaID);
+            unset(self::$medias[$MediaID]);
+        }
+
+        public static function mediaExists(int $MediaID): bool
+        {
+            return isset(self::$medias[$MediaID]);
+        }
+
+        public static function checkMedia(int $MediaID): void
+        {
+            if (!self::mediaExists($MediaID)) {
+                throw new \Exception(sprintf('Media #%d does not exist', $MediaID));
+            }
+        }
+
         public static function reset()
         {
             self::$medias = [];
@@ -910,9 +973,58 @@ namespace IPS {
     {
         private static $links = [];
 
+        public static function createLink(int $LinkID)
+        {
+            self::$links[$LinkID] = [
+                'LinkID'   => $LinkID,
+                'TargetID' => 0
+            ];
+        }
+
+        public static function deleteLink(int $LinkID)
+        {
+            self::checkLink($LinkID);
+            unset(self::$links[$LinkID]);
+        }
+
+        public static function getLink(int $LinkID)
+        {
+            self::checkLink($LinkID);
+            return self::$links[$LinkID];
+        }
+
+        public static function getLinkIdByName(string $LinkName, int $ParentID)
+        {
+            throw new \Exception('Getting link by name is not implemented yet');
+        }
+
+        public static function getLinkList()
+        {
+            self::checkLink($LinkID);
+            return array_keys(self::$links);
+        }
+
+        public static function linkExists(int $LinkID)
+        {
+            return isset(self::$links[$LinkID]);
+        }
+
+        public static function setLinkTargetID(int $LinkID, int $TargetID)
+        {
+            self::checkLink($LinkID);
+            self::$links[$LinkID]['TargetID'] = $TargetID;
+        }
+
         public static function reset()
         {
             self::$links = [];
+        }
+
+        private static function checkLink(int $LinkID)
+        {
+            if (!self::linkExists($LinkID)) {
+                throw new \Exception(sprintf('Link #%d does not exist', $LinkID));
+            }
         }
     }
 
@@ -977,6 +1089,47 @@ namespace IPS {
         public static function setVariableProfileAssociation(string $ProfileName, float $AssociationValue, string $AssociationName, string $AssociationIcon, int $AssociationColor)
         {
             self::checkVariableProfile($ProfileName);
+
+            if (($AssociationName == '') && ($AssociationIcon == '')) {
+                unset($keyFound);
+                foreach (self::$profiles[$ProfileName]['Associations'] as $key => $association) {
+                    if ($association['Value'] == $AssociationValue) {
+                        $keyFound = $key;
+                        break;
+                    }
+                }
+                if (isset($keyFound)) {
+                    unset(self::$profiles[$ProfileName]['Associations'][$keyFound]);
+                    usort(self::$profiles[$ProfileName]['Associations'], function ($a, $b)
+                    {
+                        return $a['Value'] - $b['Value'];
+                    });
+                } else {
+                    trigger_error(sprintf('Cannot find association for deletion with value %f', $AssociationValue), E_USER_WARNING);
+                }
+                return;
+            }
+
+            foreach (self::$profiles[$ProfileName]['Associations'] as &$association) {
+                if ($association['Value'] == $AssociationValue) {
+                    $association['Name'] = $AssociationName;
+                    $association['Icon'] = $AssociationIcon;
+                    $association['Color'] = $AssociationColor;
+                    return;
+                }
+            }
+
+            self::$profiles[$ProfileName]['Associations'][] = [
+                'Value' => $AssociationValue,
+                'Name'  => $AssociationName,
+                'Icon'  => $AssociationIcon,
+                'Color' => $AssociationColor
+            ];
+
+            usort(self::$profiles[$ProfileName]['Associations'], function ($a, $b)
+            {
+                return $a['Value'] - $b['Value'];
+            });
         }
 
         public static function variableProfileExists(string $ProfileName): bool
@@ -1049,7 +1202,7 @@ namespace IPS {
                 $Data = bin2hex($Data);
             }
 
-            echo 'DEBUG: ' . $Message . ' | ' . $Data;
+            echo 'DEBUG: ' . $Message . ' | ' . $Data . PHP_EOL;
         }
 
         public static function reset()
