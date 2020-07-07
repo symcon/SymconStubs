@@ -682,7 +682,7 @@ class IPSModule
 
         //update variable profile. profiles may be changed in module development.
         //this update does not affect any custom profile choices
-        IPS_SetVariableCustomProfile($vid, $Profile);
+        IPS\VariableManager::setVariableProfile($vid, $Profile);
 
         return $vid;
     }
