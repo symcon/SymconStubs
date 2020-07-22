@@ -124,12 +124,7 @@ function GetValueFormattedEx(int $VariableID, $Value)
             if (count($profile['Associations']) == 0) {
                 switch ($profile['ProfileType']) {
                     case 0: //Boolean
-                        if ($Value == true) {
-                            return $addPrefixSuffix('true');
-                        } elseif ($Value == false) {
-                            return $addPrefixSuffix('false');
-                        }
-                        throw new Exception('Format error: Invalid variable value');
+                        throw new Exception('Profiles of type boolean need to have two associations');
 
                     case 1: //Integer
                         if ((trim($profile['Suffix']) === '%') && (($profile['MaxValue'] - $profile['MinValue']) > 0)) {
@@ -156,7 +151,7 @@ function GetValueFormattedEx(int $VariableID, $Value)
                 switch ($profile['ProfileType']) {
                     case 0: //Boolean
                         if (count($profile['Associations']) < 2) {
-                            return '-';
+                            throw new Exception('Profiles of type boolean need to have two associations');
                         }
 
                         if ($Value === true) {
