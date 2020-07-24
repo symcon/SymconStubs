@@ -81,6 +81,11 @@ function SetValueString(int $VariableID, string $Value)
 
 function GetValueFormatted(int $VariableID)
 {
+    GetValueFormattedEx($VariableID, IPS_GetVariable($VariableID)['VariableValue']);
+}
+
+function GetValueFormattedEx(int $VariableID, $Value)
+{
     $variable = IPS_GetVariable($VariableID);
     $profileName = $variable['VariableCustomProfile'];
     if ($profileName == '') {
@@ -88,7 +93,7 @@ function GetValueFormatted(int $VariableID)
     }
 
     if ($profileName == '') {
-        return strval($variable['VariableValue']);
+        return strval($Value);
     }
 
     if (!IPS_VariableProfileExists($profileName)) {
@@ -101,6 +106,11 @@ function GetValueFormatted(int $VariableID)
         return 'Invalid profile type';
     }
 
+    $addPrefixSuffix = function ($value) use ($profile)
+    {
+        return strval($profile['Prefix'] . $value . $profile['Suffix']);
+    };
+
     switch ($profileName) {
         case '~UnixTimestamp':
         case '~UnixTimestampTime':
@@ -112,28 +122,51 @@ function GetValueFormatted(int $VariableID)
 
         default:
             if (count($profile['Associations']) == 0) {
-                throw new Exception('Profiles without associations not implemented yet');
+                switch ($profile['ProfileType']) {
+                    case 0: //Boolean
+                        throw new Exception('Profiles of type boolean need to have two associations');
+
+                    case 1: //Integer
+                        if ((trim($profile['Suffix']) === '%') && (($profile['MaxValue'] - $profile['MinValue']) > 0)) {
+                            return $addPrefixSuffix(round(($Value - $profile['MinValue']) * 100 / ($profile['MaxValue'] - $profile['MinValue'])));
+                        }
+
+                        return $addPrefixSuffix($Value);
+
+                    case 2: //Float
+                        if ((trim($profile['Suffix']) === '%') && (($profile['MaxValue'] - $profile['MinValue']) > 0)) {
+                            return $addPrefixSuffix(number_format(round(($Value - $profile['MinValue']) * 100 / ($profile['MaxValue'] - $profile['MinValue'])), $profile['Digits']));
+                        }
+
+                        return $addPrefixSuffix(number_format(round($Value), $profile['Digits']));
+
+                    case 3: //String
+                        return $addPrefixSuffix($Value);
+
+                    default:
+                        throw new Exception('Format error: Invalid variable type');
+
+                }
             } else {
                 switch ($profile['ProfileType']) {
                     case 0: //Boolean
                         if (count($profile['Associations']) < 2) {
-                            return '-';
+                            throw new Exception('Profiles of type boolean need to have two associations');
                         }
 
-                        if ($variable['VariableValue'] === true) {
+                        if ($Value === true) {
                             return $profile['Associations'][0]['Name'];
-                        } elseif ($variable['VariableValue'] === false) {
+                        } elseif ($Value === false) {
                             return $profile['Associations'][1]['Name'];
-                        } else {
-                            return '-';
                         }
 
-                        // FIXME: No break. Please add proper comment if intentional
+                        return '-';
+
                     case 1: //Integer
                     case 2: //Float
                         for ($i = count($profile['Associations']) - 1; $i >= 0; $i--) {
-                            if ($variable['VariableValue'] >= $profile['Associations'][$i]['Value']) {
-                                return $profile['Prefix'] . sprintf($profile['Associations'][$i]['Name'], $variable['VariableValue']) . $profile['Suffix'];
+                            if ($Value >= $profile['Associations'][$i]['Value']) {
+                                return $profile['Prefix'] . sprintf($profile['Associations'][$i]['Name'], $Value) . $profile['Suffix'];
                             }
                         }
                         return '-';
