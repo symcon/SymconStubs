@@ -214,6 +214,7 @@ class IPSModule
     protected function RegisterScript($Ident, $Name, $Content = '', $Position = 0)
     {
         //How and why do we want to test this?
+        return 0; // Workaround to fix void return value.
     }
 
     protected function RegisterVariableBoolean($Ident, $Name, $Profile = '', $Position = 0)
