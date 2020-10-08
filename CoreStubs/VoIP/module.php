@@ -17,6 +17,11 @@ class VoIP extends IPSModule
         $this->setConnected($ConnectionID, true);
     }
 
+    public function StubsRejectOutgoingCall(int $ConnectionID)
+    {
+        $this->setConnected($ConnectionID, false);
+    }
+
     public function Create()
     {
         parent::Create();
