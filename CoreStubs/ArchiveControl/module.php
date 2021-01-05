@@ -103,7 +103,7 @@ class ArchiveControl extends IPSModule
         }
 
         //display hint that this function is not fully implemented
-        echo PHP_EOL . "AC_GetAggregationVariables NOT FULLY IMPLEMENTED" . PHP_EOL;
+        echo PHP_EOL . 'AC_GetAggregationVariables NOT FULLY IMPLEMENTED' . PHP_EOL;
 
         return $aggregationVariables;
     }
