@@ -11,7 +11,8 @@ class ArchiveControl extends IPSModule
         if (!$this->GetLoggingStatus($VariableID)) {
             throw new Exception('Adding aggregated data requires active logging');
         }
-        usort($AggregationData, function ($a, $b) {
+        usort($AggregationData, function ($a, $b)
+        {
             return $a['TimeStamp'] <=> $b['TimeStamp'];
         });
         $archivedData = $this->GetVariableData($VariableID);
@@ -29,7 +30,8 @@ class ArchiveControl extends IPSModule
         if (!$this->GetLoggingStatus($VariableID)) {
             throw new Exception('Adding logged data requires active logging');
         }
-        usort($NewData, function ($a, $b) {
+        usort($NewData, function ($a, $b)
+        {
             return $a['TimeStamp'] <=> $b['TimeStamp'];
         });
         $archivedData = $this->GetVariableData($VariableID);
@@ -91,14 +93,14 @@ class ArchiveControl extends IPSModule
                 $recordCount += count($values);
             }
             $aggregationVariables[] = [
-                'FirstTime' => 0,
-                'LastTime' => 0,
-                'RecordCount' => $recordCount,
-                'RecordSize' => 0,
-                'VariableID' => $id,
-                'AggregationType' => $data['AggregationType'],
+                'FirstTime'          => 0,
+                'LastTime'           => 0,
+                'RecordCount'        => $recordCount,
+                'RecordSize'         => 0,
+                'VariableID'         => $id,
+                'AggregationType'    => $data['AggregationType'],
                 'AggregationVisible' => false,
-                'AggregationActive' => $data['AggregationActive']
+                'AggregationActive'  => $data['AggregationActive']
             ];
         }
 
