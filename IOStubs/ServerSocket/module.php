@@ -50,7 +50,7 @@ class ServerSocketBase extends VirtualIO
         return $result;
     }
 
-    public function PushConnect($ClientIP, $ClientPort)
+    public function PushConnect(string $ClientIP, int $ClientPort)
     {
         $this->SendDataToChildren(json_encode([
             'DataID'     => '{7A1272A4-CBDB-46EF-BFC6-DCF4A53D2FC7}',
@@ -61,7 +61,7 @@ class ServerSocketBase extends VirtualIO
         ]));
     }
 
-    public function PushDisconnect($ClientIP, $ClientPort)
+    public function PushDisconnect(string $ClientIP, int $ClientPort)
     {
         $this->SendDataToChildren(json_encode([
             'DataID'     => '{7A1272A4-CBDB-46EF-BFC6-DCF4A53D2FC7}',
@@ -72,7 +72,7 @@ class ServerSocketBase extends VirtualIO
         ]));
     }
 
-    public function PushPacket($Text, $ClientIP, $ClientPort)
+    public function PushPacket(string $Text, string $ClientIP, int $ClientPort)
     {
         $this->SendDataToChildren(json_encode([
             'DataID'     => '{7A1272A4-CBDB-46EF-BFC6-DCF4A53D2FC7}',

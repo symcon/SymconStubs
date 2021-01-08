@@ -2,6 +2,11 @@
 
 declare(strict_types=1);
 
+//Minimal module stub
+class IPSModule
+{
+}
+
 use PHPUnit\Framework\TestCase;
 
 class TestCaseSymconValidation extends TestCase
@@ -112,7 +117,23 @@ class TestCaseSymconValidation extends TestCase
         if (file_exists($folder . '/locale.json')) {
             $this->assertTrue(json_decode(file_get_contents($folder . '/locale.json')) !== null);
         }
+
+        //Check if parameter types are set
+        include_once "$folder/module.php";
+        $class = new \ReflectionClass(str_replace(' ', '', $module['name']));
+        foreach ($class->GetMethods() as $method) {
+            if (!$method->isPublic()) {
+                continue;
+            }
+            if (in_array($method->GetName(), ['__construct', '__destruct', '__call', '__callStatic', '__get', '__set', '__isset', '__sleep', '__wakeup', '__toString', '__invoke', '__set_state', '__clone', '__debuginfo', 'Create', 'Destroy', 'ApplyChanges', 'ReceiveData', 'ForwardData', 'RequestAction', 'MessageSink', 'GetConfigurationForm', 'GetConfigurationForParent', 'Translate'])) {
+                continue;
+            }
+            foreach ($method->getParameters() as $parameter) {
+                $this->assertTrue($parameter->hasType());
+            }
+        }
     }
+
     private function isValidGUID($guid): bool
     {
         return preg_match('/^\{?[A-Z0-9]{8}-[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{12}\}?$/', $guid) == 1;
