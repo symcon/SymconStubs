@@ -47,12 +47,12 @@ class ArchiveControl extends IPSModule
 
     public function ChangeVariableID(int $OldVariableID, int $NewVariableID)
     {
-        throw new Exception('Not implemented');
+        throw new Exception("'ChangeVariableID' is not yet implemented");
     }
 
     public function DeleteVariableData(int $VariableID, int $StartTime, int $EndTime)
     {
-        throw new Exception('Not implemented');
+        throw new Exception("'DeleteVariableData' is not yet implemented");
     }
 
     public function GetAggregatedValues(int $VariableID, int $AggregationSpan, int $StartTime, int $EndTime, int $Limit)
@@ -83,14 +83,36 @@ class ArchiveControl extends IPSModule
         return $this->GetVariableData($VariableID)['AggregationType'];
     }
 
+    //Only AggregationActive, AggregationType and VariableID work properly
     public function GetAggregationVariables(bool $DatabaseRequest)
     {
-        throw new Exception('Not implemented');
+        $aggregationVariables = [];
+        foreach ($this->Archive as $id => $data) {
+            $recordCount = 0;
+            foreach ($data['AggregatedValues'] as $values) {
+                $recordCount += count($values);
+            }
+            $aggregationVariables[] = [
+                'FirstTime'          => 0,
+                'LastTime'           => 0,
+                'RecordCount'        => $recordCount,
+                'RecordSize'         => 0,
+                'VariableID'         => $id,
+                'AggregationType'    => $data['AggregationType'],
+                'AggregationVisible' => false,
+                'AggregationActive'  => $data['AggregationActive']
+            ];
+        }
+
+        //display hint that this function is not fully implemented
+        echo PHP_EOL . 'AC_GetAggregationVariables NOT FULLY IMPLEMENTED' . PHP_EOL;
+
+        return $aggregationVariables;
     }
 
     public function GetGraphStatus(int $VariableID)
     {
-        throw new Exception('Not implemented');
+        throw new Exception("'GetGraphStatus' is not yet implemented");
     }
 
     public function GetLoggedValues(int $VariableID, int $StartTime, int $EndTime, int $Limit = 10000)
@@ -119,7 +141,7 @@ class ArchiveControl extends IPSModule
 
     public function ReAggregateVariable(int $VariableID)
     {
-        throw new Exception('Not implemented');
+        throw new Exception("'ReAggregateVariable' is not yet implemented");
     }
 
     public function SetAggregationType(int $VariableID, int $AggregationType)
@@ -131,7 +153,7 @@ class ArchiveControl extends IPSModule
 
     public function SetGraphStatus(int $VariableID)
     {
-        throw new Exception('Not implemented');
+        throw new Exception("'SetGraphStatus' is not yet implemented");
     }
 
     // Status will be updated without ApplyChanges() unlike current (5.4) IP-Symcon implementation
