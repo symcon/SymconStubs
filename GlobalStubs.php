@@ -1270,7 +1270,103 @@ function IPS_Sleep(int $Milliseconds)
 }
 
 /* System Information */
+function Sys_GetBattery()
+{
+    return [
+        'OnBattery'            => false,
+        'IsCharging'           => false,
+        'BatteryLevel'         => -1,
+        'BatteryRemainingTime' => -1,
+        'BatteryMaxTime'       => -1
+    ];
+}
+
+function Sys_GetCPUInfo()
+{
+    return [
+        'CPU_0'   => 3,
+        'CPU_AVG' => 3
+    ];
+}
+
+function Sys_GetHardDiskInfo()
+{
+    return [
+        0 => [
+            'LETTER' => 'c:\\',
+            'LABEL'  => '',
+            'TOTAL'  => 53684989952,
+            'FREE'   => 23275171840
+        ],
+        'NUMDRIVES' => 1
+    ];
+}
+
+function Sys_GetMemoryInfo()
+{
+    return [
+        'TOTALPHYSICAL' => 1072467968,
+        'AVAILPHYSICAL' => 526647296,
+        'TOTALPAGEFILE' => 2420019200,
+        'AVAILPAGEFILE' => 1386422272,
+        'TOTALVIRTUAL'  => 2147352576,
+        'AVAILVIRTUAL'  => 1906978816
+    ];
+}
+
+function Sys_GetNetworkInfo()
+{
+    return [
+        0 => [
+            'InterfaceIndex' => 10,
+            'IP'             => '192.168.1.2',
+            'MAC'            => '00:A0:03:AD:14:BD',
+            'Description'    => 'Siemens I BT USB Remote NDIS Network Device',
+            'Speed'          => 9728000,
+            'InTotal'        => 40236,
+            'OutTotal'       => 247248
+        ],
+        1 => [
+            'InterfaceIndex' => 13,
+            'IP'             => '172.12.1.200',
+            'MAC'            => '00:A0:03:AD:14:BD',
+            'Description'    => 'Qualcomm Atheros AR8151 PCI-E Gigabit Ethernet Controller (NDIS 6.30)',
+            'Speed'          => 1000000000,
+            'InTotal'        => 169987950,
+            'OutTotal'       => 86029648
+        ]
+    ];
+}
+
+function Sys_GetProcessInfo()
+{
+    return [
+        'IPS_HANDLECOUNT'    => 635,
+        'IPS_NUMTHREADS'     => 53,
+        'IPS_VIRTUALSIZE'    => 240373760,
+        'IPS_WORKINGSETSIZE' => 32706560,
+        'IPS_PAGEFILE'       => 52719616,
+        'PROCESSCOUNT'       => 53
+    ];
+}
+
+function Sys_GetSpooler()
+{
+    return [];
+}
+
+function Sys_GetURLContent(string $URL)
+{
+    return '';
+}
+
+function Sys_GetURLContentEx(string $URL, array $Parameter)
+{
+    return '';
+}
+
 function Sys_Ping(string $Host, int $Timeout)
 {
     return true;
 }
+
