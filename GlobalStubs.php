@@ -81,7 +81,7 @@ function SetValueString(int $VariableID, string $Value)
 
 function GetValueFormatted(int $VariableID)
 {
-    GetValueFormattedEx($VariableID, IPS_GetVariable($VariableID)['VariableValue']);
+    return GetValueFormattedEx($VariableID, IPS_GetVariable($VariableID)['VariableValue']);
 }
 
 function GetValueFormattedEx(int $VariableID, $Value)
