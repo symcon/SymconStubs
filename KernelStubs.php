@@ -1177,6 +1177,7 @@ namespace IPS {
     class DebugServer
     {
         private static $debug = [];
+        private static $messages = [];
 
         public static function disableDebug(int $ID): void
         {
@@ -1190,6 +1191,12 @@ namespace IPS {
 
         public static function sendDebug(int $SenderID, string $Message, string $Data, int $Format): void
         {
+            self::$messages[$SenderID][] = [
+                'Message' => $Message,
+                'Data'    => $Data,
+                'Format'  => $Format
+            ];
+
             if (!isset(self::$debug[$SenderID])) {
                 return;
             }
@@ -1203,6 +1210,14 @@ namespace IPS {
             }
 
             echo 'DEBUG: ' . $Message . ' | ' . $Data . PHP_EOL;
+        }
+
+        public static function getDebugMessages($SenderID): array
+        {
+            if (!isset(self::$messages[$SenderID])) {
+                return [];
+            }
+            return self::$messages[$SenderID];
         }
 
         public static function reset()
