@@ -172,7 +172,13 @@ function GetValueFormattedEx(int $VariableID, $Value)
                         return '-';
 
                     case 3: //String
+                        for ($i = count($profile['Associations']) - 1; $i >= 0; $i--) {
+                            if ($Value == $profile['Associations'][$i]['Value']) {
+                                return $profile['Prefix'] . sprintf($profile['Associations'][$i]['Name'], $Value) . $profile['Suffix'];
+                            }
+                        }
                         return '-';
+
                 }
             }
     }
@@ -867,7 +873,7 @@ function IPS_GetVariableProfileListByType(int $ProfileType)
     return IPS\ProfileManager::getVariableProfileListByType($ProfileType);
 }
 
-function IPS_SetVariableProfileAssociation(string $ProfileName, float $AssociationValue, string $AssociationName, string $AssociationIcon, int $AssociationColor)
+function IPS_SetVariableProfileAssociation(string $ProfileName, $AssociationValue, string $AssociationName, string $AssociationIcon, int $AssociationColor)
 {
     IPS\ProfileManager::setVariableProfileAssociation($ProfileName, $AssociationValue, $AssociationName, $AssociationIcon, $AssociationColor);
 }
