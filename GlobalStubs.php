@@ -155,9 +155,9 @@ function GetValueFormattedEx(int $VariableID, $Value)
                         }
 
                         if ($Value === true) {
-                            return $profile['Associations'][0]['Name'];
-                        } elseif ($Value === false) {
                             return $profile['Associations'][1]['Name'];
+                        } elseif ($Value === false) {
+                            return $profile['Associations'][0]['Name'];
                         }
 
                         return '-';
