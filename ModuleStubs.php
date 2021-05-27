@@ -662,6 +662,11 @@ class IPSModule
             if (!IPS_VariableProfileExists($Profile)) {
                 throw new Exception('Profile with name ' . $Profile . ' does not exist');
             }
+
+            //make typecheck
+            if (IPS_GetVariableProfile($Profile)['ProfileType'] != $Type) {
+                throw new Exception('Profile with name ' . $Profile . ' is not of type ' . $Type);
+            }
         }
 
         //search for already available variables with proper ident
