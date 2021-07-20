@@ -615,6 +615,24 @@ class IPSModule
     {
     }
 
+    protected function HasActiveParent()
+    {
+        $instanceID = IPS_GetInstance($this->InstanceID)['ConnectionID'];
+        if ($instanceID == 0) {
+            return false;
+        }
+        while (true) {
+            if ($instanceID == 0) {
+                break;
+            }
+            if (IPS_GetInstance($this->InstanceID)['InstanceStatus'] != IS_ACTIVE) {
+                return false;
+            }
+            $instanceID = IPS_GetInstance($instanceID)['ConnectionID'];
+        }
+        return IPS\InstanceManager::getStatus(IPS_GetInstance($this->InstanceID)['ConnectionID']) == IS_ACTIVE;
+    }
+
     private function RegisterProperty($Name, $DefaultValue, $Type)
     {
         $this->properties[$Name] = [
@@ -643,6 +661,11 @@ class IPSModule
             }
             if (!IPS_VariableProfileExists($Profile)) {
                 throw new Exception('Profile with name ' . $Profile . ' does not exist');
+            }
+
+            //make typecheck
+            if (IPS_GetVariableProfile($Profile)['ProfileType'] != $Type) {
+                throw new Exception('Profile with name ' . $Profile . ' is not of type ' . $Type);
             }
         }
 

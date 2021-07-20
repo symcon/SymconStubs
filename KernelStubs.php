@@ -1086,10 +1086,9 @@ namespace IPS {
             self::$profiles[$ProfileName]['Icon'] = $Icon;
         }
 
-        public static function setVariableProfileAssociation(string $ProfileName, float $AssociationValue, string $AssociationName, string $AssociationIcon, int $AssociationColor)
+        public static function setVariableProfileAssociation(string $ProfileName, $AssociationValue, string $AssociationName, string $AssociationIcon, int $AssociationColor)
         {
             self::checkVariableProfile($ProfileName);
-
             if (($AssociationName == '') && ($AssociationIcon == '')) {
                 unset($keyFound);
                 foreach (self::$profiles[$ProfileName]['Associations'] as $key => $association) {
@@ -1100,10 +1099,12 @@ namespace IPS {
                 }
                 if (isset($keyFound)) {
                     unset(self::$profiles[$ProfileName]['Associations'][$keyFound]);
-                    usort(self::$profiles[$ProfileName]['Associations'], function ($a, $b)
-                    {
-                        return $a['Value'] - $b['Value'];
-                    });
+                    if (self::$profiles[$ProfileName]['ProfileType'] != VARIABLETYPE_STRING) {
+                        usort(self::$profiles[$ProfileName]['Associations'], function ($a, $b)
+                        {
+                            return $a['Value'] - $b['Value'];
+                        });
+                    }
                 } else {
                     trigger_error(sprintf('Cannot find association for deletion with value %f', $AssociationValue), E_USER_WARNING);
                 }
@@ -1126,10 +1127,12 @@ namespace IPS {
                 'Color' => $AssociationColor
             ];
 
-            usort(self::$profiles[$ProfileName]['Associations'], function ($a, $b)
-            {
-                return $a['Value'] - $b['Value'];
-            });
+            if (self::$profiles[$ProfileName]['ProfileType'] != VARIABLETYPE_STRING) {
+                usort(self::$profiles[$ProfileName]['Associations'], function ($a, $b)
+                {
+                    return $a['Value'] - $b['Value'];
+                });
+            }
         }
 
         public static function variableProfileExists(string $ProfileName): bool
@@ -1177,6 +1180,7 @@ namespace IPS {
     class DebugServer
     {
         private static $debug = [];
+        private static $messages = [];
 
         public static function disableDebug(int $ID): void
         {
@@ -1190,6 +1194,12 @@ namespace IPS {
 
         public static function sendDebug(int $SenderID, string $Message, string $Data, int $Format): void
         {
+            self::$messages[$SenderID][] = [
+                'Message' => $Message,
+                'Data'    => $Data,
+                'Format'  => $Format
+            ];
+
             if (!isset(self::$debug[$SenderID])) {
                 return;
             }
@@ -1203,6 +1213,14 @@ namespace IPS {
             }
 
             echo 'DEBUG: ' . $Message . ' | ' . $Data . PHP_EOL;
+        }
+
+        public static function getDebugMessages($SenderID): array
+        {
+            if (!isset(self::$messages[$SenderID])) {
+                return [];
+            }
+            return self::$messages[$SenderID];
         }
 
         public static function reset()
