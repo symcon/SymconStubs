@@ -1338,6 +1338,81 @@ namespace IPS {
         }
     }
 
+    class ActionPool
+    {
+        private static $actions = [];
+
+        public static function loadActions(string $ActionPath) : void
+        {
+            if (substr($ActionPath, -1) !== '\\') {
+                $ActionPath .= '\\';
+            }
+
+            $handle = opendir($ActionPath);
+
+            $file = readdir($handle);
+            while ($file !== false) {
+                if (is_file($ActionPath . $file) && (substr($file, -5) === '.json')) {
+                    self::$actions[] = json_decode(file_get_contents($ActionPath . $file), true);
+                }
+                $file = readdir($handle);
+            }
+
+            closedir($handle);
+        }
+
+        public static function getActions(): string
+        {
+            return json_encode(self::$actions);
+        }
+
+        public static function getActionsByEnvironment(int $ID, string $Environment, bool $IncludeDefault) : string
+        {
+            throw new Exception('Not implemented');
+        }
+
+        public static function getActionForm(string $ActionID, array $Parameters) : string
+        {
+            throw new Exception('Not implemented');
+        }
+
+        public static function getActionReadableCode(string $ActionID, array $Parameters) : string
+        {
+            throw new Exception('Not implemented');
+        }
+
+        public static function runAction(string $ActionID, array $Parameters) : void
+        {
+            self::runActionWait($ActionID, $Parameters);
+        }
+
+        public static function runActionWait(string $ActionID, array $Parameters) : string
+        {
+            foreach (self::$actions as $action) {
+                if ($action['id'] === $ActionID) {
+                    $scriptText = $action['action'];
+                    if (is_array($scriptText)) {
+                        $scriptText = implode("\n", $scriptText);
+                    }
+                    // This will probably not work with included php files
+                    return ScriptEngine::runScriptTextWaitEx($scriptText, $Parameters);
+                }
+            }
+
+            throw new Exception('Action does not exist');
+        }
+
+        public static function updateFormField(string $Name, string $Parameter, $Value,  $ID, string $SessionID) : void
+        {
+            throw new Exception('Not implemented');
+        }
+
+        public static function reset() : void
+        {
+            self::$actions = [];
+        }
+    }
+
     class Kernel
     {
         public static function reset()
@@ -1353,6 +1428,7 @@ namespace IPS {
             LinkManager::reset();
             ProfileManager::reset();
             DebugServer::reset();
+            ActionPool::reset();
         }
     }
 }

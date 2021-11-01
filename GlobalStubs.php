@@ -1224,6 +1224,43 @@ function IPS_GetLibraries(array $Parameter)
     return $result;
 }
 
+/* ActionPool */
+function IPS_GetActions()
+{
+    return IPS\ActionPool::getActions();
+}
+
+function IPS_GetActionsByEnvironment(int $TargetID, string $Environment, bool $IncludeDefault)
+{
+    return IPS\ActionPool::getActionsByEnvironment($TargetID, $Environment, $IncludeDefault);
+}
+
+function IPS_GetActionForm(string $ActionID, array $Parameters)
+{
+    return IPS\ActionPool::getActionForm($ActionID, $Parameters);
+}
+
+function IPS_GetActionReadableCode(string $ActionID, array $Parameters)
+{
+    return IPS\ActionPool::getActionReadableCode($ActionID, $Parameters);
+}
+
+function IPS_RunAction(string $ActionID, array $Parameters)
+{
+    IPS\ActionPool::runAction($ActionID, $Parameters);
+    return true;
+}
+
+function IPS_RunActionWait(string $ActionID, array $Parameters)
+{
+    return IPS\ActionPool::runActionWait($ActionID, $Parameters);
+}
+
+function IPS_UpdateFormField(string $Name, string $Parameter, $Value, string $SessionID)
+{
+    return IPS\ActionPool::updateFormField($Name, $Parameter, $Value, $SessionID);
+}
+
 /* Settings */
 function IPS_GetOption(string $Option)
 {
