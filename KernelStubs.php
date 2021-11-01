@@ -992,35 +992,35 @@ namespace IPS {
             throw new Exception('Not implemented');
         }
     }
-    
+
     class DataServer
     {
-        public static function functionExists(string $FunctionName) : boolean
+        public static function functionExists(string $FunctionName): boolean
         {
             throw new Exception('Not implemented');
         }
 
-        public static function getFunction(string $FunctionName) : array
+        public static function getFunction(string $FunctionName): array
         {
             throw new Exception('Not implemented');
         }
 
-        public static function getFunctionList(int $InstanceID) : array
+        public static function getFunctionList(int $InstanceID): array
         {
             throw new Exception('Not implemented');
         }
 
-        public static function getFunctionListByModuleID(string $ModuleID) : array
+        public static function getFunctionListByModuleID(string $ModuleID): array
         {
             throw new Exception('Not implemented');
         }
 
-        public static function getFunctions(array $Parameter) : array
+        public static function getFunctions(array $Parameter): array
         {
             throw new Exception('Not implemented');
         }
 
-        public static function getFunctionsMap(array $Parameter) : array
+        public static function getFunctionsMap(array $Parameter): array
         {
             throw new Exception('Not implemented');
         }
@@ -1342,7 +1342,7 @@ namespace IPS {
     {
         private static $actions = [];
 
-        public static function loadActions(string $ActionPath) : void
+        public static function loadActions(string $ActionPath): void
         {
             if (substr($ActionPath, -1) !== '\\') {
                 $ActionPath .= '\\';
@@ -1366,27 +1366,27 @@ namespace IPS {
             return json_encode(self::$actions);
         }
 
-        public static function getActionsByEnvironment(int $ID, string $Environment, bool $IncludeDefault) : string
+        public static function getActionsByEnvironment(int $ID, string $Environment, bool $IncludeDefault): string
         {
             throw new Exception('Not implemented');
         }
 
-        public static function getActionForm(string $ActionID, array $Parameters) : string
+        public static function getActionForm(string $ActionID, array $Parameters): string
         {
             throw new Exception('Not implemented');
         }
 
-        public static function getActionReadableCode(string $ActionID, array $Parameters) : string
+        public static function getActionReadableCode(string $ActionID, array $Parameters): string
         {
             throw new Exception('Not implemented');
         }
 
-        public static function runAction(string $ActionID, array $Parameters) : void
+        public static function runAction(string $ActionID, array $Parameters): void
         {
             self::runActionWait($ActionID, $Parameters);
         }
 
-        public static function runActionWait(string $ActionID, array $Parameters) : string
+        public static function runActionWait(string $ActionID, array $Parameters): string
         {
             foreach (self::$actions as $action) {
                 if ($action['id'] === $ActionID) {
@@ -1402,12 +1402,12 @@ namespace IPS {
             throw new Exception('Action does not exist');
         }
 
-        public static function updateFormField(string $Name, string $Parameter, $Value,  $ID, string $SessionID) : void
+        public static function updateFormField(string $Name, string $Parameter, $Value, $ID, string $SessionID): void
         {
             throw new Exception('Not implemented');
         }
 
-        public static function reset() : void
+        public static function reset(): void
         {
             self::$actions = [];
         }
