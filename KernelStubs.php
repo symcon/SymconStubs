@@ -917,6 +917,115 @@ namespace IPS {
         }
     }
 
+    class ScriptEngine
+    {
+        public static function runScript(int $ScriptID): void
+        {
+            self::runScriptEx($ScriptID, []);
+        }
+
+        public static function runScriptEx(int $ScriptID, array $Parameters): void
+        {
+            self::runScriptWaitEx($ScriptID, $Parameters);
+        }
+
+        public static function IPS_RunScriptWait(int $ScriptID): string
+        {
+            return self::runScriptWaitEx($ScriptID, []);
+        }
+
+        public static function runScriptWaitEx(int $ScriptID, array $Parameters): string
+        {
+            return self::runScriptTextWaitEx(ScriptManager::getScriptContent($ScriptID), $Parameters);
+        }
+
+        public static function runScriptText(string $ScriptText): void
+        {
+            self::runScriptTextEx($ScriptText, []);
+        }
+
+        public static function runScriptTextEx(string $ScriptText, array $Parameters): void
+        {
+            self::runScriptTextWaitEx($ScriptText, $Parameters);
+        }
+
+        public static function runScriptTextWait(string $ScriptText): string
+        {
+            return self::runScriptTextWaitEx($ScriptText, []);
+        }
+
+        public static function runScriptTextWaitEx(string $ScriptText, array $Parameters): string
+        {
+            $ScriptText = str_replace('<?php', '', $ScriptText);
+            $ScriptText = str_replace('<?', '', $ScriptText);
+            $ScriptText = str_replace('?>', '', $ScriptText);
+            $ScriptText = '$_IPS = ' . var_export($Parameters, true) . ';' . PHP_EOL . $ScriptText;
+            ob_start();
+            eval($ScriptText);
+            $out = ob_get_contents();
+            ob_end_clean();
+            return $out;
+        }
+
+        public static function semaphoreEnter(string $Name, int $Milliseconds): boolean
+        {
+            throw new Exception('Not implemented');
+        }
+
+        public static function semaphoreLeave(string $Name): boolean
+        {
+            throw new Exception('Not implemented');
+        }
+
+        public static function scriptThreadExists(int $ThreadID): boolean
+        {
+            throw new Exception('Not implemented');
+        }
+
+        public static function getScriptThread(int $ThreadID): array
+        {
+            throw new Exception('Not implemented');
+        }
+
+        public static function getScriptThreadList(): array
+        {
+            throw new Exception('Not implemented');
+        }
+    }
+    
+    class DataServer
+    {
+        public static function functionExists(string $FunctionName) : boolean
+        {
+            throw new Exception('Not implemented');
+        }
+
+        public static function getFunction(string $FunctionName) : array
+        {
+            throw new Exception('Not implemented');
+        }
+
+        public static function getFunctionList(int $InstanceID) : array
+        {
+            throw new Exception('Not implemented');
+        }
+
+        public static function getFunctionListByModuleID(string $ModuleID) : array
+        {
+            throw new Exception('Not implemented');
+        }
+
+        public static function getFunctions(array $Parameter) : array
+        {
+            throw new Exception('Not implemented');
+        }
+
+        public static function getFunctionsMap(array $Parameter) : array
+        {
+            throw new Exception('Not implemented');
+        }
+    }
+
     class EventManager
     {
         private static $events = [];

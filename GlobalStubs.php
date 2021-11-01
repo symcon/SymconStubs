@@ -1013,112 +1013,108 @@ function IPS_SetLicense(string $Licensee, string $LicenseContent)
 /* Script Engine */
 function IPS_RunScript(int $ScriptID)
 {
-    return IPS_RunScriptEx($ScriptID, []);
+    IPS\ScriptEngine::runScript($ScriptID);
+    return true;
 }
 
 function IPS_RunScriptEx(int $ScriptID, array $Parameters)
 {
-    IPS_RunScriptWaitEx($ScriptID, $Parameters);
+    IPS\ScriptEngine::runScriptEx($ScriptID, $Parameters);
     return true;
 }
 
 function IPS_RunScriptWait(int $ScriptID)
 {
-    return IPS_RunScriptWaitEx($ScriptID, []);
+    return IPS\ScriptEngine::runScriptWait($ScriptID);
 }
 
 function IPS_RunScriptWaitEx(int $ScriptID, array $Parameters)
 {
-    return IPS_RunScriptTextWaitEx(IPS\ScriptManager::getScriptContent($ScriptID), $Parameters);
+    return IPS\ScriptEngine::runScriptWaitEx($ScriptID, $Parameters);
 }
 
 function IPS_RunScriptText(string $ScriptText)
 {
-    return IPS_RunScriptTextEx($ScriptText, []);
+    IPS\ScriptEngine::runScriptText($ScriptText);
+    return true;
 }
 
 function IPS_RunScriptTextEx(string $ScriptText, array $Parameters)
 {
-    IPS_RunScriptTextWaitEx($ScriptText, $Parameters);
+    IPS\ScriptEngine::runScriptTextEx($ScriptText, $Parameters);
     return true;
 }
 
 function IPS_RunScriptTextWait(string $ScriptText)
 {
-    return IPS_RunScriptTextWaitEx($ScriptText, []);
+    return IPS\ScriptEngine::IPS_RunScriptTextWait($ScriptText);
 }
 
 function IPS_RunScriptTextWaitEx(string $ScriptText, array $Parameters)
 {
-    $ScriptText = str_replace('<?php', '', $ScriptText);
-    $ScriptText = str_replace('<?', '', $ScriptText);
-    $ScriptText = str_replace('?>', '', $ScriptText);
-    $ScriptText = '$_IPS = ' . var_export($Parameters, true) . ';' . PHP_EOL . $ScriptText;
-    ob_start();
-    eval($ScriptText);
-    $out = ob_get_contents();
-    ob_end_clean();
-    return $out;
+    return IPS\ScriptEngine::runScriptTextWaitEx($ScriptText, $Parameters);
 }
 
 function IPS_SemaphoreEnter(string $Name, int $Milliseconds)
 {
-    throw new Exception('Not implemented');
+    return IPS\ScriptEngine::semaphoreEnter($Name, $Milliseconds);
 }
 
 function IPS_SemaphoreLeave(string $Name)
 {
-    throw new Exception('Not implemented');
+    return IPS\ScriptEngine::semaphoreLeave($Name);
 }
 
 function IPS_ScriptThreadExists(int $ThreadID)
 {
-    throw new Exception('Not implemented');
+    return IPS\ScriptEngine::scriptThreadExists($ThreadID);
 }
 
 function IPS_GetScriptThread(int $ThreadID)
 {
-    throw new Exception('Not implemented');
+    return IPS\ScriptEngine::getScriptThread($ThreadID);
 }
 
 function IPS_GetScriptThreadList()
 {
-    throw new Exception('Not implemented');
+    return IPS\ScriptEngine::getScriptThreadList();
 }
 
+// This function is only usable via JSON-RPC and is only "implemented" in Gluegen but not in the script engine
 function IPS_GetScriptThreads(array $Parameter)
 {
     throw new Exception('Not implemented');
 }
 
+/* Data Server */
 function IPS_FunctionExists(string $FunctionName)
 {
-    throw new Exception('Not implemented');
+    return IPS\DataServer::functionExists($FunctionName);
 }
 
 function IPS_GetFunction(string $FunctionName)
 {
-    throw new Exception('Not implemented');
+    return IPS\DataServer::getFunction($FunctionName);
 }
 
 function IPS_GetFunctionList(int $InstanceID)
 {
-    throw new Exception('Not implemented');
+    return IPS\DataServer::getFunctionList($InstanceID);
 }
 
 function IPS_GetFunctionListByModuleID(string $ModuleID)
 {
-    throw new Exception('Not implemented');
+    return IPS\DataServer::getFunctionListByModuleID($ModuleID);
 }
 
 function IPS_GetFunctions(array $Parameter)
 {
-    throw new Exception('Not implemented');
+    return IPS\DataServer::getFunctions($Parameter);
 }
 
 function IPS_GetFunctionsMap(array $Parameter)
 {
-    throw new Exception('Not implemented');
+    return IPS\DataServer::getFunctionsMap($Parameter);
 }
 
 /* Timer Pool */
