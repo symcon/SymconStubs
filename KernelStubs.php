@@ -967,17 +967,17 @@ namespace IPS {
             return $out;
         }
 
-        public static function semaphoreEnter(string $Name, int $Milliseconds): boolean
+        public static function semaphoreEnter(string $Name, int $Milliseconds): bool
         {
             throw new Exception('Not implemented');
         }
 
-        public static function semaphoreLeave(string $Name): boolean
+        public static function semaphoreLeave(string $Name): bool
         {
             throw new Exception('Not implemented');
         }
 
-        public static function scriptThreadExists(int $ThreadID): boolean
+        public static function scriptThreadExists(int $ThreadID): bool
         {
             throw new Exception('Not implemented');
         }
@@ -995,7 +995,7 @@ namespace IPS {
 
     class DataServer
     {
-        public static function functionExists(string $FunctionName): boolean
+        public static function functionExists(string $FunctionName): bool
         {
             throw new Exception('Not implemented');
         }

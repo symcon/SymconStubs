@@ -211,6 +211,12 @@ class IPSModule
         //How and why do we want to test this?
     }
 
+    protected function GetTimerInterval($Ident)
+    {
+        //How and why do we want to test this?
+        return 0;
+    }
+
     protected function RegisterScript($Ident, $Name, $Content = '', $Position = 0)
     {
         //How and why do we want to test this?
