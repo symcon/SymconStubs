@@ -43,5 +43,4 @@ class ConnectControl extends IPSModule
     {
         throw new Exception("'GetGoogleAssistantLimitCount' is not yet implemented");
     }
-
 }
