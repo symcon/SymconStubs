@@ -1344,8 +1344,8 @@ namespace IPS {
 
         public static function loadActions(string $ActionPath): void
         {
-            if (substr($ActionPath, -1) !== '\\') {
-                $ActionPath .= '\\';
+            if (substr($ActionPath, -1) !== '/') {
+                $ActionPath .= '/';
             }
 
             $handle = opendir($ActionPath);
