@@ -105,7 +105,7 @@ namespace IPS {
         private static function loadModules(string $folder, string $libraryID): void
         {
             $modules = glob($folder . '/*', GLOB_ONLYDIR);
-            $filter = ['libs', 'docs', 'imgs', 'tests'];
+            $filter = ['libs', 'docs', 'imgs', 'tests', 'actions'];
             foreach ($modules as $module) {
                 if (!in_array(basename($module), $filter)) {
                     self::loadModule($module, $libraryID);
