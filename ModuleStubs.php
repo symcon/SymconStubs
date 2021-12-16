@@ -55,7 +55,8 @@ class IPSModule
             $result[$name] = $property['Current'];
         }
 
-        return $result;
+        //return $result;
+        return json_encode($result);
     }
 
     public function SetConfiguration($Configuration)
