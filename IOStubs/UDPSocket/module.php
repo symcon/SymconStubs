@@ -13,5 +13,8 @@ class UDPSocket extends ServerSocketBase
         $this->RegisterPropertyInteger('Port', 0);
         $this->RegisterPropertyString('BindIP', '');
         $this->RegisterPropertyInteger('BindPort', 0);
+        $this->RegisterPropertyBoolean('EnableBroadcast', false);
+        $this->RegisterPropertyBoolean('EnableReuseAddress', false);
+
     }
 }
