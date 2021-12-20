@@ -55,7 +55,7 @@ class IPSModule
             $result[$name] = $property['Current'];
         }
 
-        return $result;
+        return json_encode($result);
     }
 
     public function SetConfiguration($Configuration)
@@ -209,6 +209,12 @@ class IPSModule
     protected function SetTimerInterval($Ident, $Milliseconds)
     {
         //How and why do we want to test this?
+    }
+
+    protected function GetTimerInterval($Ident)
+    {
+        //How and why do we want to test this?
+        return 0;
     }
 
     protected function RegisterScript($Ident, $Name, $Content = '', $Position = 0)

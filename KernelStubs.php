@@ -105,7 +105,7 @@ namespace IPS {
         private static function loadModules(string $folder, string $libraryID): void
         {
             $modules = glob($folder . '/*', GLOB_ONLYDIR);
-            $filter = ['libs', 'docs', 'imgs', 'tests'];
+            $filter = ['libs', 'docs', 'imgs', 'tests', 'actions'];
             foreach ($modules as $module) {
                 if (!in_array(basename($module), $filter)) {
                     self::loadModule($module, $libraryID);
@@ -917,6 +917,115 @@ namespace IPS {
         }
     }
 
+    class ScriptEngine
+    {
+        public static function runScript(int $ScriptID): void
+        {
+            self::runScriptEx($ScriptID, []);
+        }
+
+        public static function runScriptEx(int $ScriptID, array $Parameters): void
+        {
+            self::runScriptWaitEx($ScriptID, $Parameters);
+        }
+
+        public static function IPS_RunScriptWait(int $ScriptID): string
+        {
+            return self::runScriptWaitEx($ScriptID, []);
+        }
+
+        public static function runScriptWaitEx(int $ScriptID, array $Parameters): string
+        {
+            return self::runScriptTextWaitEx(ScriptManager::getScriptContent($ScriptID), $Parameters);
+        }
+
+        public static function runScriptText(string $ScriptText): void
+        {
+            self::runScriptTextEx($ScriptText, []);
+        }
+
+        public static function runScriptTextEx(string $ScriptText, array $Parameters): void
+        {
+            self::runScriptTextWaitEx($ScriptText, $Parameters);
+        }
+
+        public static function runScriptTextWait(string $ScriptText): string
+        {
+            return self::runScriptTextWaitEx($ScriptText, []);
+        }
+
+        public static function runScriptTextWaitEx(string $ScriptText, array $Parameters): string
+        {
+            $ScriptText = str_replace('<?php', '', $ScriptText);
+            $ScriptText = str_replace('<?', '', $ScriptText);
+            $ScriptText = str_replace('?>', '', $ScriptText);
+            $ScriptText = '$_IPS = ' . var_export($Parameters, true) . ';' . PHP_EOL . $ScriptText;
+            ob_start();
+            eval($ScriptText);
+            $out = ob_get_contents();
+            ob_end_clean();
+            return $out;
+        }
+
+        public static function semaphoreEnter(string $Name, int $Milliseconds): bool
+        {
+            throw new Exception('Not implemented');
+        }
+
+        public static function semaphoreLeave(string $Name): bool
+        {
+            throw new Exception('Not implemented');
+        }
+
+        public static function scriptThreadExists(int $ThreadID): bool
+        {
+            throw new Exception('Not implemented');
+        }
+
+        public static function getScriptThread(int $ThreadID): array
+        {
+            throw new Exception('Not implemented');
+        }
+
+        public static function getScriptThreadList(): array
+        {
+            throw new Exception('Not implemented');
+        }
+    }
+
+    class DataServer
+    {
+        public static function functionExists(string $FunctionName): bool
+        {
+            throw new Exception('Not implemented');
+        }
+
+        public static function getFunction(string $FunctionName): array
+        {
+            throw new Exception('Not implemented');
+        }
+
+        public static function getFunctionList(int $InstanceID): array
+        {
+            throw new Exception('Not implemented');
+        }
+
+        public static function getFunctionListByModuleID(string $ModuleID): array
+        {
+            throw new Exception('Not implemented');
+        }
+
+        public static function getFunctions(array $Parameter): array
+        {
+            throw new Exception('Not implemented');
+        }
+
+        public static function getFunctionsMap(array $Parameter): array
+        {
+            throw new Exception('Not implemented');
+        }
+    }
+
     class EventManager
     {
         private static $events = [];
@@ -1229,6 +1338,81 @@ namespace IPS {
         }
     }
 
+    class ActionPool
+    {
+        private static $actions = [];
+
+        public static function loadActions(string $ActionPath): void
+        {
+            if (substr($ActionPath, -1) !== '/') {
+                $ActionPath .= '/';
+            }
+
+            $handle = opendir($ActionPath);
+
+            $file = readdir($handle);
+            while ($file !== false) {
+                if (is_file($ActionPath . $file) && (substr($file, -5) === '.json')) {
+                    self::$actions[] = json_decode(file_get_contents($ActionPath . $file), true);
+                }
+                $file = readdir($handle);
+            }
+
+            closedir($handle);
+        }
+
+        public static function getActions(): string
+        {
+            return json_encode(self::$actions);
+        }
+
+        public static function getActionsByEnvironment(int $ID, string $Environment, bool $IncludeDefault): string
+        {
+            throw new Exception('Not implemented');
+        }
+
+        public static function getActionForm(string $ActionID, array $Parameters): string
+        {
+            throw new Exception('Not implemented');
+        }
+
+        public static function getActionReadableCode(string $ActionID, array $Parameters): string
+        {
+            throw new Exception('Not implemented');
+        }
+
+        public static function runAction(string $ActionID, array $Parameters): void
+        {
+            self::runActionWait($ActionID, $Parameters);
+        }
+
+        public static function runActionWait(string $ActionID, array $Parameters): string
+        {
+            foreach (self::$actions as $action) {
+                if ($action['id'] === $ActionID) {
+                    $scriptText = $action['action'];
+                    if (is_array($scriptText)) {
+                        $scriptText = implode("\n", $scriptText);
+                    }
+                    // This will probably not work with included php files
+                    return ScriptEngine::runScriptTextWaitEx($scriptText, $Parameters);
+                }
+            }
+
+            throw new Exception('Action does not exist');
+        }
+
+        public static function updateFormField(string $Name, string $Parameter, $Value, $ID, string $SessionID): void
+        {
+            throw new Exception('Not implemented');
+        }
+
+        public static function reset(): void
+        {
+            self::$actions = [];
+        }
+    }
+
     class Kernel
     {
         public static function reset()
@@ -1244,6 +1428,7 @@ namespace IPS {
             LinkManager::reset();
             ProfileManager::reset();
             DebugServer::reset();
+            ActionPool::reset();
         }
     }
 }
