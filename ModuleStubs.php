@@ -206,7 +206,7 @@ class IPSModule
     {
         $this->timers[$Ident] = [
             'millis' => $Milliseconds,
-            'start' => $this->getTime()
+            'start'  => $this->getTime()
         ];
     }
 
@@ -650,7 +650,8 @@ class IPSModule
         return IPS\InstanceManager::getStatus(IPS_GetInstance($this->InstanceID)['ConnectionID']) == IS_ACTIVE;
     }
 
-    protected function getTime() {
+    protected function getTime()
+    {
         throw 'getTime needs to be implemented be module under test';
     }
 
