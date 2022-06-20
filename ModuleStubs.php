@@ -202,7 +202,7 @@ class IPSModule
         $this->RegisterAttribute($Name, $DefaultValue, 3);
     }
 
-    protected function RegisterTimer($Ident, $Milliseconds, $ScriptText)
+    protected function RegisterTimer(string $Ident, int $Milliseconds, string $ScriptText)
     {
         $this->timers[$Ident] = [
             'millis' => $Milliseconds,
@@ -210,7 +210,7 @@ class IPSModule
         ];
     }
 
-    protected function SetTimerInterval($Ident, $Milliseconds)
+    protected function SetTimerInterval(string $Ident, int $Milliseconds)
     {
         if (!isset($this->timers[$Ident])) {
             throw 'Timer is not registered';
@@ -219,7 +219,7 @@ class IPSModule
         $this->RegisterTimer($Ident, $Milliseconds, '');
     }
 
-    protected function GetTimerInterval($Ident)
+    protected function GetTimerInterval(string $Ident)
     {
         if (!isset($this->timers[$Ident])) {
             throw 'Timer is not registered';
