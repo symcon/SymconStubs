@@ -68,7 +68,7 @@ class ArchiveControl extends IPSModule
         $return = [];
         foreach (array_reverse($aggregatedArchiveData) as $data) {
             if (count($return) < $Limit) {
-                if (($data['TimeStamp'] >= $StartTime) && (($data['TimeStamp'] + $data['Duration'] - 1) <= $EndTime)) {
+                if (($data['TimeStamp'] >= $StartTime) && ($EndTime == 0 || (($data['TimeStamp'] + $data['Duration'] - 1) <= $EndTime))) {
                     $return[] = $data;
                 }
             } else {
