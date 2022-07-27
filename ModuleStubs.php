@@ -9,6 +9,7 @@ class IPSModule
     private $properties = [];
     private $attributes = [];
     private $references = [];
+    private $timers = [];
 
     private $buffer = [];
 
@@ -201,20 +202,30 @@ class IPSModule
         $this->RegisterAttribute($Name, $DefaultValue, 3);
     }
 
-    protected function RegisterTimer($Ident, $Milliseconds, $ScriptText)
+    protected function RegisterTimer(string $Ident, int $Milliseconds, string $ScriptText)
     {
-        //How and why do we want to test this?
+        $this->timers[$Ident] = [
+            'millis' => $Milliseconds,
+            'start'  => $this->getTime()
+        ];
     }
 
-    protected function SetTimerInterval($Ident, $Milliseconds)
+    protected function SetTimerInterval(string $Ident, int $Milliseconds)
     {
-        //How and why do we want to test this?
+        if (!isset($this->timers[$Ident])) {
+            throw 'Timer is not registered';
+        }
+
+        $this->RegisterTimer($Ident, $Milliseconds, '');
     }
 
-    protected function GetTimerInterval($Ident)
+    protected function GetTimerInterval(string $Ident)
     {
-        //How and why do we want to test this?
-        return 0;
+        if (!isset($this->timers[$Ident])) {
+            throw 'Timer is not registered';
+        }
+
+        return $this->timers[$Ident]['millis'] - ($this->getTime() - $this->timers[$Ident]['start']) * 1000;
     }
 
     protected function RegisterScript($Ident, $Name, $Content = '', $Position = 0)
@@ -637,6 +648,11 @@ class IPSModule
             $instanceID = IPS_GetInstance($instanceID)['ConnectionID'];
         }
         return IPS\InstanceManager::getStatus(IPS_GetInstance($this->InstanceID)['ConnectionID']) == IS_ACTIVE;
+    }
+
+    protected function getTime()
+    {
+        throw 'getTime needs to be implemented be module under test';
     }
 
     private function RegisterProperty($Name, $DefaultValue, $Type)
