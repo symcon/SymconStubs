@@ -154,6 +154,9 @@ namespace IPS {
                         $type = strtolower($type->GetName());
                     } else {
                         $type = $parameter->GetType();
+                        if ($type !== null) {
+                            $type = $type->GetName();
+                        }
                     }
                     $params[] = $type . ' $' . $parameter->GetName();
                     $fwdparams[] = '$' . $parameter->GetName();

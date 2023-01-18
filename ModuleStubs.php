@@ -213,7 +213,7 @@ class IPSModule
     protected function SetTimerInterval(string $Ident, int $Milliseconds)
     {
         if (!isset($this->timers[$Ident])) {
-            throw 'Timer is not registered';
+            throw new Exception('Timer is not registered');
         }
 
         $this->RegisterTimer($Ident, $Milliseconds, '');
@@ -222,7 +222,7 @@ class IPSModule
     protected function GetTimerInterval(string $Ident)
     {
         if (!isset($this->timers[$Ident])) {
-            throw 'Timer is not registered';
+            throw new Exception('Timer is not registered');
         }
 
         return $this->timers[$Ident]['millis'] - ($this->getTime() - $this->timers[$Ident]['start']) * 1000;
@@ -652,7 +652,7 @@ class IPSModule
 
     protected function getTime()
     {
-        throw 'getTime needs to be implemented be module under test';
+        throw new Exception('getTime needs to be implemented by module under test');
     }
 
     private function RegisterProperty($Name, $DefaultValue, $Type)
