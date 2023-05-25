@@ -202,6 +202,11 @@ class IPSModule
         $this->RegisterAttribute($Name, $DefaultValue, 3);
     }
 
+    protected function RegisterOnceTimer(string $Ident, string $ScriptText)
+    {
+        IPS_RunScriptTextEx($ScriptText, ['TARGET' => $this->InstanceID]);
+    }
+
     protected function RegisterTimer(string $Ident, int $Milliseconds, string $ScriptText)
     {
         $this->timers[$Ident] = [

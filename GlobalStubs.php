@@ -724,6 +724,11 @@ function IPS_SetEventTriggerValue(int $EventID, $TriggerValue)
     return true;
 }
 
+function IPS_IsConditionPassing(string $Conditions)
+{
+    return true;
+}
+
 function IPS_GetScriptTimer(int $ScriptID)
 {
     return 0;
