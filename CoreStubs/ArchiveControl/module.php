@@ -54,7 +54,7 @@ class ArchiveControl extends IPSModule
     {
         $archivedData = $this->GetVariableData($VariableID);
         $aggregatedValues = $archivedData['AggregatedValues'];
-        
+
         //Get the first and last timestamp if it is necessary
         foreach ($aggregatedValues as $AggregationSpan => $Values) {
             if (array_key_exists('TimeStamp', $Values)) {
