@@ -53,36 +53,35 @@ class ArchiveControl extends IPSModule
     public function DeleteVariableData(int $VariableID, int $StartTime, int $EndTime)
     {
         $archivedData = $this->GetVariableData($VariableID);
-        $aggregatedValues = $archivedData['AggregatedValues'];
+        $Values = $archivedData['Values'];
+
+        if ($StartTime === 0 && $EndTime === 0) {
+            $this->SetLoggingStatus($VariableID, false);
+        }
 
         //Get the first and last timestamp if it is necessary
-        foreach ($aggregatedValues as $AggregationSpan => $Values) {
-            if (array_key_exists('TimeStamp', $Values)) {
-                if ($EndTime === 0 || $EndTime < end($Values)['TimeStamp']) {
-                    $EndTime = end($Values)['TimeStamp'];
-                }
-                if ($StartTime === 0 || $StartTime > reset($Values)['TimeStamp']) {
-                    $StartTime = reset($Values)['TimeStamp'];
-                }
+        if (array_key_exists('TimeStamp', $Values)) {
+            if ($EndTime === 0 || $EndTime < end($Values)['TimeStamp']) {
+                $EndTime = end($Values)['TimeStamp'];
+            }
+            if ($StartTime === 0 || $StartTime > reset($Values)['TimeStamp']) {
+                $StartTime = reset($Values)['TimeStamp'];
             }
         }
 
-        //Go throught the spans and delete the values
-        foreach ($aggregatedValues as $AggregationSpan => $Values) {
-            $timeStampKeys = array_column($Values, 'TimeStamp');
-            $startKey = array_search($StartTime, $timeStampKeys);
-            $endKey = array_search($EndTime, $timeStampKeys);
+        //Get the Start and endkey and delete the values between them
+        $timeStampKeys = array_column($Values, 'TimeStamp');
+        $startKey = array_search($StartTime, $timeStampKeys);
+        $endKey = array_search($EndTime, $timeStampKeys);
 
-            if ($startKey !== false && $endKey !== false) {
-                $slicedData = array_slice($Values, $endKey, $startKey - $endKey);
-                $data = array_diff($Values, $slicedData);
-            } else {
-                $slicedData = $Values;
-                $data = $Values;
-            }
-            $aggregatedValues[$AggregationSpan] = $data;
+        if ($startKey !== false && $endKey !== false) {
+            $slicedData = array_slice($Values, $endKey, $startKey - $endKey);
+            $loggedValues = array_diff($Values, $slicedData);
+        } else {
+            $slicedData = $Values;
+            $loggedValues = $Values;
         }
-        $archivedData['AggregatedValues'] = $aggregatedValues;
+        $archivedData['Values'] = $loggedValues;
         $this->SetVariableData($VariableID, $archivedData);
 
         return count($slicedData);
