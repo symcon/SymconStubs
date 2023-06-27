@@ -59,6 +59,11 @@ class ArchiveControl extends IPSModule
             $this->SetLoggingStatus($VariableID, false);
         }
 
+        //The array is empty, nothing to delete
+        if (count($Values) === 0) {
+            return 0;
+        }
+
         //Get the first and last timestamp if it is necessary
         if (array_key_exists('TimeStamp', $Values)) {
             if ($EndTime === 0 || $EndTime < end($Values)['TimeStamp']) {
@@ -70,18 +75,32 @@ class ArchiveControl extends IPSModule
         }
 
         //Get the Start and endkey and delete the values between them
-        $timeStampKeys = array_column($Values, 'TimeStamp');
-        $startKey = array_search($StartTime, $timeStampKeys);
-        $endKey = array_search($EndTime, $timeStampKeys);
-
-        if ($startKey !== false && $endKey !== false) {
-            $slicedData = array_slice($Values, $endKey, $startKey - $endKey);
-            $loggedValues = array_diff($Values, $slicedData);
-        } else {
-            $slicedData = $Values;
-            $loggedValues = $Values;
+        $endKey = count($Values);
+        reset($Values);
+        $startKey = key($Values);
+    
+        foreach ($Values as $key => $value) {
+            if ($value['TimeStamp'] < $StartTime) {
+                $startKey = $key+1;
+            } else {
+                break;
+            }
         }
-        $archivedData['Values'] = $loggedValues;
+        foreach ($Values as $key => $value) {
+            if ($value['TimeStamp'] > $EndTime) {
+                $endKey = $key;
+                break;
+            }
+        }
+
+        $slicedData = array_slice($Values, $startKey, $endKey - $startKey, true);
+        //Only keep the values that are not in the sliced Data
+        $callback = function ($key) use ($slicedData) {
+            return !key_exists($key, $slicedData);
+        };
+        $loggedValues = array_filter($Values, $callback, ARRAY_FILTER_USE_KEY);
+
+        $archivedData['Values'] = array_values($loggedValues);
         $this->SetVariableData($VariableID, $archivedData);
 
         return count($slicedData);
