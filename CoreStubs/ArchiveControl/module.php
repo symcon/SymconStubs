@@ -78,10 +78,10 @@ class ArchiveControl extends IPSModule
         $endKey = count($Values);
         reset($Values);
         $startKey = key($Values);
-    
+
         foreach ($Values as $key => $value) {
             if ($value['TimeStamp'] < $StartTime) {
-                $startKey = $key+1;
+                $startKey = $key + 1;
             } else {
                 break;
             }
@@ -95,8 +95,9 @@ class ArchiveControl extends IPSModule
 
         $slicedData = array_slice($Values, $startKey, $endKey - $startKey, true);
         //Only keep the values that are not in the sliced Data
-        $callback = function ($key) use ($slicedData) {
-            return !key_exists($key, $slicedData);
+        $callback = function ($key) use ($slicedData)
+        {
+            return !array_key_exists($key, $slicedData);
         };
         $loggedValues = array_filter($Values, $callback, ARRAY_FILTER_USE_KEY);
 
