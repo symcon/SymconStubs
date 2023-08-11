@@ -463,6 +463,16 @@ class IPSModuleStrict
         return $this->module->HasActiveParent();
     }
 
+    protected function RegisterHook(string $HookPath): void
+    {
+        //
+    }
+
+    protected function RegisterOAuth(string $OAuthPath): void
+    {
+        //
+    }
+
     protected function getTime(): int
     {
         return $this->module->getTime();
