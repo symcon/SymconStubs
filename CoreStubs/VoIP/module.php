@@ -45,7 +45,7 @@ class VoIP extends IPSModule
             throw new Exception(sprintf('Connection for ID %d does not exist', $ConnectionID));
         }
         $this->setConnected($ConnectionID, false);
-   }
+    }
 
     public function GetConnection(int $ConnectionID)
     {
