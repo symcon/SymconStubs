@@ -543,8 +543,8 @@ namespace IPS {
                 throw new \Exception(sprintf('Cannot find class %s', $Module['Class']));
             }
 
-            if (!in_array('IPSModule', class_parents($Module['Class']))) {
-                throw new \Exception(sprintf('Class %s does not inherit from IPSModule', $Module['Class']));
+            if (!in_array('IPSModule', class_parents($Module['Class'])) && !in_array('IPSModuleStrict', class_parents($Module['Class']))) {
+                throw new \Exception(sprintf('Class %s does not inherit from IPSModule or IPSModuleStrict', $Module['Class']));
             }
 
             self::$instances[$InstanceID] = [
@@ -563,7 +563,7 @@ namespace IPS {
 
             self::$interfaces[$InstanceID] = $interface;
 
-            if ($interface instanceof \IPSModule) {
+            if (($interface instanceof \IPSModule) || ($interface instanceof \IPSModuleStrict)) {
                 $interface->Create();
                 $interface->ApplyChanges();
             }
@@ -588,7 +588,7 @@ namespace IPS {
             return self::$instances[$InstanceID];
         }
 
-        public static function getInstanceInterface(int $InstanceID): \IPSModule
+        public static function getInstanceInterface(int $InstanceID): mixed
         {
             self::checkInstance($InstanceID);
 

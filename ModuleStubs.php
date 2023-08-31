@@ -464,6 +464,7 @@ class IPSModule
         if (preg_match('/' . $interface->GetForwardDataFilter() . '/', $Data) == 1) {
             return $interface->ForwardData($Data);
         }
+        return '';
     }
 
     protected function SendDataToChildren($Data)
