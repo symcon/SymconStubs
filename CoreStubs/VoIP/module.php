@@ -41,7 +41,10 @@ class VoIP extends IPSModule
 
     public function Disconnect(int $ConnectionID)
     {
-        unset($this->connections[$ConnectionID]);
+        if (!isset($this->connections[$ConnectionID])) {
+            throw new Exception(sprintf('Connection for ID %d does not exist', $ConnectionID));
+        }
+        $this->setConnected($ConnectionID, false);
     }
 
     public function GetConnection(int $ConnectionID)
@@ -83,7 +86,7 @@ class VoIP extends IPSModule
             'Number'       => $number,
             'Direction'    => 1,
             'Connected'    => false,
-            'Disconnected' => true
+            'Disconnected' => false
         ];
 
         //increment id
