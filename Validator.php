@@ -19,7 +19,7 @@ class TestCaseSymconValidation extends TestCase
 
         $this->assertArrayHasKey('id', $library);
         $this->assertIsString($library['id']);
-        $this->assertTrue($this->isValidGUID($library['id']));
+        $this->assertTrue($this->isValidGUID($library['id']), 'library id is not a valid GUID');
 
         $this->assertArrayHasKey('author', $library);
         $this->assertIsString($library['author']);
@@ -29,7 +29,7 @@ class TestCaseSymconValidation extends TestCase
 
         $this->assertArrayHasKey('url', $library);
         $this->assertIsString($library['url']);
-        $this->assertTrue($this->isValidURL($library['url']));
+        $this->assertTrue($this->isValidURL($library['url']), 'library url is not a valid');
 
         $this->assertArrayHasKey('version', $library);
         $this->assertIsString($library['version']);
@@ -61,11 +61,11 @@ class TestCaseSymconValidation extends TestCase
 
         $this->assertArrayHasKey('id', $module);
         $this->assertIsString($module['id']);
-        $this->assertTrue($this->isValidGUID($module['id']));
+        $this->assertTrue($this->isValidGUID($module['id']), 'module id is not a valid GUID');
 
         $this->assertArrayHasKey('name', $module);
         $this->assertIsString($module['name']);
-        $this->assertTrue($this->isValidName($module['name']));
+        $this->assertTrue($this->isValidName($module['name']), 'module name is not valid');
 
         $this->assertArrayHasKey('type', $module);
         $this->assertIsInt($module['type']);
@@ -80,39 +80,39 @@ class TestCaseSymconValidation extends TestCase
 
         $this->assertArrayHasKey('url', $module);
         $this->assertIsString($module['url']);
-        $this->assertTrue($this->isValidURL($module['url']));
+        $this->assertTrue($this->isValidURL($module['url']), 'module url is not valid');
 
         $this->assertArrayHasKey('parentRequirements', $module);
         $this->assertIsArray($module['parentRequirements']);
         foreach ($module['parentRequirements'] as $parentRequirement) {
             $this->assertIsString($parentRequirement);
-            $this->assertTrue($this->isValidGUID($parentRequirement));
+            $this->assertTrue($this->isValidGUID($parentRequirement), 'module parent requirements guid is not valid');
         }
 
         $this->assertArrayHasKey('childRequirements', $module);
         $this->assertIsArray($module['childRequirements']);
         foreach ($module['childRequirements'] as $childRequirement) {
             $this->assertIsString($childRequirement);
-            $this->assertTrue($this->isValidGUID($childRequirement));
+            $this->assertTrue($this->isValidGUID($childRequirement), 'module child requirements guid is not valid');
         }
 
         $this->assertArrayHasKey('implemented', $module);
         $this->assertIsArray($module['implemented']);
         foreach ($module['implemented'] as $implemented) {
             $this->assertIsString($implemented);
-            $this->assertTrue($this->isValidGUID($implemented));
+            $this->assertTrue($this->isValidGUID($implemented), 'module implemented guid is not valid');
         }
 
         $this->assertArrayHasKey('prefix', $module);
         $this->assertIsString($module['prefix']);
-        $this->assertTrue($this->isValidPrefix($module['prefix']));
+        $this->assertTrue($this->isValidPrefix($module['prefix']), 'module prefix is not valid');
 
         if (file_exists($folder . '/form.json')) {
-            $this->assertTrue(json_decode(file_get_contents($folder . '/form.json')) !== null);
+            $this->assertTrue(json_decode(file_get_contents($folder . '/form.json')) !== null, 'module form.json is invalid JSON');
         }
 
         if (file_exists($folder . '/locale.json')) {
-            $this->assertTrue(json_decode(file_get_contents($folder . '/locale.json')) !== null);
+            $this->assertTrue(json_decode(file_get_contents($folder . '/locale.json')) !== null, 'module locale.json is invalid JSON');
         }
 
         //Check if parameter types are set
@@ -126,7 +126,7 @@ class TestCaseSymconValidation extends TestCase
                 continue;
             }
             foreach ($method->getParameters() as $parameter) {
-                $this->assertTrue($parameter->hasType());
+                $this->assertTrue($parameter->hasType(), sprintf("Parameter '%s' on method '%s' is missing type hint definition", $parameter->getName(), $method->getName()));
             }
         }
     }

@@ -9,6 +9,7 @@ class IPSModule
     private $properties = [];
     private $attributes = [];
     private $references = [];
+    private $timers = [];
 
     private $buffer = [];
 
@@ -55,7 +56,7 @@ class IPSModule
             $result[$name] = $property['Current'];
         }
 
-        return $result;
+        return json_encode($result);
     }
 
     public function SetConfiguration($Configuration)
@@ -201,14 +202,35 @@ class IPSModule
         $this->RegisterAttribute($Name, $DefaultValue, 3);
     }
 
-    protected function RegisterTimer($Ident, $Milliseconds, $ScriptText)
+    protected function RegisterOnceTimer(string $Ident, string $ScriptText)
     {
-        //How and why do we want to test this?
+        IPS_RunScriptTextEx($ScriptText, ['TARGET' => $this->InstanceID]);
     }
 
-    protected function SetTimerInterval($Ident, $Milliseconds)
+    protected function RegisterTimer(string $Ident, int $Milliseconds, string $ScriptText)
     {
-        //How and why do we want to test this?
+        $this->timers[$Ident] = [
+            'millis' => $Milliseconds,
+            'start'  => $this->getTime()
+        ];
+    }
+
+    protected function SetTimerInterval(string $Ident, int $Milliseconds)
+    {
+        if (!isset($this->timers[$Ident])) {
+            throw new Exception('Timer is not registered');
+        }
+
+        $this->RegisterTimer($Ident, $Milliseconds, '');
+    }
+
+    protected function GetTimerInterval(string $Ident)
+    {
+        if (!isset($this->timers[$Ident])) {
+            throw new Exception('Timer is not registered');
+        }
+
+        return $this->timers[$Ident]['millis'] - ($this->getTime() - $this->timers[$Ident]['start']) * 1000;
     }
 
     protected function RegisterScript($Ident, $Name, $Content = '', $Position = 0)
@@ -442,6 +464,7 @@ class IPSModule
         if (preg_match('/' . $interface->GetForwardDataFilter() . '/', $Data) == 1) {
             return $interface->ForwardData($Data);
         }
+        return '';
     }
 
     protected function SendDataToChildren($Data)
@@ -615,6 +638,29 @@ class IPSModule
     {
     }
 
+    protected function HasActiveParent()
+    {
+        $instanceID = IPS_GetInstance($this->InstanceID)['ConnectionID'];
+        if ($instanceID == 0) {
+            return false;
+        }
+        while (true) {
+            if ($instanceID == 0) {
+                break;
+            }
+            if (IPS_GetInstance($this->InstanceID)['InstanceStatus'] != IS_ACTIVE) {
+                return false;
+            }
+            $instanceID = IPS_GetInstance($instanceID)['ConnectionID'];
+        }
+        return IPS\InstanceManager::getStatus(IPS_GetInstance($this->InstanceID)['ConnectionID']) == IS_ACTIVE;
+    }
+
+    protected function getTime()
+    {
+        throw new Exception('getTime needs to be implemented by module under test');
+    }
+
     private function RegisterProperty($Name, $DefaultValue, $Type)
     {
         $this->properties[$Name] = [
@@ -643,6 +689,11 @@ class IPSModule
             }
             if (!IPS_VariableProfileExists($Profile)) {
                 throw new Exception('Profile with name ' . $Profile . ' does not exist');
+            }
+
+            //make typecheck
+            if (IPS_GetVariableProfile($Profile)['ProfileType'] != $Type) {
+                throw new Exception('Profile with name ' . $Profile . ' is not of type ' . $Type);
             }
         }
 

@@ -81,7 +81,7 @@ function SetValueString(int $VariableID, string $Value)
 
 function GetValueFormatted(int $VariableID)
 {
-    GetValueFormattedEx($VariableID, IPS_GetVariable($VariableID)['VariableValue']);
+    return GetValueFormattedEx($VariableID, IPS_GetVariable($VariableID)['VariableValue']);
 }
 
 function GetValueFormattedEx(int $VariableID, $Value)
@@ -155,9 +155,9 @@ function GetValueFormattedEx(int $VariableID, $Value)
                         }
 
                         if ($Value === true) {
-                            return $profile['Associations'][0]['Name'];
-                        } elseif ($Value === false) {
                             return $profile['Associations'][1]['Name'];
+                        } elseif ($Value === false) {
+                            return $profile['Associations'][0]['Name'];
                         }
 
                         return '-';
@@ -172,7 +172,13 @@ function GetValueFormattedEx(int $VariableID, $Value)
                         return '-';
 
                     case 3: //String
+                        for ($i = count($profile['Associations']) - 1; $i >= 0; $i--) {
+                            if ($Value == $profile['Associations'][$i]['Value']) {
+                                return $profile['Prefix'] . sprintf($profile['Associations'][$i]['Name'], $Value) . $profile['Suffix'];
+                            }
+                        }
                         return '-';
+
                 }
             }
     }
@@ -718,6 +724,11 @@ function IPS_SetEventTriggerValue(int $EventID, $TriggerValue)
     return true;
 }
 
+function IPS_IsConditionPassing(string $Conditions)
+{
+    return true;
+}
+
 function IPS_GetScriptTimer(int $ScriptID)
 {
     return 0;
@@ -867,7 +878,7 @@ function IPS_GetVariableProfileListByType(int $ProfileType)
     return IPS\ProfileManager::getVariableProfileListByType($ProfileType);
 }
 
-function IPS_SetVariableProfileAssociation(string $ProfileName, float $AssociationValue, string $AssociationName, string $AssociationIcon, int $AssociationColor)
+function IPS_SetVariableProfileAssociation(string $ProfileName, $AssociationValue, string $AssociationName, string $AssociationIcon, int $AssociationColor)
 {
     IPS\ProfileManager::setVariableProfileAssociation($ProfileName, $AssociationValue, $AssociationName, $AssociationIcon, $AssociationColor);
 }
@@ -1007,112 +1018,108 @@ function IPS_SetLicense(string $Licensee, string $LicenseContent)
 /* Script Engine */
 function IPS_RunScript(int $ScriptID)
 {
-    return IPS_RunScriptEx($ScriptID, []);
+    IPS\ScriptEngine::runScript($ScriptID);
+    return true;
 }
 
 function IPS_RunScriptEx(int $ScriptID, array $Parameters)
 {
-    IPS_RunScriptWaitEx($ScriptID, $Parameters);
+    IPS\ScriptEngine::runScriptEx($ScriptID, $Parameters);
     return true;
 }
 
 function IPS_RunScriptWait(int $ScriptID)
 {
-    return IPS_RunScriptWaitEx($ScriptID, []);
+    return IPS\ScriptEngine::runScriptWait($ScriptID);
 }
 
 function IPS_RunScriptWaitEx(int $ScriptID, array $Parameters)
 {
-    return IPS_RunScriptTextWaitEx(IPS\ScriptManager::getScriptContent($ScriptID), $Parameters);
+    return IPS\ScriptEngine::runScriptWaitEx($ScriptID, $Parameters);
 }
 
 function IPS_RunScriptText(string $ScriptText)
 {
-    return IPS_RunScriptTextEx($ScriptText, []);
+    IPS\ScriptEngine::runScriptText($ScriptText);
+    return true;
 }
 
 function IPS_RunScriptTextEx(string $ScriptText, array $Parameters)
 {
-    IPS_RunScriptTextWaitEx($ScriptText, $Parameters);
+    IPS\ScriptEngine::runScriptTextEx($ScriptText, $Parameters);
     return true;
 }
 
 function IPS_RunScriptTextWait(string $ScriptText)
 {
-    return IPS_RunScriptTextWaitEx($ScriptText, []);
+    return IPS\ScriptEngine::IPS_RunScriptTextWait($ScriptText);
 }
 
 function IPS_RunScriptTextWaitEx(string $ScriptText, array $Parameters)
 {
-    $ScriptText = str_replace('<?php', '', $ScriptText);
-    $ScriptText = str_replace('<?', '', $ScriptText);
-    $ScriptText = str_replace('?>', '', $ScriptText);
-    $ScriptText = '$_IPS = ' . var_export($Parameters, true) . ';' . PHP_EOL . $ScriptText;
-    ob_start();
-    eval($ScriptText);
-    $out = ob_get_contents();
-    ob_end_clean();
-    return $out;
+    return IPS\ScriptEngine::runScriptTextWaitEx($ScriptText, $Parameters);
 }
 
 function IPS_SemaphoreEnter(string $Name, int $Milliseconds)
 {
-    throw new Exception('Not implemented');
+    return IPS\ScriptEngine::semaphoreEnter($Name, $Milliseconds);
 }
 
 function IPS_SemaphoreLeave(string $Name)
 {
-    throw new Exception('Not implemented');
+    return IPS\ScriptEngine::semaphoreLeave($Name);
 }
 
 function IPS_ScriptThreadExists(int $ThreadID)
 {
-    throw new Exception('Not implemented');
+    return IPS\ScriptEngine::scriptThreadExists($ThreadID);
 }
 
 function IPS_GetScriptThread(int $ThreadID)
 {
-    throw new Exception('Not implemented');
+    return IPS\ScriptEngine::getScriptThread($ThreadID);
 }
 
 function IPS_GetScriptThreadList()
 {
-    throw new Exception('Not implemented');
+    return IPS\ScriptEngine::getScriptThreadList();
 }
 
+// This function is only usable via JSON-RPC and is only "implemented" in Gluegen but not in the script engine
 function IPS_GetScriptThreads(array $Parameter)
 {
     throw new Exception('Not implemented');
 }
 
+/* Data Server */
 function IPS_FunctionExists(string $FunctionName)
 {
-    throw new Exception('Not implemented');
+    return IPS\DataServer::functionExists($FunctionName);
 }
 
 function IPS_GetFunction(string $FunctionName)
 {
-    throw new Exception('Not implemented');
+    return IPS\DataServer::getFunction($FunctionName);
 }
 
 function IPS_GetFunctionList(int $InstanceID)
 {
-    throw new Exception('Not implemented');
+    return IPS\DataServer::getFunctionList($InstanceID);
 }
 
 function IPS_GetFunctionListByModuleID(string $ModuleID)
 {
-    throw new Exception('Not implemented');
+    return IPS\DataServer::getFunctionListByModuleID($ModuleID);
 }
 
 function IPS_GetFunctions(array $Parameter)
 {
-    throw new Exception('Not implemented');
+    return IPS\DataServer::getFunctions($Parameter);
 }
 
 function IPS_GetFunctionsMap(array $Parameter)
 {
-    throw new Exception('Not implemented');
+    return IPS\DataServer::getFunctionsMap($Parameter);
 }
 
 /* Timer Pool */
@@ -1222,6 +1229,43 @@ function IPS_GetLibraries(array $Parameter)
     return $result;
 }
 
+/* ActionPool */
+function IPS_GetActions()
+{
+    return IPS\ActionPool::getActions();
+}
+
+function IPS_GetActionsByEnvironment(int $TargetID, string $Environment, bool $IncludeDefault)
+{
+    return IPS\ActionPool::getActionsByEnvironment($TargetID, $Environment, $IncludeDefault);
+}
+
+function IPS_GetActionForm(string $ActionID, array $Parameters)
+{
+    return IPS\ActionPool::getActionForm($ActionID, $Parameters);
+}
+
+function IPS_GetActionReadableCode(string $ActionID, array $Parameters)
+{
+    return IPS\ActionPool::getActionReadableCode($ActionID, $Parameters);
+}
+
+function IPS_RunAction(string $ActionID, array $Parameters)
+{
+    IPS\ActionPool::runAction($ActionID, $Parameters);
+    return true;
+}
+
+function IPS_RunActionWait(string $ActionID, array $Parameters)
+{
+    return IPS\ActionPool::runActionWait($ActionID, $Parameters);
+}
+
+function IPS_UpdateFormField(string $Name, string $Parameter, $Value, string $SessionID)
+{
+    return IPS\ActionPool::updateFormField($Name, $Parameter, $Value, $SessionID);
+}
+
 /* Settings */
 function IPS_GetOption(string $Option)
 {
@@ -1270,7 +1314,103 @@ function IPS_Sleep(int $Milliseconds)
 }
 
 /* System Information */
+function Sys_GetBattery()
+{
+    return [
+        'OnBattery'            => false,
+        'IsCharging'           => false,
+        'BatteryLevel'         => -1,
+        'BatteryRemainingTime' => -1,
+        'BatteryMaxTime'       => -1
+    ];
+}
+
+function Sys_GetCPUInfo()
+{
+    return [
+        'CPU_0'   => 3,
+        'CPU_AVG' => 3
+    ];
+}
+
+function Sys_GetHardDiskInfo()
+{
+    return [
+        0 => [
+            'LETTER' => 'c:\\',
+            'LABEL'  => '',
+            'TOTAL'  => 53684989952,
+            'FREE'   => 23275171840
+        ],
+        'NUMDRIVES' => 1
+    ];
+}
+
+function Sys_GetMemoryInfo()
+{
+    return [
+        'TOTALPHYSICAL' => 1072467968,
+        'AVAILPHYSICAL' => 526647296,
+        'TOTALPAGEFILE' => 2420019200,
+        'AVAILPAGEFILE' => 1386422272,
+        'TOTALVIRTUAL'  => 2147352576,
+        'AVAILVIRTUAL'  => 1906978816
+    ];
+}
+
+function Sys_GetNetworkInfo()
+{
+    return [
+        0 => [
+            'InterfaceIndex' => 10,
+            'IP'             => '192.168.1.2',
+            'MAC'            => '00:A0:03:AD:14:BD',
+            'Description'    => 'Siemens I BT USB Remote NDIS Network Device',
+            'Speed'          => 9728000,
+            'InTotal'        => 40236,
+            'OutTotal'       => 247248
+        ],
+        1 => [
+            'InterfaceIndex' => 13,
+            'IP'             => '172.12.1.200',
+            'MAC'            => '00:A0:03:AD:14:BD',
+            'Description'    => 'Qualcomm Atheros AR8151 PCI-E Gigabit Ethernet Controller (NDIS 6.30)',
+            'Speed'          => 1000000000,
+            'InTotal'        => 169987950,
+            'OutTotal'       => 86029648
+        ]
+    ];
+}
+
+function Sys_GetProcessInfo()
+{
+    return [
+        'IPS_HANDLECOUNT'    => 635,
+        'IPS_NUMTHREADS'     => 53,
+        'IPS_VIRTUALSIZE'    => 240373760,
+        'IPS_WORKINGSETSIZE' => 32706560,
+        'IPS_PAGEFILE'       => 52719616,
+        'PROCESSCOUNT'       => 53
+    ];
+}
+
+function Sys_GetSpooler()
+{
+    return [];
+}
+
+function Sys_GetURLContent(string $URL)
+{
+    return '';
+}
+
+function Sys_GetURLContentEx(string $URL, array $Parameter)
+{
+    return '';
+}
+
 function Sys_Ping(string $Host, int $Timeout)
 {
     return true;
 }
+
