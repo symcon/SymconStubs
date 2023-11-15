@@ -145,7 +145,6 @@ function GetValueFormattedEx(int $VariableID, $Value)
 
                     default:
                         throw new Exception('Format error: Invalid variable type');
-
                 }
             } else {
                 switch ($profile['ProfileType']) {
@@ -178,7 +177,6 @@ function GetValueFormattedEx(int $VariableID, $Value)
                             }
                         }
                         return '-';
-
                 }
             }
     }

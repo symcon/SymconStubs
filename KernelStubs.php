@@ -3,7 +3,6 @@
 declare(strict_types=1);
 
 namespace IPS {
-
     class ModuleLoader
     {
         private static $libraries = [];
