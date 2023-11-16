@@ -225,13 +225,13 @@ class ArchiveControl extends IPSModule
                 'Values'            => [],
                 'AggregationType'   => 0,
                 'AggregatedValues'  => [
-                    0 /* Hourly */  => [],
-                    1 /* Daily */   => [],
-                    2 /* Weekly */  => [],
-                    3 /* Monthly */ => [],
-                    4 /* Yearly */  => [],
-                    5 /* 5-Minute */=> [],
-                    6 /* 1-Minute */=> []
+                    0 /* Hourly */   => [],
+                    1 /* Daily */    => [],
+                    2 /* Weekly */   => [],
+                    3 /* Monthly */  => [],
+                    4 /* Yearly */   => [],
+                    5 /* 5-Minute */ => [],
+                    6 /* 1-Minute */ => []
                 ]
             ];
         }
