@@ -57,7 +57,7 @@ class TestCaseSymconValidation extends TestCase
 
     protected function validateModule($folder): void
     {
-        $this->assertTrue(file_exist($folder . '/module.json'), 'module json is missing');
+        $this->assertTrue(file_exists($folder . '/module.json'), 'module json is missing');
 
         if (file_exists($folder . '/module.json')) {
             $module = json_decode(file_get_contents($folder . '/module.json'), true);
