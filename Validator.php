@@ -57,76 +57,80 @@ class TestCaseSymconValidation extends TestCase
 
     protected function validateModule($folder): void
     {
-        $module = json_decode(file_get_contents($folder . '/module.json'), true);
+        $this->assertTrue(file_exists($folder . '/module.json'), 'module json is missing');
 
-        $this->assertArrayHasKey('id', $module);
-        $this->assertIsString($module['id']);
-        $this->assertTrue($this->isValidGUID($module['id']), 'module id is not a valid GUID');
+        if (file_exists($folder . '/module.json')) {
+            $module = json_decode(file_get_contents($folder . '/module.json'), true);
 
-        $this->assertArrayHasKey('name', $module);
-        $this->assertIsString($module['name']);
-        $this->assertTrue($this->isValidName($module['name']), 'module name is not valid');
+            $this->assertArrayHasKey('id', $module);
+            $this->assertIsString($module['id']);
+            $this->assertTrue($this->isValidGUID($module['id']), 'module id is not a valid GUID');
 
-        $this->assertArrayHasKey('type', $module);
-        $this->assertIsInt($module['type']);
-        $this->assertGreaterThanOrEqual(0, $module['type']);
-        $this->assertLessThanOrEqual(5, $module['type']);
+            $this->assertArrayHasKey('name', $module);
+            $this->assertIsString($module['name']);
+            $this->assertTrue($this->isValidName($module['name']), 'module name is not valid');
 
-        $this->assertArrayHasKey('vendor', $module);
-        $this->assertIsString($module['vendor']);
+            $this->assertArrayHasKey('type', $module);
+            $this->assertIsInt($module['type']);
+            $this->assertGreaterThanOrEqual(0, $module['type']);
+            $this->assertLessThanOrEqual(5, $module['type']);
 
-        $this->assertArrayHasKey('aliases', $module);
-        $this->assertIsArray($module['aliases']);
+            $this->assertArrayHasKey('vendor', $module);
+            $this->assertIsString($module['vendor']);
 
-        $this->assertArrayHasKey('url', $module);
-        $this->assertIsString($module['url']);
-        $this->assertTrue($this->isValidURL($module['url']), 'module url is not valid');
+            $this->assertArrayHasKey('aliases', $module);
+            $this->assertIsArray($module['aliases']);
 
-        $this->assertArrayHasKey('parentRequirements', $module);
-        $this->assertIsArray($module['parentRequirements']);
-        foreach ($module['parentRequirements'] as $parentRequirement) {
-            $this->assertIsString($parentRequirement);
-            $this->assertTrue($this->isValidGUID($parentRequirement), 'module parent requirements guid is not valid');
-        }
+            $this->assertArrayHasKey('url', $module);
+            $this->assertIsString($module['url']);
+            $this->assertTrue($this->isValidURL($module['url']), 'module url is not valid');
 
-        $this->assertArrayHasKey('childRequirements', $module);
-        $this->assertIsArray($module['childRequirements']);
-        foreach ($module['childRequirements'] as $childRequirement) {
-            $this->assertIsString($childRequirement);
-            $this->assertTrue($this->isValidGUID($childRequirement), 'module child requirements guid is not valid');
-        }
-
-        $this->assertArrayHasKey('implemented', $module);
-        $this->assertIsArray($module['implemented']);
-        foreach ($module['implemented'] as $implemented) {
-            $this->assertIsString($implemented);
-            $this->assertTrue($this->isValidGUID($implemented), 'module implemented guid is not valid');
-        }
-
-        $this->assertArrayHasKey('prefix', $module);
-        $this->assertIsString($module['prefix']);
-        $this->assertTrue($this->isValidPrefix($module['prefix']), 'module prefix is not valid');
-
-        if (file_exists($folder . '/form.json')) {
-            $this->assertTrue(json_decode(file_get_contents($folder . '/form.json')) !== null, 'module form.json is invalid JSON');
-        }
-
-        if (file_exists($folder . '/locale.json')) {
-            $this->assertTrue(json_decode(file_get_contents($folder . '/locale.json')) !== null, 'module locale.json is invalid JSON');
-        }
-
-        //Check if parameter types are set
-        include_once "$folder/module.php";
-        $class = new \ReflectionClass(str_replace(' ', '', $module['name']));
-        foreach ($class->GetMethods() as $method) {
-            if (!$method->isPublic()) {
-                continue;
+            $this->assertArrayHasKey('parentRequirements', $module);
+            $this->assertIsArray($module['parentRequirements']);
+            foreach ($module['parentRequirements'] as $parentRequirement) {
+                $this->assertIsString($parentRequirement);
+                $this->assertTrue($this->isValidGUID($parentRequirement), 'module parent requirements guid is not valid');
             }
-            if (in_array($method->GetName(), ['__construct', '__destruct', '__call', '__callStatic', '__get', '__set', '__isset', '__sleep', '__wakeup', '__toString', '__invoke', '__set_state', '__clone', '__debuginfo', 'Create', 'Destroy', 'ApplyChanges', 'ReceiveData', 'ForwardData', 'RequestAction', 'MessageSink', 'GetConfigurationForm', 'GetConfigurationForParent', 'Translate', 'GetProperty', 'SetProperty', 'SetConfiguration'])) {
-                continue;
+
+            $this->assertArrayHasKey('childRequirements', $module);
+            $this->assertIsArray($module['childRequirements']);
+            foreach ($module['childRequirements'] as $childRequirement) {
+                $this->assertIsString($childRequirement);
+                $this->assertTrue($this->isValidGUID($childRequirement), 'module child requirements guid is not valid');
             }
-            foreach ($method->getParameters() as $parameter) {
-                $this->assertTrue($parameter->hasType(), sprintf("Parameter '%s' on method '%s' is missing type hint definition", $parameter->getName(), $method->getName()));
+
+            $this->assertArrayHasKey('implemented', $module);
+            $this->assertIsArray($module['implemented']);
+            foreach ($module['implemented'] as $implemented) {
+                $this->assertIsString($implemented);
+                $this->assertTrue($this->isValidGUID($implemented), 'module implemented guid is not valid');
+            }
+
+            $this->assertArrayHasKey('prefix', $module);
+            $this->assertIsString($module['prefix']);
+            $this->assertTrue($this->isValidPrefix($module['prefix']), 'module prefix is not valid');
+
+            if (file_exists($folder . '/form.json')) {
+                $this->assertTrue(json_decode(file_get_contents($folder . '/form.json')) !== null, 'module form.json is invalid JSON');
+            }
+
+            if (file_exists($folder . '/locale.json')) {
+                $this->assertTrue(json_decode(file_get_contents($folder . '/locale.json')) !== null, 'module locale.json is invalid JSON');
+            }
+
+            //Check if parameter types are set
+            include_once "$folder/module.php";
+            $class = new \ReflectionClass(str_replace(' ', '', $module['name']));
+            foreach ($class->GetMethods() as $method) {
+                if (!$method->isPublic()) {
+                    continue;
+                }
+                if (in_array($method->GetName(), ['__construct', '__destruct', '__call', '__callStatic', '__get', '__set', '__isset', '__sleep', '__wakeup', '__toString', '__invoke', '__set_state', '__clone', '__debuginfo', 'Create', 'Destroy', 'ApplyChanges', 'ReceiveData', 'ForwardData', 'RequestAction', 'MessageSink', 'GetConfigurationForm', 'GetConfigurationForParent', 'Translate', 'GetProperty', 'SetProperty', 'SetConfiguration'])) {
+                    continue;
+                }
+                foreach ($method->getParameters() as $parameter) {
+                    $this->assertTrue($parameter->hasType(), sprintf("Parameter '%s' on method '%s' is missing type hint definition", $parameter->getName(), $method->getName()));
+                }
             }
         }
     }
