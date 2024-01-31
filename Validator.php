@@ -15,8 +15,8 @@ class TestCaseSymconValidation extends TestCase
 
     protected function validateLibrary($folder): void
     {
-        $this->assertTrue(file_exists($folder. '/library.json'), 'library.json is missing');
-        if(file_exists($folder. '/library.json')) {
+        $this->assertTrue(file_exists($folder . '/library.json'), 'library.json is missing');
+        if (file_exists($folder . '/library.json')) {
 
             $library = json_decode(file_get_contents($folder . '/library.json'), true);
 
