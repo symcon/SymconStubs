@@ -16,9 +16,9 @@ class IPSModulePublic extends IPSModule
 
 class IPSModuleStrict
 {
+    protected $InstanceID;
     private IPSModulePublic $module;
     private array $protectedMethods;
-    protected $InstanceID;
 
     public function __construct(int $InstanceID)
     {
