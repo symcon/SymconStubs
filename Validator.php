@@ -15,49 +15,53 @@ class TestCaseSymconValidation extends TestCase
 
     protected function validateLibrary($folder): void
     {
-        $library = json_decode(file_get_contents($folder . '/library.json'), true);
+        $this->assertTrue(file_exists($folder . '/library.json'), 'library.json is missing');
+        if (file_exists($folder . '/library.json')) {
 
-        $this->assertArrayHasKey('id', $library);
-        $this->assertIsString($library['id']);
-        $this->assertTrue($this->isValidGUID($library['id']), 'library id is not a valid GUID');
+            $library = json_decode(file_get_contents($folder . '/library.json'), true);
 
-        $this->assertArrayHasKey('author', $library);
-        $this->assertIsString($library['author']);
+            $this->assertArrayHasKey('id', $library);
+            $this->assertIsString($library['id']);
+            $this->assertTrue($this->isValidGUID($library['id']), 'library id is not a valid GUID');
 
-        $this->assertArrayHasKey('name', $library);
-        $this->assertIsString($library['name']);
+            $this->assertArrayHasKey('author', $library);
+            $this->assertIsString($library['author']);
 
-        $this->assertArrayHasKey('url', $library);
-        $this->assertIsString($library['url']);
-        $this->assertTrue($this->isValidURL($library['url']), 'library url is not a valid');
+            $this->assertArrayHasKey('name', $library);
+            $this->assertIsString($library['name']);
 
-        $this->assertArrayHasKey('version', $library);
-        $this->assertIsString($library['version']);
+            $this->assertArrayHasKey('url', $library);
+            $this->assertIsString($library['url']);
+            $this->assertTrue($this->isValidURL($library['url']), 'library url is not a valid');
 
-        $this->assertArrayHasKey('build', $library);
-        $this->assertIsInt($library['build']);
+            $this->assertArrayHasKey('version', $library);
+            $this->assertIsString($library['version']);
 
-        $this->assertArrayHasKey('date', $library);
-        $this->assertIsInt($library['date']);
+            $this->assertArrayHasKey('build', $library);
+            $this->assertIsInt($library['build']);
 
-        //This is purely optional
-        if (!isset($library['compatibility'])) {
-            $this->assertCount(7, $library);
-        } else {
-            $this->assertCount(8, $library);
-            $this->assertIsArray($library['compatibility']);
-            if (isset($library['compatibility']['version'])) {
-                $this->assertIsString($library['compatibility']['version']);
-            }
-            if (isset($library['compatibility']['date'])) {
-                $this->assertIsInt($library['compatibility']['date']);
+            $this->assertArrayHasKey('date', $library);
+            $this->assertIsInt($library['date']);
+
+            //This is purely optional
+            if (!isset($library['compatibility'])) {
+                $this->assertCount(7, $library);
+            } else {
+                $this->assertCount(8, $library);
+                $this->assertIsArray($library['compatibility']);
+                if (isset($library['compatibility']['version'])) {
+                    $this->assertIsString($library['compatibility']['version']);
+                }
+                if (isset($library['compatibility']['date'])) {
+                    $this->assertIsInt($library['compatibility']['date']);
+                }
             }
         }
     }
 
     protected function validateModule($folder): void
     {
-        $this->assertTrue(file_exists($folder . '/module.json'), 'module json is missing');
+        $this->assertTrue(file_exists($folder . '/module.json'), 'module.json is missing');
 
         if (file_exists($folder . '/module.json')) {
             $module = json_decode(file_get_contents($folder . '/module.json'), true);
