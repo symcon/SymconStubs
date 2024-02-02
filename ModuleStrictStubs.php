@@ -18,10 +18,12 @@ class IPSModuleStrict
 {
     private IPSModulePublic $module;
     private array $protectedMethods;
+    protected $InstanceID;
 
     public function __construct(int $InstanceID)
     {
         $this->module = new IPSModulePublic($InstanceID);
+        $this->InstanceID = $InstanceID;
     }
 
     public function Create(): void
