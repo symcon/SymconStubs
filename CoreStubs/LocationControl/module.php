@@ -8,5 +8,6 @@ class LocationControl extends IPSModule
         parent::Create();
 
         $this->RegisterVariableBoolean('IsDay', 'Is Day');
+        $this->RegisterVariableInteger('Sunset', 'Sunset');
     }
 }
