@@ -231,7 +231,8 @@ class ArchiveControl extends IPSModule
                     3 /* Monthly */  => [],
                     4 /* Yearly */   => [],
                     5 /* 5-Minute */ => [],
-                    6 /* 1-Minute */ => []
+                    6 /* 1-Minute */ => [],
+                    7 /* Changes */  => []
                 ]
             ];
         }
