@@ -726,7 +726,49 @@ function IPS_SetEventTriggerValue(int $EventID, $TriggerValue)
 
 function IPS_IsConditionPassing(string $Conditions)
 {
-    return true;
+    $condition = json_decode($Conditions, true);
+    switch (count($condition)) {
+        case 0:
+            return true;
+
+        case 1:
+            if (isset($condition[0]['rules']['date']) ||
+                isset($condition[0]['rules']['time']) ||
+                isset($condition[0]['rules']['dayOfTheWeek'])
+            ) {
+                throw new Error('Time related conditions not implemented yet');
+            }
+            $results = [];
+            foreach ($condition[0]['rules']['variable'] as $variableRule) {
+                $comparisionValue = (($variableRule['type'] ?? 0) === 0) ? $variableRule['value'] : GetValue($variableRule['value']);
+                $variableValue = GetValue($variableRule['variableID']);
+                switch ($variableRule['comparison']) {
+                    case 0:
+                        $results[] = ($variableValue == $comparisionValue);
+                        break;
+
+                    default:
+                        throw new Error('Comparison type not implemented yet');
+                }
+            }
+
+            switch ($condition[0]['operation']) {
+                case 0:
+                    return array_reduce(
+                        $results,
+                        function ($carry, $result) {
+                            return $carry && $result;
+                        },
+                        true
+                    );
+
+                default:
+                    throw new Error('Operation type not implemented yet');
+            }
+
+        default:
+            throw new Error('Complex conditions not implemented yet');
+    }
 }
 
 function IPS_GetScriptTimer(int $ScriptID)

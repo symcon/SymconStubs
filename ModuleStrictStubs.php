@@ -16,12 +16,14 @@ class IPSModulePublic extends IPSModule
 
 class IPSModuleStrict
 {
+    protected $InstanceID;
     private IPSModulePublic $module;
     private array $protectedMethods;
 
     public function __construct(int $InstanceID)
     {
         $this->module = new IPSModulePublic($InstanceID);
+        $this->InstanceID = $InstanceID;
     }
 
     public function Create(): void
