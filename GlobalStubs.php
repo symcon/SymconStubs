@@ -991,6 +991,11 @@ function IPS_GetLogDir()
     return sys_get_temp_dir() . '/logs';
 }
 
+function IPS_GetSystemLanguage()
+{
+    return 'de_DE';
+}
+
 function IPS_LogMessage(string $Sender, string $Message)
 {
     return true;
