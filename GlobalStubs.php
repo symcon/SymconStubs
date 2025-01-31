@@ -500,7 +500,7 @@ function IPS_SendDebug(int $SenderID, string $Message, string $Data, int $Format
 /* Instance Manager - Actions */
 function IPS_RequestAction(int $InstanceID, string $VariableIdent, $Value)
 {
-    throw new Exception('Not implemented');
+    return IPS\InstanceManager::getInstanceInterface($InstanceID)->RequestAction($VariableIdent, $Value);
 }
 
 /* Variable Manager */
