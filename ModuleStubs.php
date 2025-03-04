@@ -159,7 +159,8 @@ class IPSModule
         return $this->references;
     }
 
-    public function getMessages() {
+    public function getMessages()
+    {
         return $this->messages;
     }
 
@@ -672,12 +673,13 @@ class IPSModule
         throw new Exception('getTime needs to be implemented by module under test');
     }
 
-    protected function postMessage($Message, $Data) {
+    protected function postMessage($Message, $Data)
+    {
         $this->messages[] = [
             'TimeStamp' => 0,
-            'SenderID' => $this->InstanceID,
-            'Message' => $Message,
-            'Data' => $Data
+            'SenderID'  => $this->InstanceID,
+            'Message'   => $Message,
+            'Data'      => $Data
         ];
     }
 
