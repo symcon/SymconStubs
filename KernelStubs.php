@@ -922,6 +922,8 @@ namespace IPS {
 
     class ScriptEngine
     {
+        private static $semaphores = [];
+
         public static function runScript(int $ScriptID): void
         {
             self::runScriptEx($ScriptID, []);
@@ -972,12 +974,22 @@ namespace IPS {
 
         public static function semaphoreEnter(string $Name, int $Milliseconds): bool
         {
-            throw new Exception('Not implemented');
+            if (in_array($Name, self::$semaphores)) {
+                return false;
+            }
+            else {
+                self::$semaphores[] = $Name;
+                return true;
+            }
         }
 
         public static function semaphoreLeave(string $Name): bool
         {
-            throw new Exception('Not implemented');
+            $key = array_search($Name, self::$semaphores);
+            if ($key !== false) {
+                unset(self::$semaphores[$key]);
+            }
+            return true;
         }
 
         public static function scriptThreadExists(int $ThreadID): bool
