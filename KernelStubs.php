@@ -1467,7 +1467,8 @@ namespace IPS {
     {
         private static $presentations = [];
 
-        public static function getDefaultParameters(array $Variable, string $GUID) {
+        public static function getDefaultParameters(array $Variable, string $GUID)
+        {
             throw new Exception('Not implemented');
         }
 

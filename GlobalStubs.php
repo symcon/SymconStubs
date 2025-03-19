@@ -528,7 +528,8 @@ function IPS_GetVariable(int $VariableID)
     return IPS\VariableManager::getVariable($VariableID);
 }
 
-function IPS_GetVariablePresentation(int $VariableID) {
+function IPS_GetVariablePresentation(int $VariableID)
+{
     return IPS\VariableManager::getVariablePresentation($VariableID);
 
 }
@@ -1315,7 +1316,6 @@ function IPS_RunActionWait(string $ActionID, array $Parameters)
     return IPS\ActionPool::runActionWait($ActionID, $Parameters);
 }
 
-
 /* Presentation Pool */
 function IPS_GetPresentations()
 {
@@ -1326,7 +1326,6 @@ function IPS_GetPresentation(string $GUID)
 {
     return IPS\PresentationPool::getPresentation($GUID);
 }
-
 
 function IPS_UpdateFormField(string $Name, string $Parameter, $Value, string $SessionID)
 {
