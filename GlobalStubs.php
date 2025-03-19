@@ -500,7 +500,7 @@ function IPS_SendDebug(int $SenderID, string $Message, string $Data, int $Format
 /* Instance Manager - Actions */
 function IPS_RequestAction(int $InstanceID, string $VariableIdent, $Value)
 {
-    return IPS\InstanceManager::getInstanceInterface($InstanceID)->RequestAction($VariableIdent, $Value);
+    throw new Exception('Not implemented');
 }
 
 /* Variable Manager */
@@ -528,6 +528,11 @@ function IPS_GetVariable(int $VariableID)
     return IPS\VariableManager::getVariable($VariableID);
 }
 
+function IPS_GetVariablePresentation(int $VariableID) {
+    return IPS\VariableManager::getVariablePresentation($VariableID);
+
+}
+
 function IPS_GetVariableEventList(int $VariableID)
 {
     return []; //FIXME
@@ -551,6 +556,11 @@ function IPS_SetVariableCustomAction(int $VariableID, int $ScriptID)
 function IPS_SetVariableCustomProfile(int $VariableID, string $ProfileName)
 {
     IPS\VariableManager::setVariableCustomProfile($VariableID, $ProfileName);
+}
+
+function IPS_SetVariableCustomPresentation(int $VariableID, array $Presentation)
+{
+    IPS\VariableManager::setVariableCustomPresentation($VariableID, $Presentation);
 }
 
 /* Script Manager */
@@ -722,55 +732,6 @@ function IPS_SetEventTriggerSubsequentExecution(int $EventID, bool $AllowSubsequ
 function IPS_SetEventTriggerValue(int $EventID, $TriggerValue)
 {
     return true;
-}
-
-function IPS_IsConditionPassing(string $Conditions)
-{
-    $condition = json_decode($Conditions, true);
-    switch (count($condition)) {
-        case 0:
-            return true;
-
-        case 1:
-            if (isset($condition[0]['rules']['date']) ||
-                isset($condition[0]['rules']['time']) ||
-                isset($condition[0]['rules']['dayOfTheWeek'])
-            ) {
-                throw new Error('Time related conditions not implemented yet');
-            }
-            $results = [];
-            foreach ($condition[0]['rules']['variable'] as $variableRule) {
-                $comparisionValue = (($variableRule['type'] ?? 0) === 0) ? $variableRule['value'] : GetValue($variableRule['value']);
-                $variableValue = GetValue($variableRule['variableID']);
-                switch ($variableRule['comparison']) {
-                    case 0:
-                        $results[] = ($variableValue == $comparisionValue);
-                        break;
-
-                    default:
-                        throw new Error('Comparison type not implemented yet');
-                }
-            }
-
-            switch ($condition[0]['operation']) {
-                case 0:
-                    return array_reduce(
-                        $results,
-                        function ($carry, $result)
-                        {
-                            return $carry && $result;
-                        },
-                        true
-                    );
-
-                default:
-                    throw new Error('Operation type not implemented yet');
-            }
-
-            // No break. Add additional comment above this line if intentional
-        default:
-            throw new Error('Complex conditions not implemented yet');
-    }
 }
 
 function IPS_GetScriptTimer(int $ScriptID)
@@ -1304,6 +1265,19 @@ function IPS_RunActionWait(string $ActionID, array $Parameters)
 {
     return IPS\ActionPool::runActionWait($ActionID, $Parameters);
 }
+
+
+/* Presentation Pool */
+function IPS_GetPresentations()
+{
+    return IPS\PresentationPool::getPresentations();
+}
+
+function IPS_GetPresentation(string $GUID)
+{
+    return IPS\PresentationPool::getPresentation($GUID);
+}
+
 
 function IPS_UpdateFormField(string $Name, string $Parameter, $Value, string $SessionID)
 {
