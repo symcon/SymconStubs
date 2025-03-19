@@ -154,6 +154,9 @@ namespace IPS {
                         $type = strtolower($type->GetName());
                     } else {
                         $type = $parameter->GetType();
+                        if ($type !== null) {
+                            $type = $type->GetName();
+                        }
                     }
                     $params[] = $type . ' $' . $parameter->GetName();
                     $fwdparams[] = '$' . $parameter->GetName();
@@ -540,8 +543,8 @@ namespace IPS {
                 throw new \Exception(sprintf('Cannot find class %s', $Module['Class']));
             }
 
-            if (!in_array('IPSModule', class_parents($Module['Class']))) {
-                throw new \Exception(sprintf('Class %s does not inherit from IPSModule', $Module['Class']));
+            if (!in_array('IPSModule', class_parents($Module['Class'])) && !in_array('IPSModuleStrict', class_parents($Module['Class']))) {
+                throw new \Exception(sprintf('Class %s does not inherit from IPSModule or IPSModuleStrict', $Module['Class']));
             }
 
             self::$instances[$InstanceID] = [
@@ -560,7 +563,7 @@ namespace IPS {
 
             self::$interfaces[$InstanceID] = $interface;
 
-            if ($interface instanceof \IPSModule) {
+            if (($interface instanceof \IPSModule) || ($interface instanceof \IPSModuleStrict)) {
                 $interface->Create();
                 $interface->ApplyChanges();
             }
@@ -585,7 +588,7 @@ namespace IPS {
             return self::$instances[$InstanceID];
         }
 
-        public static function getInstanceInterface(int $InstanceID): \IPSModule
+        public static function getInstanceInterface(int $InstanceID): mixed
         {
             self::checkInstance($InstanceID);
 
@@ -954,6 +957,8 @@ namespace IPS {
 
     class ScriptEngine
     {
+        private static $semaphores = [];
+
         public static function runScript(int $ScriptID): void
         {
             self::runScriptEx($ScriptID, []);
@@ -1004,12 +1009,22 @@ namespace IPS {
 
         public static function semaphoreEnter(string $Name, int $Milliseconds): bool
         {
-            throw new Exception('Not implemented');
+            if (in_array($Name, self::$semaphores)) {
+                return false;
+            }
+            else {
+                self::$semaphores[] = $Name;
+                return true;
+            }
         }
 
         public static function semaphoreLeave(string $Name): bool
         {
-            throw new Exception('Not implemented');
+            $key = array_search($Name, self::$semaphores);
+            if ($key !== false) {
+                unset(self::$semaphores[$key]);
+            }
+            return true;
         }
 
         public static function scriptThreadExists(int $ThreadID): bool
