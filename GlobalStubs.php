@@ -192,7 +192,6 @@ function GetValueFormattedEx(int $VariableID, $Value)
             return '-';
             break;
 
-            // No break. Add additional comment above this line if intentional
         default:
             throw new Exception('Unsupported Presentation: ' . $presentation['PRESENTATION']);
 
