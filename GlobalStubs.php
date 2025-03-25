@@ -222,6 +222,7 @@ function RequestAction(int $VariableID, $Value)
         $o = IPS\ObjectManager::getObject($VariableID);
         $interface = IPS\InstanceManager::getInstanceInterface($actionID);
         $interface->RequestAction($o['ObjectIdent'], $Value);
+        return true;
     } elseif (IPS_ScriptExists($actionID)) {
         $result = IPS_RunScriptWaitEx($actionID, [
             'VARIABLE' => $VariableID,
@@ -231,6 +232,7 @@ function RequestAction(int $VariableID, $Value)
         if (strlen($result) > 0) {
             echo $result;
         }
+        return true;
     } else {
         throw new Exception('Action is invalid');
     }
@@ -248,6 +250,7 @@ function RequestActionEx(int $VariableID, $Value, $Sender)
         $o = IPS\ObjectManager::getObject($VariableID);
         $interface = IPS\InstanceManager::getInstanceInterface($actionID);
         $interface->RequestAction($o['ObjectIdent'], $Value);
+        return true;
     } elseif (IPS_ScriptExists($actionID)) {
         $result = IPS_RunScriptWaitEx($actionID, [
             'VARIABLE' => $VariableID,
@@ -257,6 +260,7 @@ function RequestActionEx(int $VariableID, $Value, $Sender)
         if (strlen($result) > 0) {
             echo $result;
         }
+        return true;
     } else {
         throw new Exception('Action is invalid');
     }
