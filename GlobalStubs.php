@@ -573,10 +573,12 @@ function IPS_GetVariable(int $VariableID)
     return IPS\VariableManager::getVariable($VariableID);
 }
 
-function IPS_GetVariablePresentation(int $VariableID)
-{
-    return IPS\VariableManager::getVariablePresentation($VariableID);
+if (!defined('IPS_VERSION') || (defined('IPS_VERSION') && IPS_VERSION >= 8.0)) {
+    function IPS_GetVariablePresentation(int $VariableID)
+    {
+        return IPS\VariableManager::getVariablePresentation($VariableID);
 
+    }
 }
 
 function IPS_GetVariableEventList(int $VariableID)
