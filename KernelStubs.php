@@ -695,16 +695,18 @@ namespace IPS {
             }
 
             self::$variables[$VariableID] = [
-                'VariableID'            => $VariableID,
-                'VariableProfile'       => '',
-                'VariableAction'        => 0,
-                'VariableCustomProfile' => '',
-                'VariableCustomAction'  => 0,
-                'VariableUpdated'       => 0,
-                'VariableChanged'       => 0,
-                'VariableType'          => $VariableType,
-                'VariableValue'         => $VariableValue,
-                'VariableIsLocked'      => false
+                'VariableID'                  => $VariableID,
+                'VariableProfile'             => '',
+                'VariableAction'              => 0,
+                'VariablePresentation'        => [],
+                'VariableCustomProfile'       => '',
+                'VariableCustomAction'        => 0,
+                'VariableCustomPresentation'  => [],
+                'VariableUpdated'             => 0,
+                'VariableChanged'             => 0,
+                'VariableType'                => $VariableType,
+                'VariableValue'               => $VariableValue,
+                'VariableIsLocked'            => false
             ];
         }
 
@@ -805,6 +807,13 @@ namespace IPS {
             return self::$variables[$VariableID];
         }
 
+        public static function getVariablePresentation(int $VariableID): array
+        {
+            self::checkVariable($VariableID);
+            $variable = self::getVariable($VariableID);
+            return $variable['VariableCustomPresentation'];
+        }
+
         public static function getVariableList(): array
         {
             return array_keys(self::$variables);
@@ -815,6 +824,12 @@ namespace IPS {
             self::checkVariable($VariableID);
 
             self::$variables[$VariableID]['VariableCustomProfile'] = $ProfileName;
+
+            if (empty($ProfileName)) {
+                self::setVariableCustomPresentation($VariableID, []);
+            } else {
+                self::setVariableCustomPresentation($VariableID, ['PRESENTATION' => VARIABLE_PRESENTATION_LEGACY, 'PROFILE' => $ProfileName]);
+            }
         }
 
         public static function setVariableCustomAction(int $VariableID, int $ScriptID): void
@@ -824,11 +839,24 @@ namespace IPS {
             self::$variables[$VariableID]['VariableCustomAction'] = $ScriptID;
         }
 
+        public static function setVariableCustomPresentation(int $VariableID, array $Presentation): void
+        {
+            self::checkVariable($VariableID);
+
+            self::$variables[$VariableID]['VariableCustomPresentation'] = $Presentation;
+        }
+
         public static function setVariableProfile(int $VariableID, string $ProfileName): void
         {
             self::checkVariable($VariableID);
 
             self::$variables[$VariableID]['VariableProfile'] = $ProfileName;
+
+            if (empty($ProfileName)) {
+                self::setVariablePresentation($VariableID, []);
+            } else {
+                self::setVariablePresentation($VariableID, ['PRESENTATION' => VARIABLE_PRESENTATION_LEGACY, 'PROFILE' => $ProfileName]);
+            }
         }
 
         public static function setVariableAction(int $VariableID, int $InstanceID): void
@@ -836,6 +864,13 @@ namespace IPS {
             self::checkVariable($VariableID);
 
             self::$variables[$VariableID]['VariableAction'] = $InstanceID;
+        }
+
+        public static function setVariablePresentation(int $VariableID, array $Presentation): void
+        {
+            self::checkVariable($VariableID);
+
+            self::$variables[$VariableID]['VariablePresentation'] = $Presentation;
         }
 
         public static function reset()
@@ -922,6 +957,8 @@ namespace IPS {
 
     class ScriptEngine
     {
+        private static $semaphores = [];
+
         public static function runScript(int $ScriptID): void
         {
             self::runScriptEx($ScriptID, []);
@@ -972,12 +1009,22 @@ namespace IPS {
 
         public static function semaphoreEnter(string $Name, int $Milliseconds): bool
         {
-            throw new Exception('Not implemented');
+            if (in_array($Name, self::$semaphores)) {
+                return false;
+            }
+            else {
+                self::$semaphores[] = $Name;
+                return true;
+            }
         }
 
         public static function semaphoreLeave(string $Name): bool
         {
-            throw new Exception('Not implemented');
+            $key = array_search($Name, self::$semaphores);
+            if ($key !== false) {
+                unset(self::$semaphores[$key]);
+            }
+            return true;
         }
 
         public static function scriptThreadExists(int $ThreadID): bool
@@ -1414,6 +1461,50 @@ namespace IPS {
         {
             self::$actions = [];
         }
+    }
+
+    class PresentationPool
+    {
+        private static $presentations = [];
+
+        public static function getDefaultParameters(array $Variable, string $GUID)
+        {
+            throw new Exception('Not implemented');
+        }
+
+        public static function checkPresentation(string $GUID)
+        {
+            if (!self::presentationExists($GUID)) {
+                throw new \Exception(sprintf('presentation with GUID %s does not exist', $GUID));
+            }
+        }
+
+        public static function getPresentations(): string
+        {
+            return json_encode(self::$presentations);
+        }
+
+        public static function getPresentation(string $GUID): array
+        {
+            self::checkPresentation($GUID);
+            return self::$presentations[$GUID];
+        }
+
+        public static function getPresentationForm(string $GUID, int $VariableType, array $Parameter): string
+        {
+            throw new Exception('Not implemented');
+        }
+
+        public static function presentationExists(string $GUID): bool
+        {
+            return isset(self::$presentations[$GUID]);
+        }
+
+        public static function reset(): void
+        {
+            self::$presentations = [];
+        }
+
     }
 
     class Kernel

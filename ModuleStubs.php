@@ -16,6 +16,8 @@ class IPSModule
     private $receiveDataFilter = '';
     private $forwardDataFilter = '';
 
+    private $messages = [];
+
     public function __construct($InstanceID)
     {
         $this->InstanceID = $InstanceID;
@@ -155,6 +157,11 @@ class IPSModule
     public function GetReferenceList()
     {
         return $this->references;
+    }
+
+    public function getMessages()
+    {
+        return $this->messages;
     }
 
     protected function GetIDForIdent($Ident)
@@ -624,6 +631,11 @@ class IPSModule
     {
     }
 
+    protected function UpdateVisualizationValue($Value)
+    {
+        $this->postMessage(10541, [$Value]);
+    }
+
     protected function GetValue(string $Ident)
     {
         return GetValue(IPS_GetObjectIDByIdent($Ident, $this->InstanceID));
@@ -659,6 +671,16 @@ class IPSModule
     protected function getTime()
     {
         throw new Exception('getTime needs to be implemented by module under test');
+    }
+
+    protected function postMessage($Message, $Data)
+    {
+        $this->messages[] = [
+            'TimeStamp' => 0,
+            'SenderID'  => $this->InstanceID,
+            'Message'   => $Message,
+            'Data'      => $Data
+        ];
     }
 
     private function RegisterProperty($Name, $DefaultValue, $Type)

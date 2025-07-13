@@ -87,101 +87,116 @@ function GetValueFormatted(int $VariableID)
 function GetValueFormattedEx(int $VariableID, $Value)
 {
     $variable = IPS_GetVariable($VariableID);
-    $profileName = $variable['VariableCustomProfile'];
-    if ($profileName == '') {
-        $profileName = $variable['VariableProfile'];
-    }
 
-    if ($profileName == '') {
+    $presentation = IPS_GetVariablePresentation($VariableID);
+    if (empty($presentation)) {
         return strval($Value);
     }
+    switch ($presentation['PRESENTATION']) {
+        case VARIABLE_PRESENTATION_LEGACY:
+            $profileName = $presentation['PROFILE'];
+            if (!IPS_VariableProfileExists($profileName)) {
+                return 'Invalid profile';
+            }
 
-    if (!IPS_VariableProfileExists($profileName)) {
-        return 'Invalid profile';
-    }
+            $profile = IPS_GetVariableProfile($profileName);
 
-    $profile = IPS_GetVariableProfile($profileName);
+            if ($profile['ProfileType'] !== $variable['VariableType']) {
+                return 'Invalid profile type';
+            }
 
-    if ($profile['ProfileType'] !== $variable['VariableType']) {
-        return 'Invalid profile type';
-    }
+            $addPrefixSuffix = function ($value) use ($profile)
+            {
+                return strval($profile['Prefix'] . $value . $profile['Suffix']);
+            };
 
-    $addPrefixSuffix = function ($value) use ($profile)
-    {
-        return strval($profile['Prefix'] . $value . $profile['Suffix']);
-    };
+            switch ($profileName) {
+                case '~UnixTimestamp':
+                case '~UnixTimestampTime':
+                case '~UnixTimestampDate':
+                    throw new Exception('TimestampProfiles not implemented yet');
 
-    switch ($profileName) {
-        case '~UnixTimestamp':
-        case '~UnixTimestampTime':
-        case '~UnixTimestampDate':
-            throw new Exception('TimestampProfiles not implemented yet');
+                case '~HexColor':
+                    return '';
 
-        case '~HexColor':
-            return '';
+                default:
+                    if (count($profile['Associations']) == 0) {
+                        switch ($profile['ProfileType']) {
+                            case 0: //Boolean
+                                throw new Exception('Profiles of type boolean need to have two associations');
 
-        default:
-            if (count($profile['Associations']) == 0) {
-                switch ($profile['ProfileType']) {
-                    case 0: //Boolean
-                        throw new Exception('Profiles of type boolean need to have two associations');
+                            case 1: //Integer
+                                if ((trim($profile['Suffix']) === '%') && (($profile['MaxValue'] - $profile['MinValue']) > 0)) {
+                                    return $addPrefixSuffix(round(($Value - $profile['MinValue']) * 100 / ($profile['MaxValue'] - $profile['MinValue'])));
+                                }
 
-                    case 1: //Integer
-                        if ((trim($profile['Suffix']) === '%') && (($profile['MaxValue'] - $profile['MinValue']) > 0)) {
-                            return $addPrefixSuffix(round(($Value - $profile['MinValue']) * 100 / ($profile['MaxValue'] - $profile['MinValue'])));
+                                return $addPrefixSuffix($Value);
+
+                            case 2: //Float
+                                if ((trim($profile['Suffix']) === '%') && (($profile['MaxValue'] - $profile['MinValue']) > 0)) {
+                                    return $addPrefixSuffix(number_format(round(($Value - $profile['MinValue']) * 100 / ($profile['MaxValue'] - $profile['MinValue'])), $profile['Digits']));
+                                }
+
+                                return $addPrefixSuffix(number_format(round($Value), $profile['Digits']));
+
+                            case 3: //String
+                                return $addPrefixSuffix($Value);
+
+                            default:
+                                throw new Exception('Format error: Invalid variable type');
+
                         }
+                    } else {
+                        switch ($profile['ProfileType']) {
+                            case 0: //Boolean
+                                if (count($profile['Associations']) < 2) {
+                                    throw new Exception('Profiles of type boolean need to have two associations');
+                                }
 
-                        return $addPrefixSuffix($Value);
+                                if ($Value === true) {
+                                    return $profile['Associations'][1]['Name'];
+                                } elseif ($Value === false) {
+                                    return $profile['Associations'][0]['Name'];
+                                }
 
-                    case 2: //Float
-                        if ((trim($profile['Suffix']) === '%') && (($profile['MaxValue'] - $profile['MinValue']) > 0)) {
-                            return $addPrefixSuffix(number_format(round(($Value - $profile['MinValue']) * 100 / ($profile['MaxValue'] - $profile['MinValue'])), $profile['Digits']));
+                                return '-';
+
+                            case 1: //Integer
+                            case 2: //Float
+                                for ($i = count($profile['Associations']) - 1; $i >= 0; $i--) {
+                                    if ($Value >= $profile['Associations'][$i]['Value']) {
+                                        return $profile['Prefix'] . sprintf($profile['Associations'][$i]['Name'], $Value) . $profile['Suffix'];
+                                    }
+                                }
+                                return '-';
+
+                            case 3: //String
+                                for ($i = count($profile['Associations']) - 1; $i >= 0; $i--) {
+                                    if ($Value == $profile['Associations'][$i]['Value']) {
+                                        return $profile['Prefix'] . sprintf($profile['Associations'][$i]['Name'], $Value) . $profile['Suffix'];
+                                    }
+                                }
+                                return '-';
+
                         }
+                    }
+            }
 
-                        return $addPrefixSuffix(number_format(round($Value), $profile['Digits']));
-
-                    case 3: //String
-                        return $addPrefixSuffix($Value);
-
-                    default:
-                        throw new Exception('Format error: Invalid variable type');
-
-                }
-            } else {
-                switch ($profile['ProfileType']) {
-                    case 0: //Boolean
-                        if (count($profile['Associations']) < 2) {
-                            throw new Exception('Profiles of type boolean need to have two associations');
-                        }
-
-                        if ($Value === true) {
-                            return $profile['Associations'][1]['Name'];
-                        } elseif ($Value === false) {
-                            return $profile['Associations'][0]['Name'];
-                        }
-
-                        return '-';
-
-                    case 1: //Integer
-                    case 2: //Float
-                        for ($i = count($profile['Associations']) - 1; $i >= 0; $i--) {
-                            if ($Value >= $profile['Associations'][$i]['Value']) {
-                                return $profile['Prefix'] . sprintf($profile['Associations'][$i]['Name'], $Value) . $profile['Suffix'];
-                            }
-                        }
-                        return '-';
-
-                    case 3: //String
-                        for ($i = count($profile['Associations']) - 1; $i >= 0; $i--) {
-                            if ($Value == $profile['Associations'][$i]['Value']) {
-                                return $profile['Prefix'] . sprintf($profile['Associations'][$i]['Name'], $Value) . $profile['Suffix'];
-                            }
-                        }
-                        return '-';
-
+        case VARIABLE_PRESENTATION_ENUMERATION:
+            $options = json_decode($presentation['OPTIONS'], true);
+            foreach ($options as $option) {
+                if ($option['Value'] == $Value) {
+                    return $option['Caption'];
                 }
             }
+            return '-';
+            break;
+
+        default:
+            throw new Exception('Unsupported Presentation: ' . $presentation['PRESENTATION']);
+
     }
+
 }
 
 function HasAction(int $VariableID)
@@ -207,6 +222,7 @@ function RequestAction(int $VariableID, $Value)
         $o = IPS\ObjectManager::getObject($VariableID);
         $interface = IPS\InstanceManager::getInstanceInterface($actionID);
         $interface->RequestAction($o['ObjectIdent'], $Value);
+        return true;
     } elseif (IPS_ScriptExists($actionID)) {
         $result = IPS_RunScriptWaitEx($actionID, [
             'VARIABLE' => $VariableID,
@@ -216,6 +232,35 @@ function RequestAction(int $VariableID, $Value)
         if (strlen($result) > 0) {
             echo $result;
         }
+        return true;
+    } else {
+        throw new Exception('Action is invalid');
+    }
+}
+
+function RequestActionEx(int $VariableID, $Value, $Sender)
+{
+    $v = IPS\VariableManager::getVariable($VariableID);
+    if ($v['VariableCustomAction'] > 0) {
+        $actionID = $v['VariableCustomAction'];
+    } else {
+        $actionID = $v['VariableAction'];
+    }
+    if (IPS_InstanceExists($actionID)) {
+        $o = IPS\ObjectManager::getObject($VariableID);
+        $interface = IPS\InstanceManager::getInstanceInterface($actionID);
+        $interface->RequestAction($o['ObjectIdent'], $Value);
+        return true;
+    } elseif (IPS_ScriptExists($actionID)) {
+        $result = IPS_RunScriptWaitEx($actionID, [
+            'VARIABLE' => $VariableID,
+            'VALUE'    => $Value,
+            'SENDER'   => $Sender,
+        ]);
+        if (strlen($result) > 0) {
+            echo $result;
+        }
+        return true;
     } else {
         throw new Exception('Action is invalid');
     }
@@ -500,7 +545,7 @@ function IPS_SendDebug(int $SenderID, string $Message, string $Data, int $Format
 /* Instance Manager - Actions */
 function IPS_RequestAction(int $InstanceID, string $VariableIdent, $Value)
 {
-    throw new Exception('Not implemented');
+    return IPS\InstanceManager::getInstanceInterface($InstanceID)->RequestAction($VariableIdent, $Value);
 }
 
 /* Variable Manager */
@@ -528,6 +573,14 @@ function IPS_GetVariable(int $VariableID)
     return IPS\VariableManager::getVariable($VariableID);
 }
 
+if (!defined('IPS_VERSION') || (defined('IPS_VERSION') && IPS_VERSION >= 8.0)) {
+    function IPS_GetVariablePresentation(int $VariableID)
+    {
+        return IPS\VariableManager::getVariablePresentation($VariableID);
+
+    }
+}
+
 function IPS_GetVariableEventList(int $VariableID)
 {
     return []; //FIXME
@@ -551,6 +604,11 @@ function IPS_SetVariableCustomAction(int $VariableID, int $ScriptID)
 function IPS_SetVariableCustomProfile(int $VariableID, string $ProfileName)
 {
     IPS\VariableManager::setVariableCustomProfile($VariableID, $ProfileName);
+}
+
+function IPS_SetVariableCustomPresentation(int $VariableID, array $Presentation)
+{
+    IPS\VariableManager::setVariableCustomPresentation($VariableID, $Presentation);
 }
 
 /* Script Manager */
@@ -756,7 +814,8 @@ function IPS_IsConditionPassing(string $Conditions)
                 case 0:
                     return array_reduce(
                         $results,
-                        function ($carry, $result) {
+                        function ($carry, $result)
+                        {
                             return $carry && $result;
                         },
                         true
@@ -766,6 +825,7 @@ function IPS_IsConditionPassing(string $Conditions)
                     throw new Error('Operation type not implemented yet');
             }
 
+            // No break. Add additional comment above this line if intentional
         default:
             throw new Error('Complex conditions not implemented yet');
     }
@@ -989,6 +1049,11 @@ function IPS_GetKernelDate()
 function IPS_GetLogDir()
 {
     return sys_get_temp_dir() . '/logs';
+}
+
+function IPS_GetSystemLanguage()
+{
+    return 'de_DE';
 }
 
 function IPS_LogMessage(string $Sender, string $Message)
@@ -1301,6 +1366,17 @@ function IPS_RunAction(string $ActionID, array $Parameters)
 function IPS_RunActionWait(string $ActionID, array $Parameters)
 {
     return IPS\ActionPool::runActionWait($ActionID, $Parameters);
+}
+
+/* Presentation Pool */
+function IPS_GetPresentations()
+{
+    return IPS\PresentationPool::getPresentations();
+}
+
+function IPS_GetPresentation(string $GUID)
+{
+    return IPS\PresentationPool::getPresentation($GUID);
 }
 
 function IPS_UpdateFormField(string $Name, string $Parameter, $Value, string $SessionID)
