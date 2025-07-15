@@ -88,15 +88,13 @@ function GetValueFormattedEx(int $VariableID, $Value)
 {
     $variable = IPS_GetVariable($VariableID);
 
-    $legacyHandling = function ($profileName)
+    $legacyHandling = function ($profileName) use ($variable, $Value)
     {
-        // throw new Exception(print_r($profileName, true));
         if (!IPS_VariableProfileExists($profileName)) {
             return 'Invalid profile';
         }
 
         $profile = IPS_GetVariableProfile($profileName);
-
         if ($profile['ProfileType'] !== $variable['VariableType']) {
             return 'Invalid profile type';
         }
@@ -194,7 +192,7 @@ function GetValueFormattedEx(int $VariableID, $Value)
         switch ($presentation['PRESENTATION']) {
             case VARIABLE_PRESENTATION_LEGACY:
                 return $legacyHandling($presentation['PROFILE']);
-    
+
             case VARIABLE_PRESENTATION_ENUMERATION:
                 $options = json_decode($presentation['OPTIONS'], true);
                 foreach ($options as $option) {
@@ -204,10 +202,10 @@ function GetValueFormattedEx(int $VariableID, $Value)
                 }
                 return '-';
                 break;
-    
+
             default:
                 throw new Exception('Unsupported Presentation: ' . $presentation['PRESENTATION']);
-    
+
         }
     }
 
