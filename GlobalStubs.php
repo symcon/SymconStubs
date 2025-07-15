@@ -88,113 +88,127 @@ function GetValueFormattedEx(int $VariableID, $Value)
 {
     $variable = IPS_GetVariable($VariableID);
 
-    $presentation = IPS_GetVariablePresentation($VariableID);
-    if (empty($presentation)) {
-        return strval($Value);
-    }
-    switch ($presentation['PRESENTATION']) {
-        case VARIABLE_PRESENTATION_LEGACY:
-            $profileName = $presentation['PROFILE'];
-            if (!IPS_VariableProfileExists($profileName)) {
-                return 'Invalid profile';
-            }
+    $legacyHandling = function ($profileName)
+    {
+        // throw new Exception(print_r($profileName, true));
+        if (!IPS_VariableProfileExists($profileName)) {
+            return 'Invalid profile';
+        }
 
-            $profile = IPS_GetVariableProfile($profileName);
+        $profile = IPS_GetVariableProfile($profileName);
 
-            if ($profile['ProfileType'] !== $variable['VariableType']) {
-                return 'Invalid profile type';
-            }
+        if ($profile['ProfileType'] !== $variable['VariableType']) {
+            return 'Invalid profile type';
+        }
 
-            $addPrefixSuffix = function ($value) use ($profile)
-            {
-                return strval($profile['Prefix'] . $value . $profile['Suffix']);
-            };
+        $addPrefixSuffix = function ($value) use ($profile)
+        {
+            return strval($profile['Prefix'] . $value . $profile['Suffix']);
+        };
 
-            switch ($profileName) {
-                case '~UnixTimestamp':
-                case '~UnixTimestampTime':
-                case '~UnixTimestampDate':
-                    throw new Exception('TimestampProfiles not implemented yet');
+        switch ($profileName) {
+            case '~UnixTimestamp':
+            case '~UnixTimestampTime':
+            case '~UnixTimestampDate':
+                throw new Exception('TimestampProfiles not implemented yet');
 
-                case '~HexColor':
-                    return '';
+            case '~HexColor':
+                return '';
 
-                default:
-                    if (count($profile['Associations']) == 0) {
-                        switch ($profile['ProfileType']) {
-                            case 0: //Boolean
-                                throw new Exception('Profiles of type boolean need to have two associations');
+            default:
+                if (count($profile['Associations']) == 0) {
+                    switch ($profile['ProfileType']) {
+                        case 0: //Boolean
+                            throw new Exception('Profiles of type boolean need to have two associations');
 
-                            case 1: //Integer
-                                if ((trim($profile['Suffix']) === '%') && (($profile['MaxValue'] - $profile['MinValue']) > 0)) {
-                                    return $addPrefixSuffix(round(($Value - $profile['MinValue']) * 100 / ($profile['MaxValue'] - $profile['MinValue'])));
-                                }
+                        case 1: //Integer
+                            if ((trim($profile['Suffix']) === '%') && (($profile['MaxValue'] - $profile['MinValue']) > 0)) {
+                                return $addPrefixSuffix(round(($Value - $profile['MinValue']) * 100 / ($profile['MaxValue'] - $profile['MinValue'])));
+                            }
 
-                                return $addPrefixSuffix($Value);
+                            return $addPrefixSuffix($Value);
 
-                            case 2: //Float
-                                if ((trim($profile['Suffix']) === '%') && (($profile['MaxValue'] - $profile['MinValue']) > 0)) {
-                                    return $addPrefixSuffix(number_format(round(($Value - $profile['MinValue']) * 100 / ($profile['MaxValue'] - $profile['MinValue'])), $profile['Digits']));
-                                }
+                        case 2: //Float
+                            if ((trim($profile['Suffix']) === '%') && (($profile['MaxValue'] - $profile['MinValue']) > 0)) {
+                                return $addPrefixSuffix(number_format(round(($Value - $profile['MinValue']) * 100 / ($profile['MaxValue'] - $profile['MinValue'])), $profile['Digits']));
+                            }
 
-                                return $addPrefixSuffix(number_format(round($Value), $profile['Digits']));
+                            return $addPrefixSuffix(number_format(round($Value), $profile['Digits']));
 
-                            case 3: //String
-                                return $addPrefixSuffix($Value);
+                        case 3: //String
+                            return $addPrefixSuffix($Value);
 
-                            default:
-                                throw new Exception('Format error: Invalid variable type');
+                        default:
+                            throw new Exception('Format error: Invalid variable type');
 
-                        }
-                    } else {
-                        switch ($profile['ProfileType']) {
-                            case 0: //Boolean
-                                if (count($profile['Associations']) < 2) {
-                                    throw new Exception('Profiles of type boolean need to have two associations');
-                                }
-
-                                if ($Value === true) {
-                                    return $profile['Associations'][1]['Name'];
-                                } elseif ($Value === false) {
-                                    return $profile['Associations'][0]['Name'];
-                                }
-
-                                return '-';
-
-                            case 1: //Integer
-                            case 2: //Float
-                                for ($i = count($profile['Associations']) - 1; $i >= 0; $i--) {
-                                    if ($Value >= $profile['Associations'][$i]['Value']) {
-                                        return $profile['Prefix'] . sprintf($profile['Associations'][$i]['Name'], $Value) . $profile['Suffix'];
-                                    }
-                                }
-                                return '-';
-
-                            case 3: //String
-                                for ($i = count($profile['Associations']) - 1; $i >= 0; $i--) {
-                                    if ($Value == $profile['Associations'][$i]['Value']) {
-                                        return $profile['Prefix'] . sprintf($profile['Associations'][$i]['Name'], $Value) . $profile['Suffix'];
-                                    }
-                                }
-                                return '-';
-
-                        }
                     }
-            }
+                } else {
+                    switch ($profile['ProfileType']) {
+                        case 0: //Boolean
+                            if (count($profile['Associations']) < 2) {
+                                throw new Exception('Profiles of type boolean need to have two associations');
+                            }
 
-        case VARIABLE_PRESENTATION_ENUMERATION:
-            $options = json_decode($presentation['OPTIONS'], true);
-            foreach ($options as $option) {
-                if ($option['Value'] == $Value) {
-                    return $option['Caption'];
+                            if ($Value === true) {
+                                return $profile['Associations'][1]['Name'];
+                            } elseif ($Value === false) {
+                                return $profile['Associations'][0]['Name'];
+                            }
+
+                            return '-';
+
+                        case 1: //Integer
+                        case 2: //Float
+                            for ($i = count($profile['Associations']) - 1; $i >= 0; $i--) {
+                                if ($Value >= $profile['Associations'][$i]['Value']) {
+                                    return $profile['Prefix'] . sprintf($profile['Associations'][$i]['Name'], $Value) . $profile['Suffix'];
+                                }
+                            }
+                            return '-';
+
+                        case 3: //String
+                            for ($i = count($profile['Associations']) - 1; $i >= 0; $i--) {
+                                if ($Value == $profile['Associations'][$i]['Value']) {
+                                    return $profile['Prefix'] . sprintf($profile['Associations'][$i]['Name'], $Value) . $profile['Suffix'];
+                                }
+                            }
+                            return '-';
+
+                    }
                 }
-            }
-            return '-';
-            break;
-
-        default:
-            throw new Exception('Unsupported Presentation: ' . $presentation['PRESENTATION']);
-
+        }
+    };
+    if (!function_exists('IPS_GetVariablePresentation')) {
+        $profileName = '';
+        if ($variable['VariableCustomProfile'] != '') {
+            $profileName = $variable['VariableCustomProfile'];
+        } else {
+            $profileName = $variable['VariableProfile'];
+        }
+        return $legacyHandling($profileName);
+    } else {
+        $presentation = IPS_GetVariablePresentation($VariableID);
+        if (empty($presentation)) {
+            return strval($Value);
+        }
+        switch ($presentation['PRESENTATION']) {
+            case VARIABLE_PRESENTATION_LEGACY:
+                return $legacyHandling($presentation['PROFILE']);
+    
+            case VARIABLE_PRESENTATION_ENUMERATION:
+                $options = json_decode($presentation['OPTIONS'], true);
+                foreach ($options as $option) {
+                    if ($option['Value'] == $Value) {
+                        return $option['Caption'];
+                    }
+                }
+                return '-';
+                break;
+    
+            default:
+                throw new Exception('Unsupported Presentation: ' . $presentation['PRESENTATION']);
+    
+        }
     }
 
 }
