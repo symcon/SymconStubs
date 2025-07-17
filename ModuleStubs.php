@@ -139,6 +139,11 @@ class IPSModule
         //Has to be overwritten by implementing module
     }
 
+    public function GetCompatibleParents()
+    {
+        return '{}';
+    }
+
     public function GetConfigurationForm()
     {
         return '{}';
