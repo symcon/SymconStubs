@@ -202,36 +202,38 @@ class IPSModuleStrict
         return $this->module->GetTimerInterval($Ident);
     }
 
-    protected function RegisterScript(string $Ident, string $Name, string $Content = '', int $Position = 0): int
+    protected function RegisterScript(string $Ident, string $Name, string $Content = '', int $Position = 0): bool
     {
-        return $this->module->RegisterScript($Ident, $Name, $Content, $Position);
+        $scriptExists = (@$this->module->GetIDForIdent($Ident) !== false);
+        $this->module->RegisterScript($Ident, $Name, $Content, $Position);
+        return !$scriptExists;
     }
 
-    protected function RegisterVariableBoolean(string $Ident, string $Name, string $Profile = '', int $Position = 0): bool
+    protected function RegisterVariableBoolean(string $Ident, string $Name, string|array $ProfileOrPresentation = '', int $Position = 0): bool
     {
         $variableExists = (@$this->module->GetIDForIdent($Ident) !== false);
-        $this->module->RegisterVariableBoolean($Ident, $Name, $Profile, $Position);
+        $this->module->RegisterVariableBoolean($Ident, $Name, $ProfileOrPresentation, $Position);
         return !$variableExists;
     }
 
-    protected function RegisterVariableInteger(string $Ident, string $Name, string $Profile = '', int $Position = 0): bool
+    protected function RegisterVariableInteger(string $Ident, string $Name, string|array $ProfileOrPresentation = '', int $Position = 0): bool
     {
         $variableExists = (@$this->module->GetIDForIdent($Ident) !== null);
-        $this->module->RegisterVariableInteger($Ident, $Name, $Profile, $Position);
+        $this->module->RegisterVariableInteger($Ident, $Name, $ProfileOrPresentation, $Position);
         return !$variableExists;
     }
 
-    protected function RegisterVariableFloat(string $Ident, string $Name, string $Profile = '', int $Position = 0): bool
+    protected function RegisterVariableFloat(string $Ident, string $Name, string|array $ProfileOrPresentation = '', int $Position = 0): bool
     {
         $variableExists = (@$this->module->GetIDForIdent($Ident) !== null);
-        $this->module->RegisterVariableFloat($Ident, $Name, $Profile, $Position);
+        $this->module->RegisterVariableFloat($Ident, $Name, $ProfileOrPresentation, $Position);
         return !$variableExists;
     }
 
-    protected function RegisterVariableString(string $Ident, string $Name, string $Profile = '', int $Position = 0): bool
+    protected function RegisterVariableString(string $Ident, string $Name, string|array $ProfileOrPresentation = '', int $Position = 0): bool
     {
         $variableExists = (@$this->module->GetIDForIdent($Ident) !== null);
-        $this->module->RegisterVariableString($Ident, $Name, $Profile, $Position);
+        $this->module->RegisterVariableString($Ident, $Name, $ProfileOrPresentation, $Position);
         return !$variableExists;
     }
 
@@ -470,11 +472,11 @@ class IPSModuleStrict
         return $this->module->HasActiveParent();
     }
 
-    protected function RegisterHook(string $HookPath): void
+    protected function RegisterHook(string $HookPath): bool
     {
     }
 
-    protected function RegisterOAuth(string $OAuthPath): void
+    protected function RegisterOAuth(string $OAuthPath): bool
     {
     }
 

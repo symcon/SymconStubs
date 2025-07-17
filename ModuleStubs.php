@@ -251,24 +251,24 @@ class IPSModule
         return 0;
     }
 
-    protected function RegisterVariableBoolean($Ident, $Name, $Profile = '', $Position = 0)
+    protected function RegisterVariableBoolean($Ident, $Name, $ProfileOrPresentation = '', $Position = 0)
     {
-        return $this->RegisterVariable($Ident, $Name, 0, $Profile, $Position);
+        return $this->RegisterVariable($Ident, $Name, 0, $ProfileOrPresentation, $Position);
     }
 
-    protected function RegisterVariableInteger($Ident, $Name, $Profile = '', $Position = 0)
+    protected function RegisterVariableInteger($Ident, $Name, $ProfileOrPresentation = '', $Position = 0)
     {
-        return $this->RegisterVariable($Ident, $Name, 1, $Profile, $Position);
+        return $this->RegisterVariable($Ident, $Name, 1, $ProfileOrPresentation, $Position);
     }
 
-    protected function RegisterVariableFloat($Ident, $Name, $Profile = '', $Position = 0)
+    protected function RegisterVariableFloat($Ident, $Name, $ProfileOrPresentation = '', $Position = 0)
     {
-        return $this->RegisterVariable($Ident, $Name, 2, $Profile, $Position);
+        return $this->RegisterVariable($Ident, $Name, 2, $ProfileOrPresentation, $Position);
     }
 
-    protected function RegisterVariableString($Ident, $Name, $Profile = '', $Position = 0)
+    protected function RegisterVariableString($Ident, $Name, $ProfileOrPresentation = '', $Position = 0)
     {
-        return $this->RegisterVariable($Ident, $Name, 3, $Profile, $Position);
+        return $this->RegisterVariable($Ident, $Name, 3, $ProfileOrPresentation, $Position);
     }
 
     protected function UnregisterVariable($Ident)
@@ -707,20 +707,20 @@ class IPSModule
         ];
     }
 
-    private function RegisterVariable($Ident, $Name, $Type, $Profile, $Position)
+    private function RegisterVariable($Ident, $Name, $Type, $ProfileOrPresentation, $Position)
     {
-        if ($Profile != '') {
+        if ($ProfileOrPresentation !== '') {
             //prefer system profiles
-            if (IPS_VariableProfileExists('~' . $Profile)) {
-                $Profile = '~' . $Profile;
+            if (IPS_VariableProfileExists('~' . $ProfileOrPresentation)) {
+                $ProfileOrPresentation = '~' . $ProfileOrPresentation;
             }
-            if (!IPS_VariableProfileExists($Profile)) {
-                throw new Exception('Profile with name ' . $Profile . ' does not exist');
+            if (!IPS_VariableProfileExists($ProfileOrPresentation)) {
+                throw new Exception('Profile with name ' . $ProfileOrPresentation . ' does not exist');
             }
 
             //make typecheck
-            if (IPS_GetVariableProfile($Profile)['ProfileType'] != $Type) {
-                throw new Exception('Profile with name ' . $Profile . ' is not of type ' . $Type);
+            if (IPS_GetVariableProfile($ProfileOrPresentation)['ProfileType'] != $Type) {
+                throw new Exception('Profile with name ' . $ProfileOrPresentation . ' is not of type ' . $Type);
             }
         }
 
@@ -761,7 +761,12 @@ class IPSModule
 
         //update variable profile. profiles may be changed in module development.
         //this update does not affect any custom profile choices
-        IPS\VariableManager::setVariableProfile($vid, $Profile);
+        if (is_array($ProfileOrPresentation)) {
+            IPS\VariableManager::setVariablePresentation($vid, $ProfileOrPresentation);
+        }
+        else {
+            IPS\VariableManager::setVariableProfile($vid, $ProfileOrPresentation);
+        }
 
         return $vid;
     }
