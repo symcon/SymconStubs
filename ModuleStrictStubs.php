@@ -239,7 +239,7 @@ class IPSModuleStrict
 
     protected function UnregisterVariable(string $Ident): bool
     {
-        $this->module->UnregisterMessage($Ident);
+        $this->module->UnregisterVariable($Ident);
         return true;
     }
 
@@ -479,6 +479,7 @@ class IPSModuleStrict
 
     protected function RegisterOAuth(string $OAuthPath): bool
     {
+        return true;
     }
 
     protected function getTime(): int
