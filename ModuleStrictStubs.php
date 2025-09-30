@@ -126,6 +126,11 @@ class IPSModuleStrict
         return $this->module->GetReferenceList();
     }
 
+    public function SetVisualizationType(int $Type): void
+    {
+        $this->module->SetVisualizationType($Type);
+    }
+
     protected function GetIDForIdent(string $Ident): int
     {
         return $this->module->GetIDForIdent($Ident);
@@ -243,7 +248,7 @@ class IPSModuleStrict
         return true;
     }
 
-    protected function MaintainVariable(string $Ident, string $Name, int $Type, string $Profile, int $Position, bool $Keep): bool
+    protected function MaintainVariable(string $Ident, string $Name, int $Type, string|array $ProfileOrPresentation, int $Position, bool $Keep): bool
     {
         $this->module->MaintainVariable($Ident, $Name, $Type, $Profile, $Position, $Keep);
         return true;
@@ -448,6 +453,11 @@ class IPSModuleStrict
     protected function UpdateFormField(string $Field, string $Parameter, mixed $Value): bool
     {
         $this->module->UpdateFormField($Field, $Parameter, $Value);
+        return true;
+    }
+
+    protected function UpdateVisualizationValue(mixed $Value) {
+        $this->module->UpdateVisualizationValue($Value);
         return true;
     }
 
