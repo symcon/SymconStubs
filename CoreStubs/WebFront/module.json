@@ -1,0 +1,12 @@
+{
+    "id": "{3565B1F2-8F7B-4311-A4B6-1BF1D868F39E}",
+    "name": "WebFront Visualization",
+    "type": 6,
+    "vendor": "Symcon GmbH",
+    "aliases": [],
+    "url": "",
+    "parentRequirements": [],
+    "childRequirements": [],
+    "implemented": [],
+    "prefix": "WFC"
+}
