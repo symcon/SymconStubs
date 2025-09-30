@@ -88,8 +88,7 @@ function GetValueFormattedEx(int $VariableID, $Value)
 {
     $variable = IPS_GetVariable($VariableID);
 
-    $legacyHandling = function ($profileName) use ($variable, $Value)
-    {
+    $legacyHandling = function ($profileName) use ($variable, $Value) {
         if (!IPS_VariableProfileExists($profileName)) {
             return 'Invalid profile';
         }
@@ -99,8 +98,7 @@ function GetValueFormattedEx(int $VariableID, $Value)
             return 'Invalid profile type';
         }
 
-        $addPrefixSuffix = function ($value) use ($profile)
-        {
+        $addPrefixSuffix = function ($value) use ($profile) {
             return strval($profile['Prefix'] . $value . $profile['Suffix']);
         };
 
@@ -826,8 +824,7 @@ function IPS_IsConditionPassing(string $Conditions)
                 case 0:
                     return array_reduce(
                         $results,
-                        function ($carry, $result)
-                        {
+                        function ($carry, $result) {
                             return $carry && $result;
                         },
                         true
@@ -837,7 +834,7 @@ function IPS_IsConditionPassing(string $Conditions)
                     throw new Error('Operation type not implemented yet');
             }
 
-            // No break. Add additional comment above this line if intentional
+            // no break. Add additional comment above this line if intentional
         default:
             throw new Error('Complex conditions not implemented yet');
     }
@@ -1396,6 +1393,55 @@ function IPS_UpdateFormField(string $Name, string $Parameter, $Value, string $Se
     return IPS\ActionPool::updateFormField($Name, $Parameter, $Value, $SessionID);
 }
 
+function IPS_PresentationExists(string $GUID)
+{
+    return IPS\PresentationPool::presentationExists($GUID);
+}
+
+/* Template Manager */
+function IPS_CreateTemplate(string $PresentationID): string
+{
+    return IPS\TemplateManager::createTemplate($PresentationID);
+}
+
+function IPS_DeleteTemplate(string $TemplateID): bool
+{
+    IPS\TemplateManager::deleteTemplate($TemplateID);
+    return true;
+}
+
+function IPS_GetTemplate(string $TemplateID): array
+{
+    return IPS\TemplateManager::getTemplate($TemplateID);
+}
+
+function IPS_GetTemplateList(): array
+{
+    return IPS\TemplateManager::getTemplateList();
+}
+
+function IPS_GetTemplateListByPresentation(string $PresentationID): array
+{
+    return IPS\TemplateManager::getTemplateListByPresentation($PresentationID);
+}
+
+function IPS_SetTemplateName(string $TemplateID, string $Name): bool
+{
+    IPS\TemplateManager::setTemplateName($TemplateID, $Name);
+    return true;
+}
+
+function IPS_SetTemplateValues(string $TemplateID, array $Values): bool
+{
+    IPS\TemplateManager::setTemplateValues($TemplateID, $Values);
+    return true;
+}
+
+function IPS_TemplateExists(string $TemplateID): bool
+{
+    return IPS\TemplateManager::templateExists($TemplateID);
+}
+
 /* Settings */
 function IPS_GetOption(string $Option)
 {
@@ -1543,4 +1589,3 @@ function Sys_Ping(string $Host, int $Timeout)
 {
     return true;
 }
-
