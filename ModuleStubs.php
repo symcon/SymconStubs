@@ -171,7 +171,7 @@ class IPSModule
         return $this->messages;
     }
 
-    public function SetVisualizationType($Type)
+    public function SetVisualizationType(int $Type)
     {
         $this->visualizationType = $Type;
     }
