@@ -88,7 +88,8 @@ function GetValueFormattedEx(int $VariableID, $Value)
 {
     $variable = IPS_GetVariable($VariableID);
 
-    $legacyHandling = function ($profileName) use ($variable, $Value) {
+    $legacyHandling = function ($profileName) use ($variable, $Value)
+    {
         if (!IPS_VariableProfileExists($profileName)) {
             return 'Invalid profile';
         }
@@ -98,7 +99,8 @@ function GetValueFormattedEx(int $VariableID, $Value)
             return 'Invalid profile type';
         }
 
-        $addPrefixSuffix = function ($value) use ($profile) {
+        $addPrefixSuffix = function ($value) use ($profile)
+        {
             return strval($profile['Prefix'] . $value . $profile['Suffix']);
         };
 
@@ -824,7 +826,8 @@ function IPS_IsConditionPassing(string $Conditions)
                 case 0:
                     return array_reduce(
                         $results,
-                        function ($carry, $result) {
+                        function ($carry, $result)
+                        {
                             return $carry && $result;
                         },
                         true
@@ -834,7 +837,7 @@ function IPS_IsConditionPassing(string $Conditions)
                     throw new Error('Operation type not implemented yet');
             }
 
-            // no break. Add additional comment above this line if intentional
+            // No break. Add additional comment above this line if intentional
         default:
             throw new Error('Complex conditions not implemented yet');
     }

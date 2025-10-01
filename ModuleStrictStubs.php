@@ -456,7 +456,8 @@ class IPSModuleStrict
         return true;
     }
 
-    protected function UpdateVisualizationValue(mixed $Value) {
+    protected function UpdateVisualizationValue(mixed $Value)
+    {
         $this->module->UpdateVisualizationValue($Value);
         return true;
     }

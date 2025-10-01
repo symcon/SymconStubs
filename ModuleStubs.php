@@ -176,7 +176,6 @@ class IPSModule
         $this->visualizationType = $Type;
     }
 
-
     protected function GetIDForIdent($Ident)
     {
         return IPS_GetObjectIDByIdent($Ident, $this->InstanceID);

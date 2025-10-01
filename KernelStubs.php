@@ -82,7 +82,8 @@ namespace IPS {
             self::loadModules(dirname($file), $library['id']);
         }
 
-        public static function loadSingleModule(string $folder, string $libraryID) {
+        public static function loadSingleModule(string $folder, string $libraryID)
+        {
             self::loadModule($folder, $libraryID);
         }
 
@@ -1360,11 +1361,11 @@ namespace IPS {
             );
 
             self::$templates[$templateID] = [
-                'TemplateID'     => $templateID,
-                'PresentationID' => $PresentationID,
+                'TemplateID'         => $templateID,
+                'PresentationID'     => $PresentationID,
                 'DisplayName'        => '',
-                'Values'         => [],
-                'IsReadOnly'     => false
+                'Values'             => [],
+                'IsReadOnly'         => false
             ];
 
             return $templateID;

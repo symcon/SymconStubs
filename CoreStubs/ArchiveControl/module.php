@@ -11,7 +11,8 @@ class ArchiveControl extends IPSModule
         if (!$this->GetLoggingStatus($VariableID)) {
             throw new Exception('Adding aggregated data requires active logging');
         }
-        usort($AggregationData, function ($a, $b) {
+        usort($AggregationData, function ($a, $b)
+        {
             return $a['TimeStamp'] <=> $b['TimeStamp'];
         });
         $archivedData = $this->GetVariableData($VariableID);
@@ -29,7 +30,8 @@ class ArchiveControl extends IPSModule
         if (!$this->GetLoggingStatus($VariableID)) {
             throw new Exception('Adding logged data requires active logging');
         }
-        usort($NewData, function ($a, $b) {
+        usort($NewData, function ($a, $b)
+        {
             return $a['TimeStamp'] <=> $b['TimeStamp'];
         });
         $archivedData = $this->GetVariableData($VariableID);
@@ -93,7 +95,8 @@ class ArchiveControl extends IPSModule
 
         $slicedData = array_slice($Values, $startKey, $endKey - $startKey, true);
         //Only keep the values that are not in the sliced Data
-        $callback = function ($key) use ($slicedData) {
+        $callback = function ($key) use ($slicedData)
+        {
             return !array_key_exists($key, $slicedData);
         };
         $loggedValues = array_filter($Values, $callback, ARRAY_FILTER_USE_KEY);
@@ -198,7 +201,7 @@ class ArchiveControl extends IPSModule
         $data['AggregationType'] = $AggregationType;
         $this->SetVariableData($VariableID, $data);
     }
-    
+
     public function SetGraphStatus(int $VariableID, bool $Active)
     {
         $data = $this->GetVariableData($VariableID);

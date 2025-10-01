@@ -22,8 +22,8 @@ class TileVisualization extends IPSModule
     {
         return self::PostNotificationEx($Title, $Text, '', '', $TargetID);
     }
-    
-    public function PostNotificationEx(string $Title, String $Text, String $Icon , String $Sound, int $TargetID): int
+
+    public function PostNotificationEx(string $Title, string $Text, string $Icon, string $Sound, int $TargetID): int
     {
         $nextNotificationID = $this->ReadAttributeInteger('LastNotificationsID') + 1;
         $this->WriteAttributeInteger('LastNotificationsID', $nextNotificationID);

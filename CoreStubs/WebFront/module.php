@@ -9,12 +9,10 @@ class WebFrontVisualization extends IPSModule
         // No need to implement this function.
     }
 
-
     public function OpenCategory(int $CategoryID): void
     {
         // No need to implement this function.
     }
-
 
     public function PushNotification(string $Title, string $Text, string $Sound, int $TargetID): void
     {
@@ -25,7 +23,6 @@ class WebFrontVisualization extends IPSModule
     {
         // No need to implement this function.
     }
-
 
     public function SendNotification(string $Title, string $Text, string $Icon, int $Timeout): void
     {
