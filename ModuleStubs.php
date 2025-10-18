@@ -18,6 +18,8 @@ class IPSModule
 
     private $messages = [];
 
+    private $visualizationType = 0 /* None */;
+
     public function __construct($InstanceID)
     {
         $this->InstanceID = $InstanceID;
@@ -167,6 +169,11 @@ class IPSModule
     public function getMessages()
     {
         return $this->messages;
+    }
+
+    public function SetVisualizationType(int $Type)
+    {
+        $this->visualizationType = $Type;
     }
 
     protected function GetIDForIdent($Ident)

@@ -164,7 +164,7 @@ class ArchiveControl extends IPSModule
 
     public function GetGraphStatus(int $VariableID)
     {
-        throw new Exception("'GetGraphStatus' is not yet implemented");
+        return $this->GetVariableData($VariableID)['AggregationVisible'];
     }
 
     public function GetLoggedValues(int $VariableID, int $StartTime, int $EndTime, int $Limit = 10000)
@@ -193,7 +193,6 @@ class ArchiveControl extends IPSModule
 
     public function ReAggregateVariable(int $VariableID)
     {
-        throw new Exception("'ReAggregateVariable' is not yet implemented");
     }
 
     public function SetAggregationType(int $VariableID, int $AggregationType)
@@ -203,9 +202,11 @@ class ArchiveControl extends IPSModule
         $this->SetVariableData($VariableID, $data);
     }
 
-    public function SetGraphStatus(int $VariableID)
+    public function SetGraphStatus(int $VariableID, bool $Active)
     {
-        throw new Exception("'SetGraphStatus' is not yet implemented");
+        $data = $this->GetVariableData($VariableID);
+        $data['AggregationVisible'] = $Active;
+        $this->SetVariableData($VariableID, $data);
     }
 
     // Status will be updated without ApplyChanges() unlike current (5.4) IP-Symcon implementation
@@ -215,6 +216,18 @@ class ArchiveControl extends IPSModule
         $data = $this->GetVariableData($VariableID);
         $data['AggregationActive'] = $Active;
         $this->SetVariableData($VariableID, $data);
+    }
+
+    public function SetCounterIgnoreZeros(int $VariableID, bool $IgnoreZeros)
+    {
+        $data = $this->GetVariableData($VariableID);
+        $data['CounterIgnoreZeros'] = $IgnoreZeros;
+        $this->SetVariableData($VariableID, $data);
+    }
+
+    public function GetCounterIgnoreZeros(int $VariableID)
+    {
+        return $this->GetVariableData($VariableID)['CounterIgnoreZeros'];
     }
 
     private function GetVariableData($VariableID)
@@ -233,7 +246,9 @@ class ArchiveControl extends IPSModule
                     5 /* 5-Minute */ => [],
                     6 /* 1-Minute */ => [],
                     7 /* Changes */  => []
-                ]
+                ],
+                'AggregationVisible' => false,
+                'CounterIgnoreZeros' => false
             ];
         }
         return $this->Archive[$VariableID];

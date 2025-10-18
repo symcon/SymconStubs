@@ -1,0 +1,12 @@
+{
+    "id": "{B5B875BB-9B76-45FD-4E67-2607E45B3AC4}",
+    "name": "Tile Visualization",
+    "type": 6,
+    "vendor": "Symcon GmbH",
+    "aliases": [],
+    "url": "",
+    "parentRequirements": [],
+    "childRequirements": [],
+    "implemented": [],
+    "prefix": "VISU"
+}

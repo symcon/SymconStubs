@@ -82,6 +82,11 @@ namespace IPS {
             self::loadModules(dirname($file), $library['id']);
         }
 
+        public static function loadSingleModule(string $folder, string $libraryID)
+        {
+            self::loadModule($folder, $libraryID);
+        }
+
         public static function reset()
         {
             self::$libraries = [];
@@ -1336,6 +1341,101 @@ namespace IPS {
         }
     }
 
+    class TemplateManager
+    {
+        private static $templates = [];
+
+        public static function createTemplate(string $PresentationID): string
+        {
+
+            $templateID = sprintf(
+                '{%04X%04X-%04X-%04X-%04X-%04X%04X%04X}',
+                mt_rand(0, 65535),
+                mt_rand(0, 65535),
+                mt_rand(0, 65535),
+                mt_rand(16384, 20479),
+                mt_rand(32768, 49151),
+                mt_rand(0, 65535),
+                mt_rand(0, 65535),
+                mt_rand(0, 65535)
+            );
+
+            self::$templates[$templateID] = [
+                'TemplateID'         => $templateID,
+                'PresentationID'     => $PresentationID,
+                'DisplayName'        => '',
+                'Values'             => [],
+                'IsReadOnly'         => false
+            ];
+
+            return $templateID;
+        }
+
+        public static function deleteTemplate(string $TemplateID): void
+        {
+            self::checkTemplate($TemplateID);
+            unset(self::$templates[$TemplateID]);
+        }
+
+        public static function createTemplateEx(array $Template, bool $IsReadOnly = true): void
+        {
+            $templateID = $Template['TemplateID'];
+            self::$templates[$templateID] = $Template;
+            self::$templates[$templateID]['IsReadOnly'] = $IsReadOnly;
+        }
+
+        public static function setTemplateName(string $TemplateID, string $TemplateName): void
+        {
+            self::checkTemplate($TemplateID);
+            self::$templates[$TemplateID]['Name'] = $TemplateName;
+        }
+
+        public static function setTemplateValues(string $TemplateID, array $Values): void
+        {
+            self::checkTemplate($TemplateID);
+            self::$templates[$TemplateID]['Values'] = $Values;
+        }
+
+        public static function templateExists(string $TemplateID): bool
+        {
+            return isset(self::$templates[$TemplateID]);
+        }
+
+        public static function getTemplate(string $TemplateID): array
+        {
+            self::checkTemplate($TemplateID);
+            return self::$templates[$TemplateID];
+        }
+
+        public static function getTemplateList(): array
+        {
+            return array_keys(self::$templates);
+        }
+
+        public static function getTemplateListByPresentation(string $PresentationID): array
+        {
+            $result = [];
+            foreach (self::$templates as $template) {
+                if ($template['PresentationID'] == $PresentationID) {
+                    $result[] = $template['TemplateID'];
+                }
+            }
+            return $result;
+        }
+
+        public static function reset(): void
+        {
+            self::$templates = [];
+        }
+
+        private static function checkTemplate(string $TemplateID): void
+        {
+            if (!self::templateExists($TemplateID)) {
+                throw new \Exception(sprintf('Template #%s does not exist', $TemplateID));
+            }
+        }
+    }
+
     class DebugServer
     {
         private static $debug = [];
@@ -1523,6 +1623,8 @@ namespace IPS {
             ProfileManager::reset();
             DebugServer::reset();
             ActionPool::reset();
+            PresentationPool::reset();
+            TemplateManager::reset();
         }
     }
 }
