@@ -16,6 +16,10 @@ class IPSModule
     private $receiveDataFilter = '';
     private $forwardDataFilter = '';
 
+    private $messages = [];
+
+    private $visualizationType = 0 /* None */;
+
     public function __construct($InstanceID)
     {
         $this->InstanceID = $InstanceID;
@@ -137,6 +141,11 @@ class IPSModule
         //Has to be overwritten by implementing module
     }
 
+    public function GetCompatibleParents()
+    {
+        return '{}';
+    }
+
     public function GetConfigurationForm()
     {
         return '{}';
@@ -155,6 +164,16 @@ class IPSModule
     public function GetReferenceList()
     {
         return $this->references;
+    }
+
+    public function getMessages()
+    {
+        return $this->messages;
+    }
+
+    public function SetVisualizationType(int $Type)
+    {
+        $this->visualizationType = $Type;
     }
 
     protected function GetIDForIdent($Ident)
@@ -239,24 +258,24 @@ class IPSModule
         return 0;
     }
 
-    protected function RegisterVariableBoolean($Ident, $Name, $Profile = '', $Position = 0)
+    protected function RegisterVariableBoolean($Ident, $Name, $ProfileOrPresentation = '', $Position = 0)
     {
-        return $this->RegisterVariable($Ident, $Name, 0, $Profile, $Position);
+        return $this->RegisterVariable($Ident, $Name, 0, $ProfileOrPresentation, $Position);
     }
 
-    protected function RegisterVariableInteger($Ident, $Name, $Profile = '', $Position = 0)
+    protected function RegisterVariableInteger($Ident, $Name, $ProfileOrPresentation = '', $Position = 0)
     {
-        return $this->RegisterVariable($Ident, $Name, 1, $Profile, $Position);
+        return $this->RegisterVariable($Ident, $Name, 1, $ProfileOrPresentation, $Position);
     }
 
-    protected function RegisterVariableFloat($Ident, $Name, $Profile = '', $Position = 0)
+    protected function RegisterVariableFloat($Ident, $Name, $ProfileOrPresentation = '', $Position = 0)
     {
-        return $this->RegisterVariable($Ident, $Name, 2, $Profile, $Position);
+        return $this->RegisterVariable($Ident, $Name, 2, $ProfileOrPresentation, $Position);
     }
 
-    protected function RegisterVariableString($Ident, $Name, $Profile = '', $Position = 0)
+    protected function RegisterVariableString($Ident, $Name, $ProfileOrPresentation = '', $Position = 0)
     {
-        return $this->RegisterVariable($Ident, $Name, 3, $Profile, $Position);
+        return $this->RegisterVariable($Ident, $Name, 3, $ProfileOrPresentation, $Position);
     }
 
     protected function UnregisterVariable($Ident)
@@ -624,6 +643,11 @@ class IPSModule
     {
     }
 
+    protected function UpdateVisualizationValue($Value)
+    {
+        $this->postMessage(10541, [$Value]);
+    }
+
     protected function GetValue(string $Ident)
     {
         return GetValue(IPS_GetObjectIDByIdent($Ident, $this->InstanceID));
@@ -661,6 +685,16 @@ class IPSModule
         throw new Exception('getTime needs to be implemented by module under test');
     }
 
+    protected function postMessage($Message, $Data)
+    {
+        $this->messages[] = [
+            'TimeStamp' => 0,
+            'SenderID'  => $this->InstanceID,
+            'Message'   => $Message,
+            'Data'      => $Data
+        ];
+    }
+
     private function RegisterProperty($Name, $DefaultValue, $Type)
     {
         $this->properties[$Name] = [
@@ -680,20 +714,20 @@ class IPSModule
         ];
     }
 
-    private function RegisterVariable($Ident, $Name, $Type, $Profile, $Position)
+    private function RegisterVariable($Ident, $Name, $Type, $ProfileOrPresentation, $Position)
     {
-        if ($Profile != '') {
+        if ($ProfileOrPresentation !== '') {
             //prefer system profiles
-            if (IPS_VariableProfileExists('~' . $Profile)) {
-                $Profile = '~' . $Profile;
+            if (IPS_VariableProfileExists('~' . $ProfileOrPresentation)) {
+                $ProfileOrPresentation = '~' . $ProfileOrPresentation;
             }
-            if (!IPS_VariableProfileExists($Profile)) {
-                throw new Exception('Profile with name ' . $Profile . ' does not exist');
+            if (!IPS_VariableProfileExists($ProfileOrPresentation)) {
+                throw new Exception('Profile with name ' . $ProfileOrPresentation . ' does not exist');
             }
 
             //make typecheck
-            if (IPS_GetVariableProfile($Profile)['ProfileType'] != $Type) {
-                throw new Exception('Profile with name ' . $Profile . ' is not of type ' . $Type);
+            if (IPS_GetVariableProfile($ProfileOrPresentation)['ProfileType'] != $Type) {
+                throw new Exception('Profile with name ' . $ProfileOrPresentation . ' is not of type ' . $Type);
             }
         }
 
@@ -734,7 +768,12 @@ class IPSModule
 
         //update variable profile. profiles may be changed in module development.
         //this update does not affect any custom profile choices
-        IPS\VariableManager::setVariableProfile($vid, $Profile);
+        if (is_array($ProfileOrPresentation)) {
+            IPS\VariableManager::setVariablePresentation($vid, $ProfileOrPresentation);
+        }
+        else {
+            IPS\VariableManager::setVariableProfile($vid, $ProfileOrPresentation);
+        }
 
         return $vid;
     }
