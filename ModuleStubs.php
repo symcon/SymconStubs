@@ -718,9 +718,12 @@ class IPSModule
     {
         if ($ProfileOrPresentation !== '') {
             //prefer system profiles
-            if (IPS_VariableProfileExists('~' . $ProfileOrPresentation)) {
-                $ProfileOrPresentation = '~' . $ProfileOrPresentation;
+            if ($ProfileOrPresentation[0] != '~') {
+                if (IPS_VariableProfileExists('~' . $ProfileOrPresentation)) {
+                    $ProfileOrPresentation = '~' . $ProfileOrPresentation;
+                }
             }
+            
             if (!IPS_VariableProfileExists($ProfileOrPresentation)) {
                 throw new Exception('Profile with name ' . $ProfileOrPresentation . ' does not exist');
             }
