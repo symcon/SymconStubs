@@ -250,7 +250,7 @@ class IPSModuleStrict
 
     protected function MaintainVariable(string $Ident, string $Name, int $Type, string|array $ProfileOrPresentation, int $Position, bool $Keep): bool
     {
-        $this->module->MaintainVariable($Ident, $Name, $Type, $Profile, $Position, $Keep);
+        $this->module->MaintainVariable($Ident, $Name, $Type, $ProfileOrPresentation, $Position, $Keep);
         return true;
     }
 
