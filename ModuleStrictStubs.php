@@ -113,7 +113,7 @@ class IPSModuleStrict
 
     public function GetCompatibleParents(): string
     {
-        return $this->module->GetConfigurationForParent();
+        return $this->module->GetCompatibleParents();
     }
 
     public function Translate(string $Text): string
