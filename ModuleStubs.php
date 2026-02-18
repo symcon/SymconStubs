@@ -716,7 +716,7 @@ class IPSModule
 
     private function RegisterVariable($Ident, $Name, $Type, $ProfileOrPresentation, $Position)
     {
-        if ($ProfileOrPresentation !== '') {
+        if (is_string($ProfileOrPresentation) && ($ProfileOrPresentation !== '')) {
             //prefer system profiles
             if (IPS_VariableProfileExists('~' . $ProfileOrPresentation)) {
                 $ProfileOrPresentation = '~' . $ProfileOrPresentation;
