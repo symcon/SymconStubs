@@ -1016,8 +1016,7 @@ namespace IPS {
         {
             if (in_array($Name, self::$semaphores)) {
                 return false;
-            }
-            else {
+            } else {
                 self::$semaphores[] = $Name;
                 return true;
             }
@@ -1034,17 +1033,17 @@ namespace IPS {
 
         public static function scriptThreadExists(int $ThreadID): bool
         {
-            throw new Exception('Not implemented');
+            throw new \Exception('Not implemented');
         }
 
         public static function getScriptThread(int $ThreadID): array
         {
-            throw new Exception('Not implemented');
+            throw new \Exception('Not implemented');
         }
 
         public static function getScriptThreadList(): array
         {
-            throw new Exception('Not implemented');
+            throw new \Exception('Not implemented');
         }
     }
 
@@ -1052,32 +1051,32 @@ namespace IPS {
     {
         public static function functionExists(string $FunctionName): bool
         {
-            throw new Exception('Not implemented');
+            throw new \Exception('Not implemented');
         }
 
         public static function getFunction(string $FunctionName): array
         {
-            throw new Exception('Not implemented');
+            throw new \Exception('Not implemented');
         }
 
         public static function getFunctionList(int $InstanceID): array
         {
-            throw new Exception('Not implemented');
+            throw new \Exception('Not implemented');
         }
 
         public static function getFunctionListByModuleID(string $ModuleID): array
         {
-            throw new Exception('Not implemented');
+            throw new \Exception('Not implemented');
         }
 
         public static function getFunctions(array $Parameter): array
         {
-            throw new Exception('Not implemented');
+            throw new \Exception('Not implemented');
         }
 
         public static function getFunctionsMap(array $Parameter): array
         {
-            throw new Exception('Not implemented');
+            throw new \Exception('Not implemented');
         }
     }
 
@@ -1164,7 +1163,6 @@ namespace IPS {
 
         public static function getLinkList()
         {
-            self::checkLink($LinkID);
             return array_keys(self::$links);
         }
 
@@ -1264,8 +1262,7 @@ namespace IPS {
                 if (isset($keyFound)) {
                     unset(self::$profiles[$ProfileName]['Associations'][$keyFound]);
                     if (self::$profiles[$ProfileName]['ProfileType'] != VARIABLETYPE_STRING) {
-                        usort(self::$profiles[$ProfileName]['Associations'], function ($a, $b)
-                        {
+                        usort(self::$profiles[$ProfileName]['Associations'], function ($a, $b) {
                             return $a['Value'] - $b['Value'];
                         });
                     }
@@ -1292,8 +1289,7 @@ namespace IPS {
             ];
 
             if (self::$profiles[$ProfileName]['ProfileType'] != VARIABLETYPE_STRING) {
-                usort(self::$profiles[$ProfileName]['Associations'], function ($a, $b)
-                {
+                usort(self::$profiles[$ProfileName]['Associations'], function ($a, $b) {
                     return $a['Value'] - $b['Value'];
                 });
             }
@@ -1337,7 +1333,2156 @@ namespace IPS {
 
         public static function reset()
         {
-            self::$profiles = [];
+            self::$profiles = [
+            '~Raining' => [
+                'ProfileName'  => '~Raining',
+                'ProfileType'  => 0,
+                'Icon'         => 'Rainfall',
+                'Prefix'       => '',
+                'Suffix'       => '',
+                'MinValue'     => 0.0,
+                'MaxValue'     => 1.0,
+                'StepSize'     => 0.0,
+                'Digits'       => 0,
+                'Associations' => [
+                    0 => [
+                        'Value' => false,
+                        'Name'  => 'Kein Regen',
+                        'Icon'  => '',
+                        'Color' => -1,
+                    ],
+                    1 => [
+                        'Value' => true,
+                        'Name'  => 'Regen',
+                        'Icon'  => '',
+                        'Color' => 255,
+                    ],
+                ],
+                'IsReadOnly' => true,
+            ],
+            '~Temperature' => [
+                'ProfileName'  => '~Temperature',
+                'ProfileType'  => 2,
+                'Icon'         => 'Temperature',
+                'Prefix'       => '',
+                'Suffix'       => ' °C',
+                'MinValue'     => -30.0,
+                'MaxValue'     => 70.0,
+                'StepSize'     => 5.0,
+                'Digits'       => 1,
+                'Associations' => [
+                ],
+                'IsReadOnly' => true,
+            ],
+            '~Temperature.Fahrenheit' => [
+                'ProfileName'  => '~Temperature.Fahrenheit',
+                'ProfileType'  => 2,
+                'Icon'         => 'Temperature',
+                'Prefix'       => '',
+                'Suffix'       => ' °F',
+                'MinValue'     => -22.0,
+                'MaxValue'     => 158.0,
+                'StepSize'     => 5.0,
+                'Digits'       => 1,
+                'Associations' => [
+                ],
+                'IsReadOnly' => true,
+            ],
+            '~UVIndex' => [
+                'ProfileName'  => '~UVIndex',
+                'ProfileType'  => 1,
+                'Icon'         => 'Sun',
+                'Prefix'       => '',
+                'Suffix'       => '',
+                'MinValue'     => 0.0,
+                'MaxValue'     => 22.0,
+                'StepSize'     => 1.0,
+                'Digits'       => 0,
+                'Associations' => [
+                ],
+                'IsReadOnly' => true,
+            ],
+            '~Power' => [
+                'ProfileName'  => '~Power',
+                'ProfileType'  => 2,
+                'Icon'         => 'Electricity',
+                'Prefix'       => '',
+                'Suffix'       => ' kW',
+                'MinValue'     => 0.0,
+                'MaxValue'     => 0.0,
+                'StepSize'     => 0.0,
+                'Digits'       => 2,
+                'Associations' => [
+                ],
+                'IsReadOnly' => true,
+            ],
+            '~Illumination' => [
+                'ProfileName'  => '~Illumination',
+                'ProfileType'  => 1,
+                'Icon'         => 'Sun',
+                'Prefix'       => '',
+                'Suffix'       => ' lx',
+                'MinValue'     => 0.0,
+                'MaxValue'     => 120000.0,
+                'StepSize'     => 20000.0,
+                'Digits'       => 0,
+                'Associations' => [
+                ],
+                'IsReadOnly' => true,
+            ],
+            '~Temperature.Room' => [
+                'ProfileName'  => '~Temperature.Room',
+                'ProfileType'  => 2,
+                'Icon'         => 'Temperature',
+                'Prefix'       => '',
+                'Suffix'       => ' °C',
+                'MinValue'     => 15.0,
+                'MaxValue'     => 25.0,
+                'StepSize'     => 0.5,
+                'Digits'       => 1,
+                'Associations' => [
+                ],
+                'IsReadOnly' => true,
+            ],
+            '~Temperature.Difference' => [
+                'ProfileName'  => '~Temperature.Difference',
+                'ProfileType'  => 2,
+                'Icon'         => 'Temperature',
+                'Prefix'       => '',
+                'Suffix'       => ' K',
+                'MinValue'     => -30.0,
+                'MaxValue'     => 30.0,
+                'StepSize'     => 0.0,
+                'Digits'       => 1,
+                'Associations' => [
+                ],
+                'IsReadOnly' => true,
+            ],
+            '~WindDirection' => [
+                'ProfileName'  => '~WindDirection',
+                'ProfileType'  => 1,
+                'Icon'         => 'WindDirection',
+                'Prefix'       => '',
+                'Suffix'       => '°',
+                'MinValue'     => 0.0,
+                'MaxValue'     => 360.0,
+                'StepSize'     => 30.0,
+                'Digits'       => 0,
+                'Associations' => [
+                ],
+                'IsReadOnly' => true,
+            ],
+            '~AirPressure.F' => [
+                'ProfileName'  => '~AirPressure.F',
+                'ProfileType'  => 2,
+                'Icon'         => 'Gauge',
+                'Prefix'       => '',
+                'Suffix'       => ' hPa',
+                'MinValue'     => 850.0,
+                'MaxValue'     => 1100.0,
+                'StepSize'     => 50.0,
+                'Digits'       => 1,
+                'Associations' => [
+                ],
+                'IsReadOnly' => true,
+            ],
+            '~ShutterPosition.100' => [
+                'ProfileName'  => '~ShutterPosition.100',
+                'ProfileType'  => 1,
+                'Icon'         => 'Shutter',
+                'Prefix'       => '',
+                'Suffix'       => '',
+                'MinValue'     => 0.0,
+                'MaxValue'     => 100.0,
+                'StepSize'     => 0.0,
+                'Digits'       => 0,
+                'Associations' => [
+                    0 => [
+                        'Value' => 0,
+                        'Name'  => 'Geöffnet',
+                        'Icon'  => '',
+                        'Color' => 65280,
+                    ],
+                    1 => [
+                        'Value' => 25,
+                        'Name'  => '25 %%',
+                        'Icon'  => '',
+                        'Color' => 65280,
+                    ],
+                    2 => [
+                        'Value' => 50,
+                        'Name'  => '50 %%',
+                        'Icon'  => '',
+                        'Color' => 65280,
+                    ],
+                    3 => [
+                        'Value' => 75,
+                        'Name'  => '75 %%',
+                        'Icon'  => '',
+                        'Color' => 65280,
+                    ],
+                    4 => [
+                        'Value' => 100,
+                        'Name'  => 'Geschlossen',
+                        'Icon'  => '',
+                        'Color' => -1,
+                    ],
+                ],
+                'IsReadOnly' => true,
+            ],
+            '~Intensity.65535' => [
+                'ProfileName'  => '~Intensity.65535',
+                'ProfileType'  => 1,
+                'Icon'         => 'Intensity',
+                'Prefix'       => '',
+                'Suffix'       => ' %',
+                'MinValue'     => 0.0,
+                'MaxValue'     => 65535.0,
+                'StepSize'     => 1.0,
+                'Digits'       => 0,
+                'Associations' => [
+                ],
+                'IsReadOnly' => true,
+            ],
+            '~Humidity' => [
+                'ProfileName'  => '~Humidity',
+                'ProfileType'  => 1,
+                'Icon'         => 'Gauge',
+                'Prefix'       => '',
+                'Suffix'       => ' %',
+                'MinValue'     => 0.0,
+                'MaxValue'     => 100.0,
+                'StepSize'     => 10.0,
+                'Digits'       => 0,
+                'Associations' => [
+                ],
+                'IsReadOnly' => true,
+            ],
+            '~Water' => [
+                'ProfileName'  => '~Water',
+                'ProfileType'  => 2,
+                'Icon'         => 'Drops',
+                'Prefix'       => '',
+                'Suffix'       => ' Liter',
+                'MinValue'     => 0.0,
+                'MaxValue'     => 0.0,
+                'StepSize'     => 0.0,
+                'Digits'       => 2,
+                'Associations' => [
+                ],
+                'IsReadOnly' => true,
+            ],
+            '~Presence' => [
+                'ProfileName'  => '~Presence',
+                'ProfileType'  => 0,
+                'Icon'         => 'Motion',
+                'Prefix'       => '',
+                'Suffix'       => '',
+                'MinValue'     => 0.0,
+                'MaxValue'     => 1.0,
+                'StepSize'     => 0.0,
+                'Digits'       => 0,
+                'Associations' => [
+                    0 => [
+                        'Value' => false,
+                        'Name'  => 'Abwesend',
+                        'Icon'  => '',
+                        'Color' => -1,
+                    ],
+                    1 => [
+                        'Value' => true,
+                        'Name'  => 'Anwesend',
+                        'Icon'  => '',
+                        'Color' => 255,
+                    ],
+                ],
+                'IsReadOnly' => true,
+            ],
+            '~AirPressure' => [
+                'ProfileName'  => '~AirPressure',
+                'ProfileType'  => 1,
+                'Icon'         => 'Gauge',
+                'Prefix'       => '',
+                'Suffix'       => ' hPa',
+                'MinValue'     => 850.0,
+                'MaxValue'     => 1100.0,
+                'StepSize'     => 50.0,
+                'Digits'       => 0,
+                'Associations' => [
+                ],
+                'IsReadOnly' => true,
+            ],
+            '~Humidity.F' => [
+                'ProfileName'  => '~Humidity.F',
+                'ProfileType'  => 2,
+                'Icon'         => 'Gauge',
+                'Prefix'       => '',
+                'Suffix'       => ' %',
+                'MinValue'     => 0.0,
+                'MaxValue'     => 100.0,
+                'StepSize'     => 10.0,
+                'Digits'       => 1,
+                'Associations' => [
+                ],
+                'IsReadOnly' => true,
+            ],
+            '~Illumination.F' => [
+                'ProfileName'  => '~Illumination.F',
+                'ProfileType'  => 2,
+                'Icon'         => 'Sun',
+                'Prefix'       => '',
+                'Suffix'       => ' lx',
+                'MinValue'     => 0.0,
+                'MaxValue'     => 120000.0,
+                'StepSize'     => 20000.0,
+                'Digits'       => 1,
+                'Associations' => [
+                ],
+                'IsReadOnly' => true,
+            ],
+            '~Motion.Reversed' => [
+                'ProfileName'  => '~Motion.Reversed',
+                'ProfileType'  => 0,
+                'Icon'         => 'Motion',
+                'Prefix'       => '',
+                'Suffix'       => '',
+                'MinValue'     => 0.0,
+                'MaxValue'     => 1.0,
+                'StepSize'     => 0.0,
+                'Digits'       => 0,
+                'Associations' => [
+                    0 => [
+                        'Value' => false,
+                        'Name'  => 'Bewegung erkannt',
+                        'Icon'  => '',
+                        'Color' => 255,
+                    ],
+                    1 => [
+                        'Value' => true,
+                        'Name'  => 'Keine Bewegung',
+                        'Icon'  => '',
+                        'Color' => -1,
+                    ],
+                ],
+                'IsReadOnly' => true,
+            ],
+            '~Door' => [
+                'ProfileName'  => '~Door',
+                'ProfileType'  => 0,
+                'Icon'         => 'Door',
+                'Prefix'       => '',
+                'Suffix'       => '',
+                'MinValue'     => 0.0,
+                'MaxValue'     => 1.0,
+                'StepSize'     => 0.0,
+                'Digits'       => 0,
+                'Associations' => [
+                    0 => [
+                        'Value' => false,
+                        'Name'  => 'Geschlossen',
+                        'Icon'  => '',
+                        'Color' => -1,
+                    ],
+                    1 => [
+                        'Value' => true,
+                        'Name'  => 'Geöffnet',
+                        'Icon'  => '',
+                        'Color' => 255,
+                    ],
+                ],
+                'IsReadOnly' => true,
+            ],
+            '~Liquid.pH' => [
+                'ProfileName'  => '~Liquid.pH',
+                'ProfileType'  => 1,
+                'Icon'         => 'ErlenmeyerFlask',
+                'Prefix'       => '',
+                'Suffix'       => ' pH',
+                'MinValue'     => 0.0,
+                'MaxValue'     => 0.0,
+                'StepSize'     => 14.0,
+                'Digits'       => 0,
+                'Associations' => [
+                ],
+                'IsReadOnly' => true,
+            ],
+            '~Switch' => [
+                'ProfileName'  => '~Switch',
+                'ProfileType'  => 0,
+                'Icon'         => 'Power',
+                'Prefix'       => '',
+                'Suffix'       => '',
+                'MinValue'     => 0.0,
+                'MaxValue'     => 1.0,
+                'StepSize'     => 0.0,
+                'Digits'       => 0,
+                'Associations' => [
+                    0 => [
+                        'Value' => false,
+                        'Name'  => 'Aus',
+                        'Icon'  => '',
+                        'Color' => -1,
+                    ],
+                    1 => [
+                        'Value' => true,
+                        'Name'  => 'An',
+                        'Icon'  => '',
+                        'Color' => 65280,
+                    ],
+                ],
+                'IsReadOnly' => true,
+            ],
+            '~Liquid.pH.F' => [
+                'ProfileName'  => '~Liquid.pH.F',
+                'ProfileType'  => 2,
+                'Icon'         => 'ErlenmeyerFlask',
+                'Prefix'       => '',
+                'Suffix'       => ' pH',
+                'MinValue'     => 0.0,
+                'MaxValue'     => 0.0,
+                'StepSize'     => 14.0,
+                'Digits'       => 1,
+                'Associations' => [
+                ],
+                'IsReadOnly' => true,
+            ],
+            '~Volt' => [
+                'ProfileName'  => '~Volt',
+                'ProfileType'  => 2,
+                'Icon'         => 'Electricity',
+                'Prefix'       => '',
+                'Suffix'       => ' V',
+                'MinValue'     => 0.0,
+                'MaxValue'     => 0.0,
+                'StepSize'     => 0.0,
+                'Digits'       => 1,
+                'Associations' => [
+                ],
+                'IsReadOnly' => true,
+            ],
+            '~Rainfall' => [
+                'ProfileName'  => '~Rainfall',
+                'ProfileType'  => 2,
+                'Icon'         => 'Rainfall',
+                'Prefix'       => '',
+                'Suffix'       => ' mm',
+                'MinValue'     => 0.0,
+                'MaxValue'     => 0.0,
+                'StepSize'     => 0.0,
+                'Digits'       => 1,
+                'Associations' => [
+                ],
+                'IsReadOnly' => true,
+            ],
+            '~Lock.Reversed' => [
+                'ProfileName'  => '~Lock.Reversed',
+                'ProfileType'  => 0,
+                'Icon'         => 'Lock',
+                'Prefix'       => '',
+                'Suffix'       => '',
+                'MinValue'     => 0.0,
+                'MaxValue'     => 1.0,
+                'StepSize'     => 0.0,
+                'Digits'       => 0,
+                'Associations' => [
+                    0 => [
+                        'Value' => false,
+                        'Name'  => 'Gesperrt',
+                        'Icon'  => '',
+                        'Color' => 255,
+                    ],
+                    1 => [
+                        'Value' => true,
+                        'Name'  => 'Entriegelt',
+                        'Icon'  => '',
+                        'Color' => -1,
+                    ],
+                ],
+                'IsReadOnly' => true,
+            ],
+            '~Occurrence.CO2' => [
+                'ProfileName'  => '~Occurrence.CO2',
+                'ProfileType'  => 1,
+                'Icon'         => 'Gauge',
+                'Prefix'       => '',
+                'Suffix'       => ' ppm',
+                'MinValue'     => 300.0,
+                'MaxValue'     => 2200.0,
+                'StepSize'     => 0.0,
+                'Digits'       => 0,
+                'Associations' => [
+                ],
+                'IsReadOnly' => true,
+            ],
+            '~Intensity.1' => [
+                'ProfileName'  => '~Intensity.1',
+                'ProfileType'  => 2,
+                'Icon'         => 'Intensity',
+                'Prefix'       => '',
+                'Suffix'       => ' %',
+                'MinValue'     => 0.0,
+                'MaxValue'     => 1.0,
+                'StepSize'     => 0.05,
+                'Digits'       => 0,
+                'Associations' => [
+                ],
+                'IsReadOnly' => true,
+            ],
+            '~Lamella' => [
+                'ProfileName'  => '~Lamella',
+                'ProfileType'  => 1,
+                'Icon'         => 'TurnRight',
+                'Prefix'       => '',
+                'Suffix'       => ' %',
+                'MinValue'     => 0.0,
+                'MaxValue'     => 100.0,
+                'StepSize'     => 1.0,
+                'Digits'       => 0,
+                'Associations' => [
+                ],
+                'IsReadOnly' => true,
+            ],
+            '~Intensity.100' => [
+                'ProfileName'  => '~Intensity.100',
+                'ProfileType'  => 1,
+                'Icon'         => 'Intensity',
+                'Prefix'       => '',
+                'Suffix'       => ' %',
+                'MinValue'     => 0.0,
+                'MaxValue'     => 100.0,
+                'StepSize'     => 1.0,
+                'Digits'       => 0,
+                'Associations' => [
+                ],
+                'IsReadOnly' => true,
+            ],
+            '~Intensity.255' => [
+                'ProfileName'  => '~Intensity.255',
+                'ProfileType'  => 1,
+                'Icon'         => 'Intensity',
+                'Prefix'       => '',
+                'Suffix'       => ' %',
+                'MinValue'     => 0.0,
+                'MaxValue'     => 255.0,
+                'StepSize'     => 1.0,
+                'Digits'       => 0,
+                'Associations' => [
+                ],
+                'IsReadOnly' => true,
+            ],
+            '~Millivolt' => [
+                'ProfileName'  => '~Millivolt',
+                'ProfileType'  => 2,
+                'Icon'         => 'Electricity',
+                'Prefix'       => '',
+                'Suffix'       => ' mV',
+                'MinValue'     => 0.0,
+                'MaxValue'     => 0.0,
+                'StepSize'     => 0.0,
+                'Digits'       => 1,
+                'Associations' => [
+                ],
+                'IsReadOnly' => true,
+            ],
+            '~ShutterAssociation' => [
+                'ProfileName'  => '~ShutterAssociation',
+                'ProfileType'  => 1,
+                'Icon'         => 'Shutter',
+                'Prefix'       => '',
+                'Suffix'       => '',
+                'MinValue'     => 0.0,
+                'MaxValue'     => 100.0,
+                'StepSize'     => 0.0,
+                'Digits'       => 0,
+                'Associations' => [
+                    0 => [
+                        'Value' => 0,
+                        'Name'  => 'Geöffnet',
+                        'Icon'  => '',
+                        'Color' => 65280,
+                    ],
+                    1 => [
+                        'Value' => 25,
+                        'Name'  => '25 %%',
+                        'Icon'  => '',
+                        'Color' => 65280,
+                    ],
+                    2 => [
+                        'Value' => 50,
+                        'Name'  => '50 %%',
+                        'Icon'  => '',
+                        'Color' => 65280,
+                    ],
+                    3 => [
+                        'Value' => 75,
+                        'Name'  => '75 %%',
+                        'Icon'  => '',
+                        'Color' => 65280,
+                    ],
+                    4 => [
+                        'Value' => 99,
+                        'Name'  => '99 %%',
+                        'Icon'  => '',
+                        'Color' => 65280,
+                    ],
+                    5 => [
+                        'Value' => 100,
+                        'Name'  => 'Geschlossen',
+                        'Icon'  => '',
+                        'Color' => -1,
+                    ],
+                ],
+                'IsReadOnly' => true,
+            ],
+            '~Intensity.32767' => [
+                'ProfileName'  => '~Intensity.32767',
+                'ProfileType'  => 1,
+                'Icon'         => 'Intensity',
+                'Prefix'       => '',
+                'Suffix'       => ' %',
+                'MinValue'     => 0.0,
+                'MaxValue'     => 32767.0,
+                'StepSize'     => 1.0,
+                'Digits'       => 0,
+                'Associations' => [
+                ],
+                'IsReadOnly' => true,
+            ],
+            '~Lamella.Reversed' => [
+                'ProfileName'  => '~Lamella.Reversed',
+                'ProfileType'  => 1,
+                'Icon'         => 'TurnRight',
+                'Prefix'       => '',
+                'Suffix'       => ' %',
+                'MinValue'     => 0.0,
+                'MaxValue'     => 100.0,
+                'StepSize'     => 1.0,
+                'Digits'       => 0,
+                'Associations' => [
+                ],
+                'IsReadOnly' => true,
+            ],
+            '~Valve.F' => [
+                'ProfileName'  => '~Valve.F',
+                'ProfileType'  => 2,
+                'Icon'         => 'Gauge',
+                'Prefix'       => '',
+                'Suffix'       => ' %',
+                'MinValue'     => 0.0,
+                'MaxValue'     => 100.0,
+                'StepSize'     => 10.0,
+                'Digits'       => 1,
+                'Associations' => [
+                ],
+                'IsReadOnly' => true,
+            ],
+            '~Alert' => [
+                'ProfileName'  => '~Alert',
+                'ProfileType'  => 0,
+                'Icon'         => 'Warning',
+                'Prefix'       => '',
+                'Suffix'       => '',
+                'MinValue'     => 0.0,
+                'MaxValue'     => 1.0,
+                'StepSize'     => 0.0,
+                'Digits'       => 0,
+                'Associations' => [
+                    0 => [
+                        'Value' => false,
+                        'Name'  => 'OK',
+                        'Icon'  => '',
+                        'Color' => -1,
+                    ],
+                    1 => [
+                        'Value' => true,
+                        'Name'  => 'Alarm',
+                        'Icon'  => '',
+                        'Color' => 16711680,
+                    ],
+                ],
+                'IsReadOnly' => true,
+            ],
+            '~Alert.Reversed' => [
+                'ProfileName'  => '~Alert.Reversed',
+                'ProfileType'  => 0,
+                'Icon'         => 'Warning',
+                'Prefix'       => '',
+                'Suffix'       => '',
+                'MinValue'     => 0.0,
+                'MaxValue'     => 1.0,
+                'StepSize'     => 0.0,
+                'Digits'       => 0,
+                'Associations' => [
+                    0 => [
+                        'Value' => false,
+                        'Name'  => 'Alarm',
+                        'Icon'  => '',
+                        'Color' => 16711680,
+                    ],
+                    1 => [
+                        'Value' => true,
+                        'Name'  => 'OK',
+                        'Icon'  => '',
+                        'Color' => -1,
+                    ],
+                ],
+                'IsReadOnly' => true,
+            ],
+            '~Window' => [
+                'ProfileName'  => '~Window',
+                'ProfileType'  => 0,
+                'Icon'         => 'Window',
+                'Prefix'       => '',
+                'Suffix'       => '',
+                'MinValue'     => 0.0,
+                'MaxValue'     => 1.0,
+                'StepSize'     => 0.0,
+                'Digits'       => 0,
+                'Associations' => [
+                    0 => [
+                        'Value' => false,
+                        'Name'  => 'Geschlossen',
+                        'Icon'  => '',
+                        'Color' => -1,
+                    ],
+                    1 => [
+                        'Value' => true,
+                        'Name'  => 'Geöffnet',
+                        'Icon'  => '',
+                        'Color' => 255,
+                    ],
+                ],
+                'IsReadOnly' => true,
+            ],
+            '~ShutterMove' => [
+                'ProfileName'  => '~ShutterMove',
+                'ProfileType'  => 0,
+                'Icon'         => 'Shutter',
+                'Prefix'       => '',
+                'Suffix'       => '',
+                'MinValue'     => 0.0,
+                'MaxValue'     => 1.0,
+                'StepSize'     => 0.0,
+                'Digits'       => 0,
+                'Associations' => [
+                    0 => [
+                        'Value' => false,
+                        'Name'  => 'Schließen',
+                        'Icon'  => '',
+                        'Color' => -1,
+                    ],
+                    1 => [
+                        'Value' => true,
+                        'Name'  => 'Öffnen',
+                        'Icon'  => '',
+                        'Color' => -1,
+                    ],
+                ],
+                'IsReadOnly' => true,
+            ],
+            '~Window.Reversed' => [
+                'ProfileName'  => '~Window.Reversed',
+                'ProfileType'  => 0,
+                'Icon'         => 'Window',
+                'Prefix'       => '',
+                'Suffix'       => '',
+                'MinValue'     => 0.0,
+                'MaxValue'     => 1.0,
+                'StepSize'     => 0.0,
+                'Digits'       => 0,
+                'Associations' => [
+                    0 => [
+                        'Value' => false,
+                        'Name'  => 'Geöffnet',
+                        'Icon'  => '',
+                        'Color' => 255,
+                    ],
+                    1 => [
+                        'Value' => true,
+                        'Name'  => 'Geschlossen',
+                        'Icon'  => '',
+                        'Color' => -1,
+                    ],
+                ],
+                'IsReadOnly' => true,
+            ],
+            '~Door.Reversed' => [
+                'ProfileName'  => '~Door.Reversed',
+                'ProfileType'  => 0,
+                'Icon'         => 'Door',
+                'Prefix'       => '',
+                'Suffix'       => '',
+                'MinValue'     => 0.0,
+                'MaxValue'     => 1.0,
+                'StepSize'     => 0.0,
+                'Digits'       => 0,
+                'Associations' => [
+                    0 => [
+                        'Value' => false,
+                        'Name'  => 'Geöffnet',
+                        'Icon'  => '',
+                        'Color' => 255,
+                    ],
+                    1 => [
+                        'Value' => true,
+                        'Name'  => 'Geschlossen',
+                        'Icon'  => '',
+                        'Color' => -1,
+                    ],
+                ],
+                'IsReadOnly' => true,
+            ],
+            '~Lock' => [
+                'ProfileName'  => '~Lock',
+                'ProfileType'  => 0,
+                'Icon'         => 'Lock',
+                'Prefix'       => '',
+                'Suffix'       => '',
+                'MinValue'     => 0.0,
+                'MaxValue'     => 1.0,
+                'StepSize'     => 0.0,
+                'Digits'       => 0,
+                'Associations' => [
+                    0 => [
+                        'Value' => false,
+                        'Name'  => 'Entriegelt',
+                        'Icon'  => '',
+                        'Color' => -1,
+                    ],
+                    1 => [
+                        'Value' => true,
+                        'Name'  => 'Gesperrt',
+                        'Icon'  => '',
+                        'Color' => 255,
+                    ],
+                ],
+                'IsReadOnly' => true,
+            ],
+            '~Battery.Reversed' => [
+                'ProfileName'  => '~Battery.Reversed',
+                'ProfileType'  => 0,
+                'Icon'         => 'Battery',
+                'Prefix'       => '',
+                'Suffix'       => '',
+                'MinValue'     => 0.0,
+                'MaxValue'     => 1.0,
+                'StepSize'     => 0.0,
+                'Digits'       => 0,
+                'Associations' => [
+                    0 => [
+                        'Value' => false,
+                        'Name'  => 'Batterie schwach',
+                        'Icon'  => '',
+                        'Color' => 16711680,
+                    ],
+                    1 => [
+                        'Value' => true,
+                        'Name'  => 'OK',
+                        'Icon'  => '',
+                        'Color' => -1,
+                    ],
+                ],
+                'IsReadOnly' => true,
+            ],
+            '~Milliampere' => [
+                'ProfileName'  => '~Milliampere',
+                'ProfileType'  => 2,
+                'Icon'         => 'Electricity',
+                'Prefix'       => '',
+                'Suffix'       => ' mA',
+                'MinValue'     => 0.0,
+                'MaxValue'     => 0.0,
+                'StepSize'     => 0.0,
+                'Digits'       => 1,
+                'Associations' => [
+                ],
+                'IsReadOnly' => true,
+            ],
+            '~Progress' => [
+                'ProfileName'  => '~Progress',
+                'ProfileType'  => 2,
+                'Icon'         => 'Clock',
+                'Prefix'       => '',
+                'Suffix'       => ' %',
+                'MinValue'     => 0.0,
+                'MaxValue'     => 100.0,
+                'StepSize'     => 0.1,
+                'Digits'       => 1,
+                'Associations' => [
+                ],
+                'IsReadOnly' => true,
+            ],
+            '~Battery' => [
+                'ProfileName'  => '~Battery',
+                'ProfileType'  => 0,
+                'Icon'         => 'Battery',
+                'Prefix'       => '',
+                'Suffix'       => '',
+                'MinValue'     => 0.0,
+                'MaxValue'     => 1.0,
+                'StepSize'     => 0.0,
+                'Digits'       => 0,
+                'Associations' => [
+                    0 => [
+                        'Value' => false,
+                        'Name'  => 'OK',
+                        'Icon'  => '',
+                        'Color' => -1,
+                    ],
+                    1 => [
+                        'Value' => true,
+                        'Name'  => 'Batterie schwach',
+                        'Icon'  => '',
+                        'Color' => 16711680,
+                    ],
+                ],
+                'IsReadOnly' => true,
+            ],
+            '~ShutterPosition.255' => [
+                'ProfileName'  => '~ShutterPosition.255',
+                'ProfileType'  => 1,
+                'Icon'         => 'Shutter',
+                'Prefix'       => '',
+                'Suffix'       => '',
+                'MinValue'     => 0.0,
+                'MaxValue'     => 255.0,
+                'StepSize'     => 0.0,
+                'Digits'       => 0,
+                'Associations' => [
+                    0 => [
+                        'Value' => 0,
+                        'Name'  => 'Geöffnet',
+                        'Icon'  => '',
+                        'Color' => 65280,
+                    ],
+                    1 => [
+                        'Value' => 64,
+                        'Name'  => '25 %%',
+                        'Icon'  => '',
+                        'Color' => 65280,
+                    ],
+                    2 => [
+                        'Value' => 128,
+                        'Name'  => '50 %%',
+                        'Icon'  => '',
+                        'Color' => 65280,
+                    ],
+                    3 => [
+                        'Value' => 191,
+                        'Name'  => '75 %%',
+                        'Icon'  => '',
+                        'Color' => 65280,
+                    ],
+                    4 => [
+                        'Value' => 255,
+                        'Name'  => 'Geschlossen',
+                        'Icon'  => '',
+                        'Color' => -1,
+                    ],
+                ],
+                'IsReadOnly' => true,
+            ],
+            '~PlaybackPreviousNextNoStop' => [
+                'ProfileName'  => '~PlaybackPreviousNextNoStop',
+                'ProfileType'  => 1,
+                'Icon'         => 'Remote',
+                'Prefix'       => '',
+                'Suffix'       => '',
+                'MinValue'     => 0.0,
+                'MaxValue'     => 4.0,
+                'StepSize'     => 0.0,
+                'Digits'       => 0,
+                'Associations' => [
+                    0 => [
+                        'Value' => 0,
+                        'Name'  => 'Zurück',
+                        'Icon'  => '',
+                        'Color' => -1,
+                    ],
+                    1 => [
+                        'Value' => 2,
+                        'Name'  => 'Play',
+                        'Icon'  => '',
+                        'Color' => -1,
+                    ],
+                    2 => [
+                        'Value' => 3,
+                        'Name'  => 'Pause',
+                        'Icon'  => '',
+                        'Color' => -1,
+                    ],
+                    3 => [
+                        'Value' => 4,
+                        'Name'  => 'Weiter',
+                        'Icon'  => '',
+                        'Color' => -1,
+                    ],
+                ],
+                'IsReadOnly' => true,
+            ],
+            '~Mode.HM' => [
+                'ProfileName'  => '~Mode.HM',
+                'ProfileType'  => 1,
+                'Icon'         => 'ArrowRight',
+                'Prefix'       => '',
+                'Suffix'       => '',
+                'MinValue'     => 0.0,
+                'MaxValue'     => 1.0,
+                'StepSize'     => 0.0,
+                'Digits'       => 0,
+                'Associations' => [
+                    0 => [
+                        'Value' => 0,
+                        'Name'  => 'Automatisch',
+                        'Icon'  => '',
+                        'Color' => -1,
+                    ],
+                    1 => [
+                        'Value' => 1,
+                        'Name'  => 'Manuell',
+                        'Icon'  => '',
+                        'Color' => 255,
+                    ],
+                ],
+                'IsReadOnly' => true,
+            ],
+            '~Battery.100' => [
+                'ProfileName'  => '~Battery.100',
+                'ProfileType'  => 1,
+                'Icon'         => 'Battery',
+                'Prefix'       => '',
+                'Suffix'       => ' %',
+                'MinValue'     => 0.0,
+                'MaxValue'     => 100.0,
+                'StepSize'     => 10.0,
+                'Digits'       => 0,
+                'Associations' => [
+                ],
+                'IsReadOnly' => true,
+            ],
+            '~Presence.Reversed' => [
+                'ProfileName'  => '~Presence.Reversed',
+                'ProfileType'  => 0,
+                'Icon'         => 'Motion',
+                'Prefix'       => '',
+                'Suffix'       => '',
+                'MinValue'     => 0.0,
+                'MaxValue'     => 1.0,
+                'StepSize'     => 0.0,
+                'Digits'       => 0,
+                'Associations' => [
+                    0 => [
+                        'Value' => false,
+                        'Name'  => 'Anwesend',
+                        'Icon'  => '',
+                        'Color' => 255,
+                    ],
+                    1 => [
+                        'Value' => true,
+                        'Name'  => 'Abwesend',
+                        'Icon'  => '',
+                        'Color' => -1,
+                    ],
+                ],
+                'IsReadOnly' => true,
+            ],
+            '~Motion' => [
+                'ProfileName'  => '~Motion',
+                'ProfileType'  => 0,
+                'Icon'         => 'Motion',
+                'Prefix'       => '',
+                'Suffix'       => '',
+                'MinValue'     => 0.0,
+                'MaxValue'     => 1.0,
+                'StepSize'     => 0.0,
+                'Digits'       => 0,
+                'Associations' => [
+                    0 => [
+                        'Value' => false,
+                        'Name'  => 'Keine Bewegung',
+                        'Icon'  => '',
+                        'Color' => -1,
+                    ],
+                    1 => [
+                        'Value' => true,
+                        'Name'  => 'Bewegung erkannt',
+                        'Icon'  => '',
+                        'Color' => 255,
+                    ],
+                ],
+                'IsReadOnly' => true,
+            ],
+            '~WindSpeed.kmh' => [
+                'ProfileName'  => '~WindSpeed.kmh',
+                'ProfileType'  => 2,
+                'Icon'         => 'WindSpeed',
+                'Prefix'       => '',
+                'Suffix'       => ' km/h',
+                'MinValue'     => 0.0,
+                'MaxValue'     => 200.0,
+                'StepSize'     => 0.0,
+                'Digits'       => 1,
+                'Associations' => [
+                ],
+                'IsReadOnly' => true,
+            ],
+            '~WindSpeed.ms' => [
+                'ProfileName'  => '~WindSpeed.ms',
+                'ProfileType'  => 2,
+                'Icon'         => 'WindSpeed',
+                'Prefix'       => '',
+                'Suffix'       => ' m/s',
+                'MinValue'     => 0.0,
+                'MaxValue'     => 60.0,
+                'StepSize'     => 0.0,
+                'Digits'       => 2,
+                'Associations' => [
+                ],
+                'IsReadOnly' => true,
+            ],
+            '~WindDirection.F' => [
+                'ProfileName'  => '~WindDirection.F',
+                'ProfileType'  => 2,
+                'Icon'         => 'WindDirection',
+                'Prefix'       => '',
+                'Suffix'       => '°',
+                'MinValue'     => 0.0,
+                'MaxValue'     => 360.0,
+                'StepSize'     => 30.0,
+                'Digits'       => 1,
+                'Associations' => [
+                ],
+                'IsReadOnly' => true,
+            ],
+            '~SunAltitude.F' => [
+                'ProfileName'  => '~SunAltitude.F',
+                'ProfileType'  => 2,
+                'Icon'         => 'Sun',
+                'Prefix'       => '',
+                'Suffix'       => '°',
+                'MinValue'     => -180.0,
+                'MaxValue'     => 180.0,
+                'StepSize'     => 0.0,
+                'Digits'       => 1,
+                'Associations' => [
+                ],
+                'IsReadOnly' => true,
+            ],
+            '~SunAzimuth.F' => [
+                'ProfileName'  => '~SunAzimuth.F',
+                'ProfileType'  => 2,
+                'Icon'         => 'Sun',
+                'Prefix'       => '',
+                'Suffix'       => '°',
+                'MinValue'     => 0.0,
+                'MaxValue'     => 360.0,
+                'StepSize'     => 0.0,
+                'Digits'       => 1,
+                'Associations' => [
+                ],
+                'IsReadOnly' => true,
+            ],
+            '~Acceleration.F' => [
+                'ProfileName'  => '~Acceleration.F',
+                'ProfileType'  => 2,
+                'Icon'         => 'Cross',
+                'Prefix'       => '',
+                'Suffix'       => ' g',
+                'MinValue'     => 10.0,
+                'MaxValue'     => 10.0,
+                'StepSize'     => 0.0,
+                'Digits'       => 1,
+                'Associations' => [
+                ],
+                'IsReadOnly' => true,
+            ],
+            '~RGB' => [
+                'ProfileName'  => '~RGB',
+                'ProfileType'  => 3,
+                'Icon'         => '',
+                'Prefix'       => '',
+                'Suffix'       => '',
+                'MinValue'     => 0.0,
+                'MaxValue'     => 0.0,
+                'StepSize'     => 0.0,
+                'Digits'       => 0,
+                'Associations' => [
+                ],
+                'IsReadOnly' => true,
+            ],
+            '~Duration' => [
+                'ProfileName'  => '~Duration',
+                'ProfileType'  => 1,
+                'Icon'         => '',
+                'Prefix'       => '',
+                'Suffix'       => '',
+                'MinValue'     => 0.0,
+                'MaxValue'     => 0.0,
+                'StepSize'     => 1.0,
+                'Digits'       => 0,
+                'Associations' => [
+                ],
+                'IsReadOnly' => true,
+            ],
+            '~Duration.Long' => [
+                'ProfileName'  => '~Duration.Long',
+                'ProfileType'  => 1,
+                'Icon'         => '',
+                'Prefix'       => '',
+                'Suffix'       => '',
+                'MinValue'     => 0.0,
+                'MaxValue'     => 0.0,
+                'StepSize'     => 1.0,
+                'Digits'       => 0,
+                'Associations' => [
+                ],
+                'IsReadOnly' => true,
+            ],
+            '~WindDirection.Text' => [
+                'ProfileName'  => '~WindDirection.Text',
+                'ProfileType'  => 2,
+                'Icon'         => 'WindDirection',
+                'Prefix'       => '',
+                'Suffix'       => '',
+                'MinValue'     => 0.0,
+                'MaxValue'     => 337.5,
+                'StepSize'     => 0.0,
+                'Digits'       => 1,
+                'Associations' => [
+                    0 => [
+                        'Value' => 0,
+                        'Name'  => 'N',
+                        'Icon'  => '',
+                        'Color' => -1,
+                    ],
+                    1 => [
+                        'Value' => 22.5,
+                        'Name'  => 'NNO',
+                        'Icon'  => '',
+                        'Color' => -1,
+                    ],
+                    2 => [
+                        'Value' => 45,
+                        'Name'  => 'NO',
+                        'Icon'  => '',
+                        'Color' => -1,
+                    ],
+                    3 => [
+                        'Value' => 67.5,
+                        'Name'  => 'ONO',
+                        'Icon'  => '',
+                        'Color' => -1,
+                    ],
+                    4 => [
+                        'Value' => 90,
+                        'Name'  => 'O',
+                        'Icon'  => '',
+                        'Color' => -1,
+                    ],
+                    5 => [
+                        'Value' => 112.5,
+                        'Name'  => 'OSO',
+                        'Icon'  => '',
+                        'Color' => -1,
+                    ],
+                    6 => [
+                        'Value' => 135,
+                        'Name'  => 'SO',
+                        'Icon'  => '',
+                        'Color' => -1,
+                    ],
+                    7 => [
+                        'Value' => 157.5,
+                        'Name'  => 'SSO',
+                        'Icon'  => '',
+                        'Color' => -1,
+                    ],
+                    8 => [
+                        'Value' => 180,
+                        'Name'  => 'S',
+                        'Icon'  => '',
+                        'Color' => -1,
+                    ],
+                    9 => [
+                        'Value' => 202.5,
+                        'Name'  => 'SSW',
+                        'Icon'  => '',
+                        'Color' => -1,
+                    ],
+                    10 => [
+                        'Value' => 225,
+                        'Name'  => 'SW',
+                        'Icon'  => '',
+                        'Color' => -1,
+                    ],
+                    11 => [
+                        'Value' => 247.5,
+                        'Name'  => 'WSW',
+                        'Icon'  => '',
+                        'Color' => -1,
+                    ],
+                    12 => [
+                        'Value' => 270,
+                        'Name'  => 'W',
+                        'Icon'  => '',
+                        'Color' => -1,
+                    ],
+                    13 => [
+                        'Value' => 292.5,
+                        'Name'  => 'WNW',
+                        'Icon'  => '',
+                        'Color' => -1,
+                    ],
+                    14 => [
+                        'Value' => 315,
+                        'Name'  => 'NW',
+                        'Icon'  => '',
+                        'Color' => -1,
+                    ],
+                    15 => [
+                        'Value' => 337.5,
+                        'Name'  => 'NNW',
+                        'Icon'  => '',
+                        'Color' => -1,
+                    ],
+                ],
+                'IsReadOnly' => true,
+            ],
+            '~Valve' => [
+                'ProfileName'  => '~Valve',
+                'ProfileType'  => 1,
+                'Icon'         => 'Gauge',
+                'Prefix'       => '',
+                'Suffix'       => ' %',
+                'MinValue'     => 0.0,
+                'MaxValue'     => 100.0,
+                'StepSize'     => 10.0,
+                'Digits'       => 0,
+                'Associations' => [
+                ],
+                'IsReadOnly' => true,
+            ],
+            '~Shutter' => [
+                'ProfileName'  => '~Shutter',
+                'ProfileType'  => 1,
+                'Icon'         => 'Shutter',
+                'Prefix'       => '',
+                'Suffix'       => ' %',
+                'MinValue'     => 0.0,
+                'MaxValue'     => 100.0,
+                'StepSize'     => 1.0,
+                'Digits'       => 0,
+                'Associations' => [
+                ],
+                'IsReadOnly' => true,
+            ],
+            '~Shutter.Reversed' => [
+                'ProfileName'  => '~Shutter.Reversed',
+                'ProfileType'  => 1,
+                'Icon'         => 'Shutter',
+                'Prefix'       => '',
+                'Suffix'       => ' %',
+                'MinValue'     => 0.0,
+                'MaxValue'     => 100.0,
+                'StepSize'     => 1.0,
+                'Digits'       => 0,
+                'Associations' => [
+                ],
+                'IsReadOnly' => true,
+            ],
+            '~ShutterMoveStop' => [
+                'ProfileName'  => '~ShutterMoveStop',
+                'ProfileType'  => 1,
+                'Icon'         => 'Shutter',
+                'Prefix'       => '',
+                'Suffix'       => '',
+                'MinValue'     => 0.0,
+                'MaxValue'     => 4.0,
+                'StepSize'     => 0.0,
+                'Digits'       => 0,
+                'Associations' => [
+                    0 => [
+                        'Value' => 0,
+                        'Name'  => 'Öffnen',
+                        'Icon'  => '',
+                        'Color' => 65280,
+                    ],
+                    1 => [
+                        'Value' => 2,
+                        'Name'  => 'Stop',
+                        'Icon'  => '',
+                        'Color' => -1,
+                    ],
+                    2 => [
+                        'Value' => 4,
+                        'Name'  => 'Schließen',
+                        'Icon'  => '',
+                        'Color' => -1,
+                    ],
+                ],
+                'IsReadOnly' => true,
+            ],
+            '~Ampere' => [
+                'ProfileName'  => '~Ampere',
+                'ProfileType'  => 2,
+                'Icon'         => 'Electricity',
+                'Prefix'       => '',
+                'Suffix'       => ' A',
+                'MinValue'     => 0.0,
+                'MaxValue'     => 0.0,
+                'StepSize'     => 0.0,
+                'Digits'       => 1,
+                'Associations' => [
+                ],
+                'IsReadOnly' => true,
+            ],
+            '~ShutterMoveStep' => [
+                'ProfileName'  => '~ShutterMoveStep',
+                'ProfileType'  => 1,
+                'Icon'         => 'Shutter',
+                'Prefix'       => '',
+                'Suffix'       => '',
+                'MinValue'     => 0.0,
+                'MaxValue'     => 4.0,
+                'StepSize'     => 0.0,
+                'Digits'       => 0,
+                'Associations' => [
+                    0 => [
+                        'Value' => 0,
+                        'Name'  => 'Öffnen',
+                        'Icon'  => '',
+                        'Color' => 65280,
+                    ],
+                    1 => [
+                        'Value' => 1,
+                        'Name'  => 'Schritt',
+                        'Icon'  => '',
+                        'Color' => 255,
+                    ],
+                    2 => [
+                        'Value' => 2,
+                        'Name'  => 'Stop',
+                        'Icon'  => '',
+                        'Color' => -1,
+                    ],
+                    3 => [
+                        'Value' => 3,
+                        'Name'  => 'Schritt',
+                        'Icon'  => '',
+                        'Color' => 255,
+                    ],
+                    4 => [
+                        'Value' => 4,
+                        'Name'  => 'Schließen',
+                        'Icon'  => '',
+                        'Color' => -1,
+                    ],
+                ],
+                'IsReadOnly' => true,
+            ],
+            '~Volt.230' => [
+                'ProfileName'  => '~Volt.230',
+                'ProfileType'  => 2,
+                'Icon'         => 'Electricity',
+                'Prefix'       => '',
+                'Suffix'       => ' V',
+                'MinValue'     => 207.0,
+                'MaxValue'     => 253.0,
+                'StepSize'     => 0.0,
+                'Digits'       => 1,
+                'Associations' => [
+                ],
+                'IsReadOnly' => true,
+            ],
+            '~Ampere.16' => [
+                'ProfileName'  => '~Ampere.16',
+                'ProfileType'  => 2,
+                'Icon'         => 'Electricity',
+                'Prefix'       => '',
+                'Suffix'       => ' A',
+                'MinValue'     => 0.0,
+                'MaxValue'     => 16.0,
+                'StepSize'     => 0.0,
+                'Digits'       => 1,
+                'Associations' => [
+                ],
+                'IsReadOnly' => true,
+            ],
+            '~Watt' => [
+                'ProfileName'  => '~Watt',
+                'ProfileType'  => 2,
+                'Icon'         => 'Electricity',
+                'Prefix'       => '',
+                'Suffix'       => ' W',
+                'MinValue'     => 0.0,
+                'MaxValue'     => 0.0,
+                'StepSize'     => 0.0,
+                'Digits'       => 1,
+                'Associations' => [
+                ],
+                'IsReadOnly' => true,
+            ],
+            '~Watt.3680' => [
+                'ProfileName'  => '~Watt.3680',
+                'ProfileType'  => 2,
+                'Icon'         => 'Electricity',
+                'Prefix'       => '',
+                'Suffix'       => ' W',
+                'MinValue'     => 0.0,
+                'MaxValue'     => 3680.0,
+                'StepSize'     => 0.0,
+                'Digits'       => 1,
+                'Associations' => [
+                ],
+                'IsReadOnly' => true,
+            ],
+            '~Watt.14490' => [
+                'ProfileName'  => '~Watt.14490',
+                'ProfileType'  => 2,
+                'Icon'         => 'Electricity',
+                'Prefix'       => '',
+                'Suffix'       => ' W',
+                'MinValue'     => 0.0,
+                'MaxValue'     => 14490.0,
+                'StepSize'     => 0.0,
+                'Digits'       => 1,
+                'Associations' => [
+                ],
+                'IsReadOnly' => true,
+            ],
+            '~Hertz' => [
+                'ProfileName'  => '~Hertz',
+                'ProfileType'  => 2,
+                'Icon'         => 'Electricity',
+                'Prefix'       => '',
+                'Suffix'       => ' Hz',
+                'MinValue'     => 0.0,
+                'MaxValue'     => 0.0,
+                'StepSize'     => 0.0,
+                'Digits'       => 2,
+                'Associations' => [
+                ],
+                'IsReadOnly' => true,
+            ],
+            '~Hertz.50' => [
+                'ProfileName'  => '~Hertz.50',
+                'ProfileType'  => 2,
+                'Icon'         => 'Electricity',
+                'Prefix'       => '',
+                'Suffix'       => ' Hz',
+                'MinValue'     => 45.0,
+                'MaxValue'     => 55.0,
+                'StepSize'     => 0.0,
+                'Digits'       => 2,
+                'Associations' => [
+                ],
+                'IsReadOnly' => true,
+            ],
+            '~Electricity' => [
+                'ProfileName'  => '~Electricity',
+                'ProfileType'  => 2,
+                'Icon'         => 'Electricity',
+                'Prefix'       => '',
+                'Suffix'       => ' kWh',
+                'MinValue'     => 0.0,
+                'MaxValue'     => 0.0,
+                'StepSize'     => 0.0,
+                'Digits'       => 2,
+                'Associations' => [
+                ],
+                'IsReadOnly' => true,
+            ],
+            '~Electricity.Wh' => [
+                'ProfileName'  => '~Electricity.Wh',
+                'ProfileType'  => 2,
+                'Icon'         => 'Electricity',
+                'Prefix'       => '',
+                'Suffix'       => ' Wh',
+                'MinValue'     => 0.0,
+                'MaxValue'     => 0.0,
+                'StepSize'     => 0.0,
+                'Digits'       => 2,
+                'Associations' => [
+                ],
+                'IsReadOnly' => true,
+            ],
+            '~Water.m3' => [
+                'ProfileName'  => '~Water.m3',
+                'ProfileType'  => 2,
+                'Icon'         => 'Drops',
+                'Prefix'       => '',
+                'Suffix'       => ' m³',
+                'MinValue'     => 0.0,
+                'MaxValue'     => 0.0,
+                'StepSize'     => 0.0,
+                'Digits'       => 3,
+                'Associations' => [
+                ],
+                'IsReadOnly' => true,
+            ],
+            '~MailMessages' => [
+                'ProfileName'  => '~MailMessages',
+                'ProfileType'  => 1,
+                'Icon'         => 'Mail',
+                'Prefix'       => '',
+                'Suffix'       => '',
+                'MinValue'     => -1.0,
+                'MaxValue'     => 2147483647.0,
+                'StepSize'     => 0.0,
+                'Digits'       => 0,
+                'Associations' => [
+                    0 => [
+                        'Value' => -1,
+                        'Name'  => 'Unbekannt',
+                        'Icon'  => '',
+                        'Color' => -1,
+                    ],
+                    1 => [
+                        'Value' => 0,
+                        'Name'  => 'Kein(e)',
+                        'Icon'  => '',
+                        'Color' => -1,
+                    ],
+                    2 => [
+                        'Value' => 1,
+                        'Name'  => '%d',
+                        'Icon'  => '',
+                        'Color' => 255,
+                    ],
+                    3 => [
+                        'Value' => 2147483647,
+                        'Name'  => '*',
+                        'Icon'  => '',
+                        'Color' => -1,
+                    ],
+                ],
+                'IsReadOnly' => true,
+            ],
+            '~Gas' => [
+                'ProfileName'  => '~Gas',
+                'ProfileType'  => 2,
+                'Icon'         => 'Flame',
+                'Prefix'       => '',
+                'Suffix'       => ' m³',
+                'MinValue'     => 0.0,
+                'MaxValue'     => 0.0,
+                'StepSize'     => 0.0,
+                'Digits'       => 2,
+                'Associations' => [
+                ],
+                'IsReadOnly' => true,
+            ],
+            '~Repeat' => [
+                'ProfileName'  => '~Repeat',
+                'ProfileType'  => 1,
+                'Icon'         => 'Repeat',
+                'Prefix'       => '',
+                'Suffix'       => '',
+                'MinValue'     => 0.0,
+                'MaxValue'     => 2.0,
+                'StepSize'     => 0.0,
+                'Digits'       => 0,
+                'Associations' => [
+                    0 => [
+                        'Value' => 0,
+                        'Name'  => 'Aus',
+                        'Icon'  => '',
+                        'Color' => -1,
+                    ],
+                    1 => [
+                        'Value' => 1,
+                        'Name'  => 'Kontext',
+                        'Icon'  => '',
+                        'Color' => -1,
+                    ],
+                    2 => [
+                        'Value' => 2,
+                        'Name'  => 'Lied',
+                        'Icon'  => '',
+                        'Color' => -1,
+                    ],
+                ],
+                'IsReadOnly' => true,
+            ],
+            '~Flow' => [
+                'ProfileName'  => '~Flow',
+                'ProfileType'  => 2,
+                'Icon'         => 'Distance',
+                'Prefix'       => '',
+                'Suffix'       => ' m³/h',
+                'MinValue'     => 0.0,
+                'MaxValue'     => 0.0,
+                'StepSize'     => 0.0,
+                'Digits'       => 2,
+                'Associations' => [
+                ],
+                'IsReadOnly' => true,
+            ],
+            '~Euro' => [
+                'ProfileName'  => '~Euro',
+                'ProfileType'  => 2,
+                'Icon'         => 'Euro',
+                'Prefix'       => '',
+                'Suffix'       => ' €',
+                'MinValue'     => 0.0,
+                'MaxValue'     => 0.0,
+                'StepSize'     => 0.0,
+                'Digits'       => 2,
+                'Associations' => [
+                ],
+                'IsReadOnly' => true,
+            ],
+            '~Dollar' => [
+                'ProfileName'  => '~Dollar',
+                'ProfileType'  => 2,
+                'Icon'         => 'Dollar',
+                'Prefix'       => '',
+                'Suffix'       => ' $',
+                'MinValue'     => 0.0,
+                'MaxValue'     => 0.0,
+                'StepSize'     => 0.0,
+                'Digits'       => 2,
+                'Associations' => [
+                ],
+                'IsReadOnly' => true,
+            ],
+            '~UnixTimestamp' => [
+                'ProfileName'  => '~UnixTimestamp',
+                'ProfileType'  => 1,
+                'Icon'         => 'Clock',
+                'Prefix'       => '',
+                'Suffix'       => '',
+                'MinValue'     => 0.0,
+                'MaxValue'     => 0.0,
+                'StepSize'     => 0.0,
+                'Digits'       => 0,
+                'Associations' => [
+                ],
+                'IsReadOnly' => true,
+            ],
+            '~UnixTimestampDate' => [
+                'ProfileName'  => '~UnixTimestampDate',
+                'ProfileType'  => 1,
+                'Icon'         => 'Calendar',
+                'Prefix'       => '',
+                'Suffix'       => '',
+                'MinValue'     => 0.0,
+                'MaxValue'     => 0.0,
+                'StepSize'     => 0.0,
+                'Digits'       => 0,
+                'Associations' => [
+                ],
+                'IsReadOnly' => true,
+            ],
+            '~UnixTimestampTime' => [
+                'ProfileName'  => '~UnixTimestampTime',
+                'ProfileType'  => 1,
+                'Icon'         => 'Clock',
+                'Prefix'       => '',
+                'Suffix'       => '',
+                'MinValue'     => 0.0,
+                'MaxValue'     => 0.0,
+                'StepSize'     => 0.0,
+                'Digits'       => 0,
+                'Associations' => [
+                ],
+                'IsReadOnly' => true,
+            ],
+            '~TextBox' => [
+                'ProfileName'  => '~TextBox',
+                'ProfileType'  => 3,
+                'Icon'         => '',
+                'Prefix'       => '',
+                'Suffix'       => '',
+                'MinValue'     => 0.0,
+                'MaxValue'     => 0.0,
+                'StepSize'     => 0.0,
+                'Digits'       => 0,
+                'Associations' => [
+                ],
+                'IsReadOnly' => true,
+            ],
+            '~HTMLBox' => [
+                'ProfileName'  => '~HTMLBox',
+                'ProfileType'  => 3,
+                'Icon'         => '',
+                'Prefix'       => '',
+                'Suffix'       => '',
+                'MinValue'     => 0.0,
+                'MaxValue'     => 0.0,
+                'StepSize'     => 0.0,
+                'Digits'       => 0,
+                'Associations' => [
+                ],
+                'IsReadOnly' => true,
+            ],
+            '~HexColor' => [
+                'ProfileName'  => '~HexColor',
+                'ProfileType'  => 1,
+                'Icon'         => 'Paintbrush',
+                'Prefix'       => '',
+                'Suffix'       => '',
+                'MinValue'     => 0.0,
+                'MaxValue'     => 0.0,
+                'StepSize'     => 0.0,
+                'Digits'       => 0,
+                'Associations' => [
+                ],
+                'IsReadOnly' => true,
+            ],
+            '~TWColor' => [
+                'ProfileName'  => '~TWColor',
+                'ProfileType'  => 1,
+                'Icon'         => 'Paintbrush',
+                'Prefix'       => '',
+                'Suffix'       => ' K',
+                'MinValue'     => 1000.0,
+                'MaxValue'     => 12000.0,
+                'StepSize'     => 1.0,
+                'Digits'       => 0,
+                'Associations' => [
+                ],
+                'IsReadOnly' => true,
+            ],
+            '~Playback' => [
+                'ProfileName'  => '~Playback',
+                'ProfileType'  => 1,
+                'Icon'         => 'Remote',
+                'Prefix'       => '',
+                'Suffix'       => '',
+                'MinValue'     => 1.0,
+                'MaxValue'     => 3.0,
+                'StepSize'     => 0.0,
+                'Digits'       => 0,
+                'Associations' => [
+                    0 => [
+                        'Value' => 1,
+                        'Name'  => 'Stop',
+                        'Icon'  => '',
+                        'Color' => -1,
+                    ],
+                    1 => [
+                        'Value' => 2,
+                        'Name'  => 'Play',
+                        'Icon'  => '',
+                        'Color' => -1,
+                    ],
+                    2 => [
+                        'Value' => 3,
+                        'Name'  => 'Pause',
+                        'Icon'  => '',
+                        'Color' => -1,
+                    ],
+                ],
+                'IsReadOnly' => true,
+            ],
+            '~PlaybackPreviousNext' => [
+                'ProfileName'  => '~PlaybackPreviousNext',
+                'ProfileType'  => 1,
+                'Icon'         => 'Remote',
+                'Prefix'       => '',
+                'Suffix'       => '',
+                'MinValue'     => 0.0,
+                'MaxValue'     => 4.0,
+                'StepSize'     => 0.0,
+                'Digits'       => 0,
+                'Associations' => [
+                    0 => [
+                        'Value' => 0,
+                        'Name'  => 'Zurück',
+                        'Icon'  => '',
+                        'Color' => -1,
+                    ],
+                    1 => [
+                        'Value' => 1,
+                        'Name'  => 'Stop',
+                        'Icon'  => '',
+                        'Color' => -1,
+                    ],
+                    2 => [
+                        'Value' => 2,
+                        'Name'  => 'Play',
+                        'Icon'  => '',
+                        'Color' => -1,
+                    ],
+                    3 => [
+                        'Value' => 3,
+                        'Name'  => 'Pause',
+                        'Icon'  => '',
+                        'Color' => -1,
+                    ],
+                    4 => [
+                        'Value' => 4,
+                        'Name'  => 'Weiter',
+                        'Icon'  => '',
+                        'Color' => -1,
+                    ],
+                ],
+                'IsReadOnly' => true,
+            ],
+            '~PlaybackNoStop' => [
+                'ProfileName'  => '~PlaybackNoStop',
+                'ProfileType'  => 1,
+                'Icon'         => 'Remote',
+                'Prefix'       => '',
+                'Suffix'       => '',
+                'MinValue'     => 2.0,
+                'MaxValue'     => 3.0,
+                'StepSize'     => 0.0,
+                'Digits'       => 0,
+                'Associations' => [
+                    0 => [
+                        'Value' => 2,
+                        'Name'  => 'Play',
+                        'Icon'  => '',
+                        'Color' => -1,
+                    ],
+                    1 => [
+                        'Value' => 3,
+                        'Name'  => 'Pause',
+                        'Icon'  => '',
+                        'Color' => -1,
+                    ],
+                ],
+                'IsReadOnly' => true,
+            ],
+            '~Artist' => [
+                'ProfileName'  => '~Artist',
+                'ProfileType'  => 3,
+                'Icon'         => 'People',
+                'Prefix'       => '',
+                'Suffix'       => '',
+                'MinValue'     => 0.0,
+                'MaxValue'     => 0.0,
+                'StepSize'     => 0.0,
+                'Digits'       => 0,
+                'Associations' => [
+                ],
+                'IsReadOnly' => true,
+            ],
+            '~Song' => [
+                'ProfileName'  => '~Song',
+                'ProfileType'  => 3,
+                'Icon'         => 'Melody',
+                'Prefix'       => '',
+                'Suffix'       => '',
+                'MinValue'     => 0.0,
+                'MaxValue'     => 0.0,
+                'StepSize'     => 0.0,
+                'Digits'       => 0,
+                'Associations' => [
+                ],
+                'IsReadOnly' => true,
+            ],
+            '~Playlist' => [
+                'ProfileName'  => '~Playlist',
+                'ProfileType'  => 3,
+                'Icon'         => 'Database',
+                'Prefix'       => '',
+                'Suffix'       => '',
+                'MinValue'     => 0.0,
+                'MaxValue'     => 0.0,
+                'StepSize'     => 0.0,
+                'Digits'       => 0,
+                'Associations' => [
+                ],
+                'IsReadOnly' => true,
+            ],
+            '~Volume' => [
+                'ProfileName'  => '~Volume',
+                'ProfileType'  => 1,
+                'Icon'         => 'Speaker',
+                'Prefix'       => '',
+                'Suffix'       => ' %',
+                'MinValue'     => 0.0,
+                'MaxValue'     => 100.0,
+                'StepSize'     => 1.0,
+                'Digits'       => 0,
+                'Associations' => [
+                ],
+                'IsReadOnly' => true,
+            ],
+            '~Shuffle' => [
+                'ProfileName'  => '~Shuffle',
+                'ProfileType'  => 0,
+                'Icon'         => 'Shuffle',
+                'Prefix'       => '',
+                'Suffix'       => '',
+                'MinValue'     => 0.0,
+                'MaxValue'     => 1.0,
+                'StepSize'     => 0.0,
+                'Digits'       => 0,
+                'Associations' => [
+                    0 => [
+                        'Value' => false,
+                        'Name'  => 'Aus',
+                        'Icon'  => '',
+                        'Color' => -1,
+                    ],
+                    1 => [
+                        'Value' => true,
+                        'Name'  => 'An',
+                        'Icon'  => '',
+                        'Color' => 65280,
+                    ],
+                ],
+                'IsReadOnly' => true,
+            ],
+            '~Mute' => [
+                'ProfileName'  => '~Mute',
+                'ProfileType'  => 0,
+                'Icon'         => 'Speaker',
+                'Prefix'       => '',
+                'Suffix'       => '',
+                'MinValue'     => 0.0,
+                'MaxValue'     => 1.0,
+                'StepSize'     => 0.0,
+                'Digits'       => 0,
+                'Associations' => [
+                    0 => [
+                        'Value' => false,
+                        'Name'  => 'Aus',
+                        'Icon'  => '',
+                        'Color' => -1,
+                    ],
+                    1 => [
+                        'Value' => true,
+                        'Name'  => 'An',
+                        'Icon'  => '',
+                        'Color' => 65280,
+                    ],
+                ],
+                'IsReadOnly' => true,
+            ],
+            '~IconNotifier' => [
+                'ProfileName'  => '~IconNotifier',
+                'ProfileType'  => 1,
+                'Icon'         => 'Alert',
+                'Prefix'       => '',
+                'Suffix'       => '',
+                'MinValue'     => 0.0,
+                'MaxValue'     => 999.0,
+                'StepSize'     => 1.0,
+                'Digits'       => 0,
+                'Associations' => [
+                ],
+                'IsReadOnly' => true,
+            ],
+            '~Motion.HM' => [
+                'ProfileName'  => '~Motion.HM',
+                'ProfileType'  => 0,
+                'Icon'         => 'Motion',
+                'Prefix'       => '',
+                'Suffix'       => '',
+                'MinValue'     => 0.0,
+                'MaxValue'     => 1.0,
+                'StepSize'     => 0.0,
+                'Digits'       => 0,
+                'Associations' => [
+                    0 => [
+                        'Value' => false,
+                        'Name'  => 'Untätig',
+                        'Icon'  => '',
+                        'Color' => -1,
+                    ],
+                    1 => [
+                        'Value' => true,
+                        'Name'  => 'Bewegung',
+                        'Icon'  => '',
+                        'Color' => 255,
+                    ],
+                ],
+                'IsReadOnly' => true,
+            ],
+            '~Electricity.HM' => [
+                'ProfileName'  => '~Electricity.HM',
+                'ProfileType'  => 2,
+                'Icon'         => '',
+                'Prefix'       => '',
+                'Suffix'       => ' Wh',
+                'MinValue'     => 0.0,
+                'MaxValue'     => 0.0,
+                'StepSize'     => 0.0,
+                'Digits'       => 2,
+                'Associations' => [
+                ],
+                'IsReadOnly' => true,
+            ],
+            '~Brightness.HM' => [
+                'ProfileName'  => '~Brightness.HM',
+                'ProfileType'  => 1,
+                'Icon'         => 'Sun',
+                'Prefix'       => '',
+                'Suffix'       => '',
+                'MinValue'     => 0.0,
+                'MaxValue'     => 255.0,
+                'StepSize'     => 0.0,
+                'Digits'       => 0,
+                'Associations' => [
+                ],
+                'IsReadOnly' => true,
+            ],
+            '~Temperature.HM' => [
+                'ProfileName'  => '~Temperature.HM',
+                'ProfileType'  => 2,
+                'Icon'         => 'Temperature',
+                'Prefix'       => '',
+                'Suffix'       => ' °C',
+                'MinValue'     => 6.0,
+                'MaxValue'     => 30.0,
+                'StepSize'     => 0.5,
+                'Digits'       => 1,
+                'Associations' => [
+                ],
+                'IsReadOnly' => true,
+            ],
+            '~Window.HM' => [
+                'ProfileName'  => '~Window.HM',
+                'ProfileType'  => 1,
+                'Icon'         => 'Window',
+                'Prefix'       => '',
+                'Suffix'       => '',
+                'MinValue'     => 0.0,
+                'MaxValue'     => 2.0,
+                'StepSize'     => 0.0,
+                'Digits'       => 0,
+                'Associations' => [
+                    0 => [
+                        'Value' => 0,
+                        'Name'  => 'Geschlossen',
+                        'Icon'  => '',
+                        'Color' => -1,
+                    ],
+                    1 => [
+                        'Value' => 1,
+                        'Name'  => 'Gekippt',
+                        'Icon'  => '',
+                        'Color' => 255,
+                    ],
+                    2 => [
+                        'Value' => 2,
+                        'Name'  => 'Geöffnet',
+                        'Icon'  => '',
+                        'Color' => 65280,
+                    ],
+                ],
+                'IsReadOnly' => true,
+            ],
+            '~Milliampere.HM' => [
+                'ProfileName'  => '~Milliampere.HM',
+                'ProfileType'  => 2,
+                'Icon'         => '',
+                'Prefix'       => '',
+                'Suffix'       => ' mA',
+                'MinValue'     => 0.0,
+                'MaxValue'     => 0.0,
+                'StepSize'     => 0.0,
+                'Digits'       => 0,
+                'Associations' => [
+                ],
+                'IsReadOnly' => true,
+            ],
+          ];
         }
     }
 
@@ -1518,17 +3663,17 @@ namespace IPS {
 
         public static function getActionsByEnvironment(int $ID, string $Environment, bool $IncludeDefault): string
         {
-            throw new Exception('Not implemented');
+            throw new \Exception('Not implemented');
         }
 
         public static function getActionForm(string $ActionID, array $Parameters): string
         {
-            throw new Exception('Not implemented');
+            throw new \Exception('Not implemented');
         }
 
         public static function getActionReadableCode(string $ActionID, array $Parameters): string
         {
-            throw new Exception('Not implemented');
+            throw new \Exception('Not implemented');
         }
 
         public static function runAction(string $ActionID, array $Parameters): void
@@ -1549,12 +3694,12 @@ namespace IPS {
                 }
             }
 
-            throw new Exception('Action does not exist');
+            throw new \Exception('Action does not exist');
         }
 
         public static function updateFormField(string $Name, string $Parameter, $Value, $ID, string $SessionID): void
         {
-            throw new Exception('Not implemented');
+            throw new \Exception('Not implemented');
         }
 
         public static function reset(): void
@@ -1569,7 +3714,7 @@ namespace IPS {
 
         public static function getDefaultParameters(array $Variable, string $GUID)
         {
-            throw new Exception('Not implemented');
+            throw new \Exception('Not implemented');
         }
 
         public static function checkPresentation(string $GUID)
@@ -1592,7 +3737,7 @@ namespace IPS {
 
         public static function getPresentationForm(string $GUID, int $VariableType, array $Parameter): string
         {
-            throw new Exception('Not implemented');
+            throw new \Exception('Not implemented');
         }
 
         public static function presentationExists(string $GUID): bool
