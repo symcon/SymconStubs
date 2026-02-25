@@ -131,7 +131,7 @@ class IPSModuleStrict
         $this->module->SetVisualizationType($Type);
     }
 
-    protected function GetIDForIdent(string $Ident): int
+    protected function GetIDForIdent(string $Ident): int|false
     {
         return $this->module->GetIDForIdent($Ident);
     }
