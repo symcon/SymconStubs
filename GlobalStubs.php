@@ -57,6 +57,8 @@ function SetValue(int $VariableID, $Value)
         default:
             throw new Exception('Unsupported VariableType!');
     }
+
+    return true;
 }
 
 function SetValueBoolean(int $VariableID, bool $Value)
