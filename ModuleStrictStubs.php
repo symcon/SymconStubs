@@ -228,21 +228,21 @@ class IPSModuleStrict
 
     protected function RegisterVariableInteger(string $Ident, string $Name, string|array $ProfileOrPresentation = '', int $Position = 0): bool
     {
-        $variableExists = (@$this->module->GetIDForIdent($Ident) !== null);
+        $variableExists = (@$this->module->GetIDForIdent($Ident) !== false);
         $this->module->RegisterVariableInteger($Ident, $Name, $ProfileOrPresentation, $Position);
         return !$variableExists;
     }
 
     protected function RegisterVariableFloat(string $Ident, string $Name, string|array $ProfileOrPresentation = '', int $Position = 0): bool
     {
-        $variableExists = (@$this->module->GetIDForIdent($Ident) !== null);
+        $variableExists = (@$this->module->GetIDForIdent($Ident) !== false);
         $this->module->RegisterVariableFloat($Ident, $Name, $ProfileOrPresentation, $Position);
         return !$variableExists;
     }
 
     protected function RegisterVariableString(string $Ident, string $Name, string|array $ProfileOrPresentation = '', int $Position = 0): bool
     {
-        $variableExists = (@$this->module->GetIDForIdent($Ident) !== null);
+        $variableExists = (@$this->module->GetIDForIdent($Ident) !== false);
         $this->module->RegisterVariableString($Ident, $Name, $ProfileOrPresentation, $Position);
         return !$variableExists;
     }
