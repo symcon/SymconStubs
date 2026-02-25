@@ -126,6 +126,11 @@ class IPSModuleStrict
         return $this->module->GetReferenceList();
     }
 
+    public function getMessages() : array
+    {
+        return $this->module->getMessages();
+    }
+
     public function SetVisualizationType(int $Type): void
     {
         $this->module->SetVisualizationType($Type);
@@ -192,19 +197,19 @@ class IPSModuleStrict
 
     protected function RegisterTimer(string $Ident, int $Milliseconds, string $ScriptText): bool
     {
-        $this->module->RegisterTimer($Ident, $Milliseconds, $ScriptText);
+        $this->module->RegisterTimer($Ident, $Milliseconds, $ScriptText, $this->getTime());
         return true;
     }
 
     protected function SetTimerInterval(string $Ident, int $Milliseconds): bool
     {
-        $this->module->SetTimerInterval($Ident, $Milliseconds);
+        $this->module->SetTimerInterval($Ident, $Milliseconds, $this->getTime());
         return true;
     }
 
     protected function GetTimerInterval(string $Ident): int
     {
-        return $this->module->GetTimerInterval($Ident);
+        return $this->module->GetTimerInterval($Ident, $this->getTime());
     }
 
     protected function RegisterScript(string $Ident, string $Name, string $Content = '', int $Position = 0): bool
@@ -244,13 +249,13 @@ class IPSModuleStrict
 
     protected function UnregisterVariable(string $Ident): bool
     {
-        $this->module->UnregisterMessage($Ident);
+        $this->module->UnregisterVariable($Ident);
         return true;
     }
 
     protected function MaintainVariable(string $Ident, string $Name, int $Type, string|array $ProfileOrPresentation, int $Position, bool $Keep): bool
     {
-        $this->module->MaintainVariable($Ident, $Name, $Type, $Profile, $Position, $Keep);
+        $this->module->MaintainVariable($Ident, $Name, $Type, $ProfileOrPresentation, $Position, $Keep);
         return true;
     }
 
