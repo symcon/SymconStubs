@@ -8,7 +8,7 @@ class IPSModulePublic extends IPSModule
     public function __call($name, $arguments)
     {
         if (!in_array($name, get_class_methods($this))) {
-            throw "Method $name is not implemented";
+            throw new Exception("Method $name is not implemented");
         }
         return $this->{$name}(...$arguments);
     }
@@ -113,7 +113,7 @@ class IPSModuleStrict
 
     public function GetCompatibleParents(): string
     {
-        return $this->module->GetConfigurationForParent();
+        return $this->module->GetCompatibleParents();
     }
 
     public function Translate(string $Text): string
@@ -365,7 +365,7 @@ class IPSModuleStrict
 
     protected function ForceParent(string $ModuleID): bool
     {
-        $this->module->ForceParent($MduleID);
+        $this->module->ForceParent($ModuleID);
         return true;
     }
 
@@ -394,7 +394,7 @@ class IPSModuleStrict
 
     protected function GetBufferList(): array
     {
-        return $this->module->GetBufferList($Name, $Data);
+        return $this->module->GetBufferList();
     }
 
     protected function GetBuffer(string $Name): string
@@ -490,10 +490,12 @@ class IPSModuleStrict
 
     protected function RegisterHook(string $HookPath): bool
     {
+        return true;
     }
 
     protected function RegisterOAuth(string $OAuthPath): bool
     {
+        return true;
     }
 
     protected function getTime(): int
