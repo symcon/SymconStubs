@@ -660,6 +660,7 @@ class IPSModule
 
     protected function LogMessage($Message, $Type)
     {
+        IPS\LogServer::logMessage(strval($this->InstanceID), $Message, $Type);
     }
 
     protected function HasActiveParent()
