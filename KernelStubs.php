@@ -1485,6 +1485,33 @@ namespace IPS {
         public static function reset()
         {
             self::$debug = [];
+            self::$messages = [];
+        }
+    }
+
+    class LogServer
+    {
+        private static $messages = [];
+
+        public static function logMessage(string $Sender, string $Message, int $Type): void
+        {
+            self::$messages[$Sender][] = [
+                'Message' => $Message,
+                'Type'    => $Type
+            ];
+        }
+
+        public static function getLogMessages(string $Sender): array
+        {
+            if (!isset(self::$messages[$Sender])) {
+                return [];
+            }
+            return self::$messages[$Sender];
+        }
+
+        public static function reset()
+        {
+            self::$messages = [];
         }
     }
 
@@ -1622,6 +1649,7 @@ namespace IPS {
             LinkManager::reset();
             ProfileManager::reset();
             DebugServer::reset();
+            LogServer::reset();
             ActionPool::reset();
             PresentationPool::reset();
             TemplateManager::reset();
