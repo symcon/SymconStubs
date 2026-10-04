@@ -509,10 +509,12 @@ class IPSModuleStrict
 
     protected function RegisterHook(string $HookPath): bool
     {
+        return true;
     }
 
     protected function RegisterOAuth(string $OAuthPath): bool
     {
+        return true;
     }
 
     protected function getTime(): int
