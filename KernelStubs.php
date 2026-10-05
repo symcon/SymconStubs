@@ -166,7 +166,7 @@ namespace IPS {
                     $params[] = $type . ' $' . $parameter->GetName();
                     $fwdparams[] = '$' . $parameter->GetName();
                 }
-                $function = sprintf('function %s_%s(%s){return IPS\InstanceManager::getInstanceInterface($InstanceID)->%s(%s);}', $modulePrefix, $method->GetName(), implode(', ', $params), $method->GetName(), implode(', ', $fwdparams));
+                $function = sprintf('function %s_%s(%s){$result = IPS\InstanceManager::getInstanceInterface($InstanceID)->%s(%s); IPS\TimeManager::updateTime($InstanceID); return $result;}', $modulePrefix, $method->GetName(), implode(', ', $params), $method->GetName(), implode(', ', $fwdparams));
                 if (!\function_exists($modulePrefix . '_' . $method->GetName())) {
                     eval($function);
                 }
@@ -676,6 +676,41 @@ namespace IPS {
         }
     }
 
+    class TimeManager
+    {
+        private static $time = null;
+
+        // Remember the time of the module after each function call, so timestamps follow the time simulated by tests
+        public static function updateTime(int $InstanceID): void
+        {
+            $interface = InstanceManager::getInstanceInterface($InstanceID);
+            if (!method_exists($interface, 'getTime')) {
+                return;
+            }
+            $method = new \ReflectionMethod($interface, 'getTime');
+            // Protected methods are accessible by default since PHP 8.1 and setAccessible is deprecated since PHP 8.5
+            if (PHP_VERSION_ID < 80100) {
+                $method->setAccessible(true);
+            }
+            try {
+                self::$time = $method->invoke($interface);
+            } catch (\Throwable $e) {
+                // Module does not implement getTime, keep the last known time
+            }
+        }
+
+        // Last known time of a module or the real time if no module provided a time yet
+        public static function getTime(): int
+        {
+            return self::$time ?? time();
+        }
+
+        public static function reset()
+        {
+            self::$time = null;
+        }
+    }
+
     class VariableManager
     {
         private static $variables = [];
@@ -732,9 +767,9 @@ namespace IPS {
         {
             self::checkVariable($VariableID);
 
-            self::$variables[$VariableID]['VariableUpdated'] = time();
+            self::$variables[$VariableID]['VariableUpdated'] = TimeManager::getTime();
             if (self::$variables[$VariableID]['VariableValue'] != $VariableValue) {
-                self::$variables[$VariableID]['VariableChanged'] = time();
+                self::$variables[$VariableID]['VariableChanged'] = TimeManager::getTime();
             }
             self::$variables[$VariableID]['VariableValue'] = $VariableValue;
         }
@@ -750,9 +785,9 @@ namespace IPS {
         {
             self::checkVariable($VariableID);
 
-            self::$variables[$VariableID]['VariableUpdated'] = time();
+            self::$variables[$VariableID]['VariableUpdated'] = TimeManager::getTime();
             if (self::$variables[$VariableID]['VariableValue'] != $VariableValue) {
-                self::$variables[$VariableID]['VariableChanged'] = time();
+                self::$variables[$VariableID]['VariableChanged'] = TimeManager::getTime();
             }
             self::$variables[$VariableID]['VariableValue'] = $VariableValue;
         }
@@ -768,9 +803,9 @@ namespace IPS {
         {
             self::checkVariable($VariableID);
 
-            self::$variables[$VariableID]['VariableUpdated'] = time();
+            self::$variables[$VariableID]['VariableUpdated'] = TimeManager::getTime();
             if (self::$variables[$VariableID]['VariableValue'] != $VariableValue) {
-                self::$variables[$VariableID]['VariableChanged'] = time();
+                self::$variables[$VariableID]['VariableChanged'] = TimeManager::getTime();
             }
             self::$variables[$VariableID]['VariableValue'] = $VariableValue;
         }
@@ -786,9 +821,9 @@ namespace IPS {
         {
             self::checkVariable($VariableID);
 
-            self::$variables[$VariableID]['VariableUpdated'] = time();
+            self::$variables[$VariableID]['VariableUpdated'] = TimeManager::getTime();
             if (self::$variables[$VariableID]['VariableValue'] != $VariableValue) {
-                self::$variables[$VariableID]['VariableChanged'] = time();
+                self::$variables[$VariableID]['VariableChanged'] = TimeManager::getTime();
             }
             self::$variables[$VariableID]['VariableValue'] = $VariableValue;
         }
@@ -1642,6 +1677,7 @@ namespace IPS {
             ObjectManager::reset();
             CategoryManager::reset();
             InstanceManager::reset();
+            TimeManager::reset();
             VariableManager::reset();
             ScriptManager::reset();
             EventManager::reset();
