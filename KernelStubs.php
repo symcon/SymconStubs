@@ -242,6 +242,9 @@ namespace IPS {
                 unset(self::$objects[$ParentID]['ChildrenIDs'][$key]);
             }
 
+            //Remove object
+            unset(self::$objects[$ID]);
+
             //Readd ID to available pool
             self::$availableIDs[] = $ID;
         }
