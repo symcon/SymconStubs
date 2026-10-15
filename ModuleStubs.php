@@ -537,6 +537,7 @@ class IPSModule
         //FIXME: We could validate something here
         $connectionID = IPS_GetInstance($this->InstanceID)['ConnectionID'];
         $interface = IPS\InstanceManager::getInstanceInterface($connectionID);
+        $Data = $this->TranslateDataFlowBuffer($Data, $interface);
         // check if forwardDataFilter applys
         if (preg_match('/' . $interface->GetForwardDataFilter() . '/', $Data) == 1) {
             return $interface->ForwardData($Data);
@@ -552,9 +553,10 @@ class IPSModule
         foreach ($ids as $id) {
             if (IPS_GetInstance($id)['ConnectionID'] == $this->InstanceID) {
                 $interface = IPS\InstanceManager::getInstanceInterface($id);
+                $childData = $this->TranslateDataFlowBuffer($Data, $interface);
                 // check if receiveDataFilter applys
-                if (preg_match('/' . $interface->GetReceiveDataFilter() . '/', $Data) == 1) {
-                    $singleReturn = $interface->ReceiveData($Data);
+                if (preg_match('/' . $interface->GetReceiveDataFilter() . '/', $childData) == 1) {
+                    $singleReturn = $interface->ReceiveData($childData);
                     if ($singleReturn != '') {
                         $return[] = $singleReturn;
                     }
@@ -562,6 +564,28 @@ class IPSModule
             }
         }
         return $return;
+    }
+
+    //Mimics the kernel translating the Buffer between the data flow encodings:
+    //IPSModule uses UTF-8 (utf8_encode/utf8_decode), IPSModuleStrict uses HEX (bin2hex/hex2bin)
+    private function TranslateDataFlowBuffer($Data, $Receiver)
+    {
+        $senderStrict = IPS\InstanceManager::getInstanceInterface($this->InstanceID) instanceof IPSModuleStrict;
+        $receiverStrict = $Receiver instanceof IPSModuleStrict;
+
+        if ($senderStrict == $receiverStrict) {
+            return $Data;
+        }
+
+        $json = json_decode($Data, true);
+        if (!is_array($json) || !isset($json['Buffer']) || !is_string($json['Buffer'])) {
+            return $Data;
+        }
+
+        $binary = $senderStrict ? hex2bin($json['Buffer']) : utf8_decode($json['Buffer']);
+        $json['Buffer'] = $receiverStrict ? bin2hex($binary) : utf8_encode($binary);
+
+        return json_encode($json);
     }
 
     protected function ConnectParent($ModuleID)
