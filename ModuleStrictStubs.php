@@ -43,6 +43,12 @@ class IPSModuleStrict
             return $this->getTime();
         });
         $this->InstanceID = $InstanceID;
+
+        //Route getTime back to the module under test, so it can be overridden like with IPSModule
+        $this->module->SetStubTimeSource(function ()
+        {
+            return $this->getTime();
+        });
     }
 
     public function Create(): void
@@ -73,6 +79,21 @@ class IPSModuleStrict
     public function SetConfiguration(string $Configuration): void
     {
         $this->module->SetConfiguration($Configuration);
+    }
+
+    public function Migrate(string $JSONData): string
+    {
+        return $this->module->Migrate($JSONData);
+    }
+
+    public function GetPersistence(): array
+    {
+        return $this->module->GetPersistence();
+    }
+
+    public function ApplyPersistence(array $Persistence): void
+    {
+        $this->module->ApplyPersistence($Persistence);
     }
 
     public function MessageSink(int $TimeStamp, int $SenderID, int $Message, array $Data): void
@@ -413,7 +434,7 @@ class IPSModuleStrict
 
     protected function GetBufferList(): array
     {
-        return $this->module->GetBufferList($Name, $Data);
+        return $this->module->GetBufferList();
     }
 
     protected function GetBuffer(string $Name): string

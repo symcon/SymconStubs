@@ -584,6 +584,27 @@ namespace IPS {
             unset(self::$interfaces[$InstanceID]);
         }
 
+        //Mimics the kernel calling Migrate on IP-Symcon start/module update and persisting the result
+        public static function migrateInstance(int $InstanceID): bool
+        {
+            self::checkInstance($InstanceID);
+
+            $interface = self::$interfaces[$InstanceID];
+
+            $result = $interface->Migrate(json_encode($interface->GetPersistence()));
+            if (!is_string($result) || ($result === '')) {
+                return false;
+            }
+
+            $persistence = json_decode($result, true);
+            if (!is_array($persistence)) {
+                throw new \Exception('Migrate returned invalid JSON');
+            }
+
+            $interface->ApplyPersistence($persistence);
+            return true;
+        }
+
         public static function instanceExists(int $InstanceID): bool
         {
             return isset(self::$instances[$InstanceID]);

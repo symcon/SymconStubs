@@ -9,6 +9,12 @@ class IPSModule
     private $properties = [];
     private $attributes = [];
     private $references = [];
+
+    //Persisted values which are not registered (anymore), e.g. before Migrate transformed them
+    private $unknownConfiguration = [];
+    private $unknownAttributes = [];
+
+    private $stubTimeSource = null;
     private $timers = [];
 
     private $buffer = [];
@@ -33,6 +39,58 @@ class IPSModule
     public function Destroy()
     {
         //Has to be overwritten by implementing module
+    }
+
+    public function Migrate($JSONData)
+    {
+        //Has to be overwritten by implementing module
+        return '';
+    }
+
+    public function GetPersistence()
+    {
+        // This helper is only available in Stub, not in PHP-SDK
+        // It builds the persistence like the kernel passes it to Migrate
+        $configuration = [];
+        foreach ($this->properties as $name => $property) {
+            $configuration[$name] = $property['Current'];
+        }
+
+        $attributes = [];
+        foreach ($this->attributes as $name => $attribute) {
+            $attributes[$name] = $attribute['Current'];
+        }
+
+        return [
+            'attributes'    => array_merge($attributes, $this->unknownAttributes),
+            'configuration' => array_merge($configuration, $this->unknownConfiguration)
+        ];
+    }
+
+    public function ApplyPersistence($Persistence)
+    {
+        // This helper is only available in Stub, not in PHP-SDK
+        // It mimics the kernel persisting the result of Migrate. Values for registered
+        // properties/attributes are applied directly, unknown values are kept separately
+        // and reappear in GetPersistence, like unregistered values in a settings file
+        $this->unknownConfiguration = [];
+        foreach ($Persistence['configuration'] ?? [] as $name => $value) {
+            if (isset($this->properties[$name])) {
+                $this->properties[$name]['Current'] = $value;
+                $this->properties[$name]['Pending'] = $value;
+            } else {
+                $this->unknownConfiguration[$name] = $value;
+            }
+        }
+
+        $this->unknownAttributes = [];
+        foreach ($Persistence['attributes'] ?? [] as $name => $value) {
+            if (isset($this->attributes[$name])) {
+                $this->attributes[$name]['Current'] = $value;
+            } else {
+                $this->unknownAttributes[$name] = $value;
+            }
+        }
     }
 
     public function GetProperty($Name)
@@ -683,7 +741,18 @@ class IPSModule
 
     protected function getTime()
     {
+        if ($this->stubTimeSource !== null) {
+            return ($this->stubTimeSource)();
+        }
+
         throw new Exception('getTime needs to be implemented by module under test');
+    }
+
+    public function SetStubTimeSource(callable $timeSource)
+    {
+        // This helper is only available in Stub, not in PHP-SDK
+        // IPSModuleStrict uses it to route getTime back to the module under test
+        $this->stubTimeSource = $timeSource;
     }
 
     protected function postMessage($Message, $Data)
