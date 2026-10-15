@@ -23,6 +23,7 @@ class IPSModule
     private $forwardDataFilter = '';
 
     private $messages = [];
+    private $messageRegistrations = [];
 
     private $visualizationType = 0 /* None */;
 
@@ -681,16 +682,26 @@ class IPSModule
 
     protected function GetMessageList()
     {
-        // TODO: Some implementation here would be nice, but this suffices for the time being
-        return [];
+        return $this->messageRegistrations;
     }
 
     protected function RegisterMessage($SenderID, $Message)
     {
+        if (!in_array($Message, $this->messageRegistrations[$SenderID] ?? [])) {
+            $this->messageRegistrations[$SenderID][] = $Message;
+        }
     }
 
     protected function UnregisterMessage($SenderID, $Message)
     {
+        if (!isset($this->messageRegistrations[$SenderID])) {
+            return;
+        }
+
+        $this->messageRegistrations[$SenderID] = array_values(array_diff($this->messageRegistrations[$SenderID], [$Message]));
+        if (count($this->messageRegistrations[$SenderID]) == 0) {
+            unset($this->messageRegistrations[$SenderID]);
+        }
     }
 
     protected function SetReceiveDataFilter($RequiredRegexMatch)
