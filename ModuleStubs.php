@@ -235,6 +235,13 @@ class IPSModule
         $this->visualizationType = $Type;
     }
 
+    public function SetStubTimeSource(callable $timeSource)
+    {
+        // This helper is only available in Stub, not in PHP-SDK
+        // IPSModuleStrict uses it to route getTime back to the module under test
+        $this->stubTimeSource = $timeSource;
+    }
+
     protected function GetIDForIdent($Ident)
     {
         return IPS_GetObjectIDByIdent($Ident, $this->InstanceID);
@@ -567,28 +574,6 @@ class IPSModule
         return $return;
     }
 
-    //Mimics the kernel translating the Buffer between the data flow encodings:
-    //IPSModule uses UTF-8 (utf8_encode/utf8_decode), IPSModuleStrict uses HEX (bin2hex/hex2bin)
-    private function TranslateDataFlowBuffer($Data, $Receiver)
-    {
-        $senderStrict = IPS\InstanceManager::getInstanceInterface($this->InstanceID) instanceof IPSModuleStrict;
-        $receiverStrict = $Receiver instanceof IPSModuleStrict;
-
-        if ($senderStrict == $receiverStrict) {
-            return $Data;
-        }
-
-        $json = json_decode($Data, true);
-        if (!is_array($json) || !isset($json['Buffer']) || !is_string($json['Buffer'])) {
-            return $Data;
-        }
-
-        $binary = $senderStrict ? hex2bin($json['Buffer']) : utf8_decode($json['Buffer']);
-        $json['Buffer'] = $receiverStrict ? bin2hex($binary) : utf8_encode($binary);
-
-        return json_encode($json);
-    }
-
     protected function ConnectParent($ModuleID)
     {
         if (IPS_GetInstance($this->InstanceID)['ConnectionID'] == 0) {
@@ -783,13 +768,6 @@ class IPSModule
         throw new Exception('getTime needs to be implemented by module under test');
     }
 
-    public function SetStubTimeSource(callable $timeSource)
-    {
-        // This helper is only available in Stub, not in PHP-SDK
-        // IPSModuleStrict uses it to route getTime back to the module under test
-        $this->stubTimeSource = $timeSource;
-    }
-
     protected function postMessage($Message, $Data)
     {
         $this->messages[] = [
@@ -798,6 +776,28 @@ class IPSModule
             'Message'   => $Message,
             'Data'      => $Data
         ];
+    }
+
+    //Mimics the kernel translating the Buffer between the data flow encodings:
+    //IPSModule uses UTF-8 (utf8_encode/utf8_decode), IPSModuleStrict uses HEX (bin2hex/hex2bin)
+    private function TranslateDataFlowBuffer($Data, $Receiver)
+    {
+        $senderStrict = IPS\InstanceManager::getInstanceInterface($this->InstanceID) instanceof IPSModuleStrict;
+        $receiverStrict = $Receiver instanceof IPSModuleStrict;
+
+        if ($senderStrict == $receiverStrict) {
+            return $Data;
+        }
+
+        $json = json_decode($Data, true);
+        if (!is_array($json) || !isset($json['Buffer']) || !is_string($json['Buffer'])) {
+            return $Data;
+        }
+
+        $binary = $senderStrict ? hex2bin($json['Buffer']) : utf8_decode($json['Buffer']);
+        $json['Buffer'] = $receiverStrict ? bin2hex($binary) : utf8_encode($binary);
+
+        return json_encode($json);
     }
 
     private function RegisterProperty($Name, $DefaultValue, $Type)
@@ -828,7 +828,7 @@ class IPSModule
                     $ProfileOrPresentation = '~' . $ProfileOrPresentation;
                 }
             }
-            
+
             if (!IPS_VariableProfileExists($ProfileOrPresentation)) {
                 throw new Exception('Profile with name ' . $ProfileOrPresentation . ' does not exist');
             }
