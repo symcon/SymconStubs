@@ -68,7 +68,7 @@ class IPSModule
         ];
     }
 
-    public function ApplyPersistence($Persistence)
+    public function ApplyPersistence(array $Persistence)
     {
         // This helper is only available in Stub, not in PHP-SDK
         // It mimics the kernel persisting the result of Migrate. Values for registered
