@@ -1023,6 +1023,11 @@ namespace IPS {
     {
         private static $semaphores = [];
 
+        public static function reset()
+        {
+            self::$semaphores = [];
+        }
+
         public static function runScript(int $ScriptID): void
         {
             self::runScriptEx($ScriptID, []);
@@ -1704,6 +1709,7 @@ namespace IPS {
             TimeManager::reset();
             VariableManager::reset();
             ScriptManager::reset();
+            ScriptEngine::reset();
             EventManager::reset();
             MediaManager::reset();
             LinkManager::reset();
