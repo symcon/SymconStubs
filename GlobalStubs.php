@@ -1075,6 +1075,7 @@ function IPS_GetSystemLanguage()
 
 function IPS_LogMessage(string $Sender, string $Message)
 {
+    IPS\LogServer::logMessage($Sender, $Message, KL_MESSAGE);
     return true;
 }
 

@@ -9,6 +9,12 @@ class IPSModule
     private $properties = [];
     private $attributes = [];
     private $references = [];
+
+    //Persisted values which are not registered (anymore), e.g. before Migrate transformed them
+    private $unknownConfiguration = [];
+    private $unknownAttributes = [];
+
+    private $stubTimeSource = null;
     private $timers = [];
 
     private $buffer = [];
@@ -17,6 +23,7 @@ class IPSModule
     private $forwardDataFilter = '';
 
     private $messages = [];
+    private $messageRegistrations = [];
 
     private $visualizationType = 0 /* None */;
 
@@ -33,6 +40,58 @@ class IPSModule
     public function Destroy()
     {
         //Has to be overwritten by implementing module
+    }
+
+    public function Migrate($JSONData)
+    {
+        //Has to be overwritten by implementing module
+        return '';
+    }
+
+    public function GetPersistence()
+    {
+        // This helper is only available in Stub, not in PHP-SDK
+        // It builds the persistence like the kernel passes it to Migrate
+        $configuration = [];
+        foreach ($this->properties as $name => $property) {
+            $configuration[$name] = $property['Current'];
+        }
+
+        $attributes = [];
+        foreach ($this->attributes as $name => $attribute) {
+            $attributes[$name] = $attribute['Current'];
+        }
+
+        return [
+            'attributes'    => array_merge($attributes, $this->unknownAttributes),
+            'configuration' => array_merge($configuration, $this->unknownConfiguration)
+        ];
+    }
+
+    public function ApplyPersistence($Persistence)
+    {
+        // This helper is only available in Stub, not in PHP-SDK
+        // It mimics the kernel persisting the result of Migrate. Values for registered
+        // properties/attributes are applied directly, unknown values are kept separately
+        // and reappear in GetPersistence, like unregistered values in a settings file
+        $this->unknownConfiguration = [];
+        foreach ($Persistence['configuration'] ?? [] as $name => $value) {
+            if (isset($this->properties[$name])) {
+                $this->properties[$name]['Current'] = $value;
+                $this->properties[$name]['Pending'] = $value;
+            } else {
+                $this->unknownConfiguration[$name] = $value;
+            }
+        }
+
+        $this->unknownAttributes = [];
+        foreach ($Persistence['attributes'] ?? [] as $name => $value) {
+            if (isset($this->attributes[$name])) {
+                $this->attributes[$name]['Current'] = $value;
+            } else {
+                $this->unknownAttributes[$name] = $value;
+            }
+        }
     }
 
     public function GetProperty($Name)
@@ -479,6 +538,7 @@ class IPSModule
         //FIXME: We could validate something here
         $connectionID = IPS_GetInstance($this->InstanceID)['ConnectionID'];
         $interface = IPS\InstanceManager::getInstanceInterface($connectionID);
+        $Data = $this->TranslateDataFlowBuffer($Data, $interface);
         // check if forwardDataFilter applys
         if (preg_match('/' . $interface->GetForwardDataFilter() . '/', $Data) == 1) {
             return $interface->ForwardData($Data);
@@ -494,9 +554,10 @@ class IPSModule
         foreach ($ids as $id) {
             if (IPS_GetInstance($id)['ConnectionID'] == $this->InstanceID) {
                 $interface = IPS\InstanceManager::getInstanceInterface($id);
+                $childData = $this->TranslateDataFlowBuffer($Data, $interface);
                 // check if receiveDataFilter applys
-                if (preg_match('/' . $interface->GetReceiveDataFilter() . '/', $Data) == 1) {
-                    $singleReturn = $interface->ReceiveData($Data);
+                if (preg_match('/' . $interface->GetReceiveDataFilter() . '/', $childData) == 1) {
+                    $singleReturn = $interface->ReceiveData($childData);
                     if ($singleReturn != '') {
                         $return[] = $singleReturn;
                     }
@@ -504,6 +565,28 @@ class IPSModule
             }
         }
         return $return;
+    }
+
+    //Mimics the kernel translating the Buffer between the data flow encodings:
+    //IPSModule uses UTF-8 (utf8_encode/utf8_decode), IPSModuleStrict uses HEX (bin2hex/hex2bin)
+    private function TranslateDataFlowBuffer($Data, $Receiver)
+    {
+        $senderStrict = IPS\InstanceManager::getInstanceInterface($this->InstanceID) instanceof IPSModuleStrict;
+        $receiverStrict = $Receiver instanceof IPSModuleStrict;
+
+        if ($senderStrict == $receiverStrict) {
+            return $Data;
+        }
+
+        $json = json_decode($Data, true);
+        if (!is_array($json) || !isset($json['Buffer']) || !is_string($json['Buffer'])) {
+            return $Data;
+        }
+
+        $binary = $senderStrict ? hex2bin($json['Buffer']) : utf8_decode($json['Buffer']);
+        $json['Buffer'] = $receiverStrict ? bin2hex($binary) : utf8_encode($binary);
+
+        return json_encode($json);
     }
 
     protected function ConnectParent($ModuleID)
@@ -599,16 +682,26 @@ class IPSModule
 
     protected function GetMessageList()
     {
-        // TODO: Some implementation here would be nice, but this suffices for the time being
-        return [];
+        return $this->messageRegistrations;
     }
 
     protected function RegisterMessage($SenderID, $Message)
     {
+        if (!in_array($Message, $this->messageRegistrations[$SenderID] ?? [])) {
+            $this->messageRegistrations[$SenderID][] = $Message;
+        }
     }
 
     protected function UnregisterMessage($SenderID, $Message)
     {
+        if (!isset($this->messageRegistrations[$SenderID])) {
+            return;
+        }
+
+        $this->messageRegistrations[$SenderID] = array_values(array_diff($this->messageRegistrations[$SenderID], [$Message]));
+        if (count($this->messageRegistrations[$SenderID]) == 0) {
+            unset($this->messageRegistrations[$SenderID]);
+        }
     }
 
     protected function SetReceiveDataFilter($RequiredRegexMatch)
@@ -660,6 +753,7 @@ class IPSModule
 
     protected function LogMessage($Message, $Type)
     {
+        IPS\LogServer::logMessage(strval($this->InstanceID), $Message, $Type);
     }
 
     protected function HasActiveParent()
@@ -682,7 +776,18 @@ class IPSModule
 
     protected function getTime()
     {
+        if ($this->stubTimeSource !== null) {
+            return ($this->stubTimeSource)();
+        }
+
         throw new Exception('getTime needs to be implemented by module under test');
+    }
+
+    public function SetStubTimeSource(callable $timeSource)
+    {
+        // This helper is only available in Stub, not in PHP-SDK
+        // IPSModuleStrict uses it to route getTime back to the module under test
+        $this->stubTimeSource = $timeSource;
     }
 
     protected function postMessage($Message, $Data)

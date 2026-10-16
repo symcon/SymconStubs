@@ -166,7 +166,7 @@ namespace IPS {
                     $params[] = $type . ' $' . $parameter->GetName();
                     $fwdparams[] = '$' . $parameter->GetName();
                 }
-                $function = sprintf('function %s_%s(%s){return IPS\InstanceManager::getInstanceInterface($InstanceID)->%s(%s);}', $modulePrefix, $method->GetName(), implode(', ', $params), $method->GetName(), implode(', ', $fwdparams));
+                $function = sprintf('function %s_%s(%s){$result = IPS\InstanceManager::getInstanceInterface($InstanceID)->%s(%s); IPS\TimeManager::updateTime($InstanceID); return $result;}', $modulePrefix, $method->GetName(), implode(', ', $params), $method->GetName(), implode(', ', $fwdparams));
                 if (!\function_exists($modulePrefix . '_' . $method->GetName())) {
                     eval($function);
                 }
@@ -241,6 +241,9 @@ namespace IPS {
             if (($key = array_search($ID, self::$objects[$ParentID]['ChildrenIDs'])) !== false) {
                 unset(self::$objects[$ParentID]['ChildrenIDs'][$key]);
             }
+
+            //Remove object
+            unset(self::$objects[$ID]);
 
             //Readd ID to available pool
             self::$availableIDs[] = $ID;
@@ -581,6 +584,27 @@ namespace IPS {
             unset(self::$interfaces[$InstanceID]);
         }
 
+        //Mimics the kernel calling Migrate on IP-Symcon start/module update and persisting the result
+        public static function migrateInstance(int $InstanceID): bool
+        {
+            self::checkInstance($InstanceID);
+
+            $interface = self::$interfaces[$InstanceID];
+
+            $result = $interface->Migrate(json_encode($interface->GetPersistence()));
+            if (!is_string($result) || ($result === '')) {
+                return false;
+            }
+
+            $persistence = json_decode($result, true);
+            if (!is_array($persistence)) {
+                throw new \Exception('Migrate returned invalid JSON');
+            }
+
+            $interface->ApplyPersistence($persistence);
+            return true;
+        }
+
         public static function instanceExists(int $InstanceID): bool
         {
             return isset(self::$instances[$InstanceID]);
@@ -676,6 +700,41 @@ namespace IPS {
         }
     }
 
+    class TimeManager
+    {
+        private static $time = null;
+
+        // Remember the time of the module after each function call, so timestamps follow the time simulated by tests
+        public static function updateTime(int $InstanceID): void
+        {
+            $interface = InstanceManager::getInstanceInterface($InstanceID);
+            if (!method_exists($interface, 'getTime')) {
+                return;
+            }
+            $method = new \ReflectionMethod($interface, 'getTime');
+            // Protected methods are accessible by default since PHP 8.1 and setAccessible is deprecated since PHP 8.5
+            if (PHP_VERSION_ID < 80100) {
+                $method->setAccessible(true);
+            }
+            try {
+                self::$time = $method->invoke($interface);
+            } catch (\Throwable $e) {
+                // Module does not implement getTime, keep the last known time
+            }
+        }
+
+        // Last known time of a module or the real time if no module provided a time yet
+        public static function getTime(): int
+        {
+            return self::$time ?? time();
+        }
+
+        public static function reset()
+        {
+            self::$time = null;
+        }
+    }
+
     class VariableManager
     {
         private static $variables = [];
@@ -732,9 +791,9 @@ namespace IPS {
         {
             self::checkVariable($VariableID);
 
-            self::$variables[$VariableID]['VariableUpdated'] = time();
+            self::$variables[$VariableID]['VariableUpdated'] = TimeManager::getTime();
             if (self::$variables[$VariableID]['VariableValue'] != $VariableValue) {
-                self::$variables[$VariableID]['VariableChanged'] = time();
+                self::$variables[$VariableID]['VariableChanged'] = TimeManager::getTime();
             }
             self::$variables[$VariableID]['VariableValue'] = $VariableValue;
         }
@@ -750,9 +809,9 @@ namespace IPS {
         {
             self::checkVariable($VariableID);
 
-            self::$variables[$VariableID]['VariableUpdated'] = time();
+            self::$variables[$VariableID]['VariableUpdated'] = TimeManager::getTime();
             if (self::$variables[$VariableID]['VariableValue'] != $VariableValue) {
-                self::$variables[$VariableID]['VariableChanged'] = time();
+                self::$variables[$VariableID]['VariableChanged'] = TimeManager::getTime();
             }
             self::$variables[$VariableID]['VariableValue'] = $VariableValue;
         }
@@ -768,9 +827,9 @@ namespace IPS {
         {
             self::checkVariable($VariableID);
 
-            self::$variables[$VariableID]['VariableUpdated'] = time();
+            self::$variables[$VariableID]['VariableUpdated'] = TimeManager::getTime();
             if (self::$variables[$VariableID]['VariableValue'] != $VariableValue) {
-                self::$variables[$VariableID]['VariableChanged'] = time();
+                self::$variables[$VariableID]['VariableChanged'] = TimeManager::getTime();
             }
             self::$variables[$VariableID]['VariableValue'] = $VariableValue;
         }
@@ -786,9 +845,9 @@ namespace IPS {
         {
             self::checkVariable($VariableID);
 
-            self::$variables[$VariableID]['VariableUpdated'] = time();
+            self::$variables[$VariableID]['VariableUpdated'] = TimeManager::getTime();
             if (self::$variables[$VariableID]['VariableValue'] != $VariableValue) {
-                self::$variables[$VariableID]['VariableChanged'] = time();
+                self::$variables[$VariableID]['VariableChanged'] = TimeManager::getTime();
             }
             self::$variables[$VariableID]['VariableValue'] = $VariableValue;
         }
@@ -3630,6 +3689,33 @@ namespace IPS {
         public static function reset()
         {
             self::$debug = [];
+            self::$messages = [];
+        }
+    }
+
+    class LogServer
+    {
+        private static $messages = [];
+
+        public static function logMessage(string $Sender, string $Message, int $Type): void
+        {
+            self::$messages[$Sender][] = [
+                'Message' => $Message,
+                'Type'    => $Type
+            ];
+        }
+
+        public static function getLogMessages(string $Sender): array
+        {
+            if (!isset(self::$messages[$Sender])) {
+                return [];
+            }
+            return self::$messages[$Sender];
+        }
+
+        public static function reset()
+        {
+            self::$messages = [];
         }
     }
 
@@ -3760,6 +3846,7 @@ namespace IPS {
             ObjectManager::reset();
             CategoryManager::reset();
             InstanceManager::reset();
+            TimeManager::reset();
             VariableManager::reset();
             ScriptManager::reset();
             EventManager::reset();
@@ -3767,6 +3854,7 @@ namespace IPS {
             LinkManager::reset();
             ProfileManager::reset();
             DebugServer::reset();
+            LogServer::reset();
             ActionPool::reset();
             PresentationPool::reset();
             TemplateManager::reset();
