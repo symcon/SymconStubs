@@ -31,12 +31,28 @@ define('EVENTTRIGGERTYPE_ONLIMITEXCEED', 2);
 define('EVENTTRIGGERTYPE_ONLIMITDROP', 3);
 define('EVENTTRIGGERTYPE_ONVALUE', 4);
 
+/* EventConditionOperation */
+define('EVENT_CONDITION_OPERATION_AND', 0);
+define('EVENT_CONDITION_OPERATION_OR', 1);
+
+/* EventDay */
+define('EVENT_DAY_MONDAY', 1);
+define('EVENT_DAY_TUESDAY', 2);
+define('EVENT_DAY_WEDNESDAY', 4);
+define('EVENT_DAY_THURSDAY', 8);
+define('EVENT_DAY_FRIDAY', 16);
+define('EVENT_DAY_SATURDAY', 32);
+define('EVENT_DAY_SUNDAY', 64);
+define('EVENT_DAY_ALL', 127);
+
 /* EventType */
 define('EVENTTYPE_TRIGGER', 0);
 define('EVENTTYPE_CYCLIC', 1);
 define('EVENTTYPE_SCHEDULE', 2);
 
 /* MediaType */
+define('MEDIATYPE_IPSVIEW', 0);
+define('MEDIATYPE_FORM', 0);
 define('MEDIATYPE_DASHBOARD', 0);
 define('MEDIATYPE_IMAGE', 1);
 define('MEDIATYPE_SOUND', 2);
@@ -51,6 +67,17 @@ define('MODULETYPE_SPLITTER', 2);
 define('MODULETYPE_DEVICE', 3);
 define('MODULETYPE_CONFIGURATOR', 4);
 define('MODULETYPE_DISCOVERY', 5);
+define('MODULETYPE_VISUALIZATION', 6);
+
+/* InstanceVisualizationType */
+define('INSTANCE_VISUALIZATION_TYPE_NONE', 0);
+define('INSTANCE_VISUALIZATION_TYPE_HTML', 1);
+define('INSTANCE_VISUALIZATION_TYPE_HTML_FULLSCREEN', 2);
+define('INSTANCE_VISUALIZATION_TYPE_FORM', 3);
+
+/* DebugFormat */
+define('DEBUG_FORMAT_TEXT', 0);
+define('DEBUG_FORMAT_BINARY', 1);
 
 /* ObjectType */
 define('OBJECTTYPE_CATEGORY', 0);
@@ -63,6 +90,28 @@ define('OBJECTTYPE_LINK', 6);
 
 /* ScriptType */
 define('SCRIPTTYPE_PHP', 0);
+define('SCRIPTTYPE_FLOW', 1);
+define('SCRIPTTYPE_IPSWORKFLOW', 2);
+
+/* UserType */
+define('USER_TYPE_LOCAL', 0);
+define('USER_TYPE_LDAP', 1);
+
+/* ReplicationMode */
+define('REPLICATION_MODE_PARALLEL', 0);
+define('REPLICATION_MODE_STANDBY', 1);
+
+/* VariableAction */
+define('VARIABLE_ACTION_NONE', 0);
+define('VARIABLE_ACTION_DISABLED', 1);
+
+/* Color */
+define('COLOR_TRANSPARENT', -1);
+define('COLOR_ENCODING_RGB', 0);
+define('COLOR_ENCODING_CMYK', 1);
+define('COLOR_ENCODING_HSV', 2);
+define('COLOR_ENCODING_HSL', 3);
+define('COLOR_ENCODING_XY', 4);
 
 /* VariableType */
 define('VARIABLETYPE_BOOLEAN', 0);

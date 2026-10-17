@@ -132,6 +132,9 @@ namespace IPS {
                 'Implemented'        => $module['implemented'] ?? [],
                 'LibraryID'          => $libraryID,
                 'Prefix'             => $module['prefix'],
+                'URL'                => $module['url'] ?? '',
+                'Limit'              => 0,
+                'Translation'        => $module['translations'] ?? [],
                 'Class'              => str_replace(' ', '', $module['name'])
             ];
 
@@ -722,7 +725,9 @@ namespace IPS {
         {
             self::checkCategory($CategoryID);
 
-            return [];
+            return [
+                'CategoryID' => $CategoryID
+            ];
         }
 
         public static function getCategoryList(): array
@@ -759,11 +764,14 @@ namespace IPS {
             }
 
             self::$instances[$InstanceID] = [
-                'InstanceID'      => $InstanceID,
-                'ConnectionID'    => 0,
-                'InstanceStatus'  => 101 /* IS_CREATING */,
-                'InstanceChanged' => time(),
-                'ModuleInfo'      => [
+                'InstanceID'                => $InstanceID,
+                'ConnectionID'              => 0,
+                'InstanceStatus'            => 101 /* IS_CREATING */,
+                'InstanceChanged'           => TimeManager::getTime(),
+                'InstanceSupportsSearching' => false,
+                'InstanceIsSearching'       => false,
+                'InstanceVisualizationType' => 0 /* INSTANCE_VISUALIZATION_TYPE_NONE */,
+                'ModuleInfo'                => [
                     'ModuleID'   => $Module['ModuleID'],
                     'ModuleName' => $Module['ModuleName'],
                     'ModuleType' => $Module['ModuleType']
@@ -866,6 +874,13 @@ namespace IPS {
             self::checkInstance($InstanceID);
 
             self::$instances[$InstanceID]['InstanceStatus'] = $Status;
+        }
+
+        public static function setVisualizationType(int $InstanceID, int $VisualizationType): void
+        {
+            self::checkInstance($InstanceID);
+
+            self::$instances[$InstanceID]['InstanceVisualizationType'] = $VisualizationType;
         }
 
         public static function getStatus($InstanceID): int
@@ -1325,7 +1340,10 @@ namespace IPS {
                 'ScriptType'     => $ScriptType,
                 'ScriptFile'     => $ScriptID . '.ips.php',
                 'ScriptExecuted' => 0,
-                'ScriptIsBroken' => false
+                'ScriptIsBroken' => false,
+                'ScriptCRC'      => '',
+                'ScriptSize'     => 0,
+                'ScriptUpdated'  => 0
             ];
 
             self::$content[$ScriptID] = '<?php ' . PHP_EOL . PHP_EOL . '//Start writing your scripts between the brackets' . PHP_EOL . PHP_EOL . '?>';
@@ -1357,6 +1375,9 @@ namespace IPS {
             self::checkScript($ScriptID);
 
             self::$content[$ScriptID] = $Content;
+            self::$scripts[$ScriptID]['ScriptUpdated'] = TimeManager::getTime();
+            self::$scripts[$ScriptID]['ScriptSize'] = strlen($Content);
+            self::$scripts[$ScriptID]['ScriptCRC'] = strtoupper(hash('crc32b', $Content));
         }
 
         public static function scriptExists(int $ScriptID): bool
@@ -1542,6 +1563,7 @@ namespace IPS {
     class MediaManager
     {
         private static $medias = [];
+        private static $content = [];
 
         public static function createMedia(int $MediaID, int $MediaType): void
         {
@@ -1561,11 +1583,90 @@ namespace IPS {
         {
             self::checkMedia($MediaID);
             unset(self::$medias[$MediaID]);
+            unset(self::$content[$MediaID]);
         }
 
         public static function mediaExists(int $MediaID): bool
         {
             return isset(self::$medias[$MediaID]);
+        }
+
+        public static function getMedia(int $MediaID): array
+        {
+            self::checkMedia($MediaID);
+
+            return self::$medias[$MediaID];
+        }
+
+        public static function getMediaList(): array
+        {
+            return array_keys(self::$medias);
+        }
+
+        public static function getMediaListByType(int $MediaType): array
+        {
+            $result = [];
+            foreach (self::$medias as $media) {
+                if ($media['MediaType'] == $MediaType) {
+                    $result[] = $media['MediaID'];
+                }
+            }
+
+            return $result;
+        }
+
+        public static function getMediaIDByFile(string $FilePath): int|false
+        {
+            foreach (self::$medias as $media) {
+                if ($media['MediaFile'] == $FilePath) {
+                    return $media['MediaID'];
+                }
+            }
+
+            trigger_error(sprintf('File %s could not be found', $FilePath), E_USER_WARNING);
+            return false;
+        }
+
+        //The content is kept in memory instead of a file. Like the kernel, it is passed as Base64
+        public static function getMediaContent(int $MediaID): string
+        {
+            self::checkMedia($MediaID);
+
+            if (!isset(self::$content[$MediaID])) {
+                throw new \Exception(sprintf('File #%s does not exist', self::$medias[$MediaID]['MediaFile']));
+            }
+
+            return self::$content[$MediaID];
+        }
+
+        public static function setMediaContent(int $MediaID, string $Content): void
+        {
+            self::checkMedia($MediaID);
+
+            $data = base64_decode($Content);
+            self::$content[$MediaID] = $Content;
+            self::$medias[$MediaID]['MediaIsAvailable'] = true;
+            self::$medias[$MediaID]['MediaSize'] = strlen($data);
+            self::$medias[$MediaID]['MediaCRC'] = strtoupper(hash('crc32b', $data));
+            self::$medias[$MediaID]['MediaUpdated'] = TimeManager::getTime();
+        }
+
+        public static function setMediaFile(int $MediaID, string $FilePath, bool $FileMustExists): void
+        {
+            self::checkMedia($MediaID);
+
+            if ($FileMustExists && !isset(self::$content[$MediaID]) && !file_exists($FilePath)) {
+                throw new \Exception(sprintf('File #%s does not exist', $FilePath));
+            }
+
+            self::$medias[$MediaID]['MediaFile'] = $FilePath;
+        }
+
+        public static function setMediaCached(int $MediaID, bool $Cached): void
+        {
+            self::checkMedia($MediaID);
+
+            self::$medias[$MediaID]['MediaIsCached'] = $Cached;
         }
 
         public static function checkMediaTypeRange(int $MediaType): void
@@ -1585,6 +1686,7 @@ namespace IPS {
         public static function reset()
         {
             self::$medias = [];
+            self::$content = [];
         }
     }
 

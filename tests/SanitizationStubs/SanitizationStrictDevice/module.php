@@ -30,6 +30,16 @@ class SanitizationStrictDevice extends IPSModuleStrict
         return $this->UnregisterVariable($Ident);
     }
 
+    public function CallRegisterScript(string $Ident, string $Name): bool
+    {
+        return $this->RegisterScript($Ident, $Name);
+    }
+
+    public function CallSetVisualizationType(int $Type): bool
+    {
+        return $this->SetVisualizationType($Type);
+    }
+
     protected function getTime(): int
     {
         return 1000;

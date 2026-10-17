@@ -100,6 +100,16 @@ class SanitizationDevice extends IPSModule
         return $this->ReadPropertyFloat($Name);
     }
 
+    public function CallRegisterScript(string $Ident, string $Name, string $Content)
+    {
+        return $this->RegisterScript($Ident, $Name, $Content);
+    }
+
+    public function CallSetVisualizationType(int $Type)
+    {
+        return $this->SetVisualizationType($Type);
+    }
+
     protected function getTime()
     {
         return 1000;
