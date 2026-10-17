@@ -32,7 +32,7 @@ class TestCaseSymconValidation extends TestCase
 
             $this->assertArrayHasKey('url', $library);
             $this->assertIsString($library['url']);
-            $this->assertTrue($this->isValidURL($library['url']), 'library url is not a valid');
+            $this->assertTrue($this->isValidURL($library['url']), 'library url is not valid');
 
             $this->assertArrayHasKey('version', $library);
             $this->assertIsString($library['version']);
@@ -141,7 +141,8 @@ class TestCaseSymconValidation extends TestCase
 
     private function isValidGUID($guid): bool
     {
-        return preg_match('/^\{?[A-Z0-9]{8}-[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{12}\}?$/', $guid) == 1;
+        //Same check as the kernel, which requires the braces
+        return preg_match('/^\{[A-Z0-9]{8}-[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{12}\}$/', $guid) == 1;
     }
 
     private function isValidName($name): bool
@@ -156,7 +157,8 @@ class TestCaseSymconValidation extends TestCase
 
     private function isValidURL($name): bool
     {
-        return preg_match('/^(?:http:\/\/|https:\/\/)/', $name) == 1;
+        //The URL may also be empty
+        return ($name === '') || (preg_match('/^(?:http:\/\/|https:\/\/)/', $name) == 1);
     }
 
     private function ignoreFolders(): array
