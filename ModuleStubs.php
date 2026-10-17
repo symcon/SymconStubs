@@ -109,7 +109,8 @@ class IPSModule
             throw new Exception(sprintf('Property %s not found', $Name));
         }
 
-        $this->properties[$Name]['Pending'] = $Value;
+        //The value is converted to the type of the property like the kernel does
+        $this->properties[$Name]['Pending'] = IPS\ValueConverter::toPropertyType($Name, $Value, $this->properties[$Name]['Type']);
     }
 
     public function GetConfiguration()
@@ -125,13 +126,17 @@ class IPSModule
     public function SetConfiguration($Configuration)
     {
         $json = json_decode($Configuration);
-        if ($json === null) {
-            throw new \Exception('Cannot parse configuration json');
+        if (json_last_error() !== JSON_ERROR_NONE) {
+            throw new \Exception('Configuration is invalid.');
+        }
+        if (!is_object($json)) {
+            throw new \Exception('Configuration is not of Type Object.');
         }
         foreach ($json as $name => $value) {
-            if (isset($this->properties[$name])) {
-                $this->properties[$name]['Pending'] = $value;
+            if (!is_scalar($value)) {
+                throw new \Exception(sprintf('Unsupported type for property %s in configuration', $name));
             }
+            $this->SetProperty($name, $value);
         }
     }
 
@@ -162,11 +167,6 @@ class IPSModule
     {
         foreach ($this->properties as &$property) {
             $property['Current'] = $property['Pending'];
-        }
-
-        //If the module overrides ApplyChanges, it might change the status again
-        if (IPS_GetInstance($this->InstanceID)['InstanceStatus'] == 100 /* IS_CREATING */) {
-            $this->SetStatus(102 /* IS_ACTIVE */);
         }
     }
 
@@ -294,6 +294,14 @@ class IPSModule
 
     protected function RegisterTimer(string $Ident, int $Milliseconds, string $ScriptText, ?int $start = null)
     {
+        if (!$this->IsCreating()) {
+            throw new Exception('Timer registration is only possible in the Create method');
+        }
+
+        if (isset($this->timers[$Ident])) {
+            throw new Exception(sprintf('Timer %s already exists', $Ident));
+        }
+
         $this->timers[$Ident] = [
             'millis' => $Milliseconds,
             'start'  => $start ?? $this->getTime()
@@ -302,20 +310,28 @@ class IPSModule
 
     protected function SetTimerInterval(string $Ident, int $Milliseconds, ?int $start = null)
     {
-        if (!isset($this->timers[$Ident])) {
-            throw new Exception('Timer is not registered');
+        if ($Milliseconds < 0) {
+            throw new Exception('Timer interval must not be negative!');
         }
 
-        $this->RegisterTimer($Ident, $Milliseconds, '', $start);
+        if (!isset($this->timers[$Ident])) {
+            throw new Exception(sprintf('Timer %s does not exist', $Ident));
+        }
+
+        $this->timers[$Ident] = [
+            'millis' => $Milliseconds,
+            'start'  => $start ?? $this->getTime()
+        ];
     }
 
     protected function GetTimerInterval(string $Ident, ?int $currentTime = null)
     {
         if (!isset($this->timers[$Ident])) {
-            throw new Exception('Timer is not registered');
+            throw new Exception(sprintf('Timer %s does not exist', $Ident));
         }
 
-        return $this->timers[$Ident]['millis'] - (($currentTime ?? $this->getTime()) - $this->timers[$Ident]['start']) * 1000;
+        //Like the kernel, this returns the configured interval and not the remaining time
+        return $this->timers[$Ident]['millis'];
     }
 
     protected function RegisterScript($Ident, $Name, $Content = '', $Position = 0)
@@ -346,41 +362,51 @@ class IPSModule
 
     protected function UnregisterVariable($Ident)
     {
-        $vid = @IPS_GetObjectIDByIdent($Ident, $this->InstanceID);
-        if ($vid === false) {
-            return;
-        }
-        if (!IPS_VariableExists($vid)) {
-            return;
+        $vid = IPS\ObjectManager::findObjectIDByIdent($Ident, $this->InstanceID);
+        if (($vid === false) || !IPS_VariableExists($vid)) {
+            return false;
         } //bail out
         IPS_DeleteVariable($vid);
+        return true;
     }
 
     protected function MaintainVariable($Ident, $Name, $Type, $Profile, $Position, $Keep)
     {
         if ($Keep) {
-            $this->RegisterVariable($Ident, $Name, $Type, $Profile, $Position);
+            return $this->RegisterVariable($Ident, $Name, $Type, $Profile, $Position);
         } else {
-            $this->UnregisterVariable($Ident);
+            return $this->UnregisterVariable($Ident);
         }
     }
 
     protected function EnableAction($Ident)
     {
-        IPS\VariableManager::setVariableAction(IPS_GetObjectIDByIdent($Ident, $this->InstanceID), $this->InstanceID);
+        $vid = IPS\ObjectManager::findObjectIDByIdent($Ident, $this->InstanceID);
+        if (($vid === false) || !IPS_VariableExists($vid)) {
+            return false;
+        }
+
+        IPS\VariableManager::setVariableAction($vid, $this->InstanceID);
+        return true;
     }
 
     protected function DisableAction($Ident)
     {
-        IPS\VariableManager::setVariableAction(IPS_GetObjectIDByIdent($Ident, $this->InstanceID), 0);
+        $vid = IPS\ObjectManager::findObjectIDByIdent($Ident, $this->InstanceID);
+        if (($vid === false) || !IPS_VariableExists($vid)) {
+            return false;
+        }
+
+        IPS\VariableManager::setVariableAction($vid, 0);
+        return true;
     }
 
     protected function MaintainAction($Ident, $Keep)
     {
         if ($Keep) {
-            $this->EnableAction($Ident);
+            return $this->EnableAction($Ident);
         } else {
-            $this->DisableAction($Ident);
+            return $this->DisableAction($Ident);
         }
     }
 
@@ -542,8 +568,19 @@ class IPSModule
 
     protected function SendDataToParent($Data)
     {
-        //FIXME: We could validate something here
+        $dataID = $this->GetDataFlowDataID($Data);
+
         $connectionID = IPS_GetInstance($this->InstanceID)['ConnectionID'];
+        if ($connectionID == 0) {
+            throw new Exception('No parent instance was configured which could process our data');
+        }
+        if (!IPS_InstanceExists($connectionID)) {
+            throw new Exception(sprintf('Cannot find instance #%d which should process our data', $this->InstanceID));
+        }
+        if (!in_array($dataID, IPS_GetModule(IPS_GetInstance($connectionID)['ModuleInfo']['ModuleID'])['Implemented'])) {
+            throw new Exception('Data is not compatible with parent');
+        }
+
         $interface = IPS\InstanceManager::getInstanceInterface($connectionID);
         $Data = $this->TranslateDataFlowBuffer($Data, $interface);
         // check if forwardDataFilter applys
@@ -555,11 +592,16 @@ class IPSModule
 
     protected function SendDataToChildren($Data)
     {
-        //FIXME: We could validate something here
+        $dataID = $this->GetDataFlowDataID($Data);
+
         $ids = IPS_GetInstanceList();
         $return = [];
         foreach ($ids as $id) {
             if (IPS_GetInstance($id)['ConnectionID'] == $this->InstanceID) {
+                //Children only receive data, which they implement
+                if (!in_array($dataID, IPS_GetModule(IPS_GetInstance($id)['ModuleInfo']['ModuleID'])['Implemented'])) {
+                    continue;
+                }
                 $interface = IPS\InstanceManager::getInstanceInterface($id);
                 $childData = $this->TranslateDataFlowBuffer($Data, $interface);
                 // check if receiveDataFilter applys
@@ -628,6 +670,10 @@ class IPSModule
 
     protected function SetStatus($Status)
     {
+        if (($Status != 102 /* IS_ACTIVE */) && ($Status != 104 /* IS_INACTIVE */) && ($Status != 106 /* IS_STANDBY */) && ($Status < 200 /* IS_EBASE */)) {
+            throw new Exception('Only Active, Inactive, StandBy and Error codes are allowed');
+        }
+
         IPS\InstanceManager::setStatus($this->InstanceID, $Status);
     }
 
@@ -643,7 +689,24 @@ class IPSModule
 
     protected function SetBuffer($Name, $Data)
     {
+        if ($Data === '') {
+            unset($this->buffer[$Name]);
+            return;
+        }
+
+        if (strlen($Data) > 512 * 1024) {
+            $Data = substr($Data, -512 * 1024);
+        }
         $this->buffer[$Name] = $Data;
+
+        //The kernel clears all buffers if their size goes over the hard limit of 1024kB
+        $totalSize = 0;
+        foreach ($this->buffer as $name => $value) {
+            $totalSize += strlen($name) + strlen($value);
+        }
+        if ($totalSize > 1024 * 1024) {
+            $this->buffer = [];
+        }
     }
 
     protected function GetBufferList()
@@ -728,16 +791,32 @@ class IPSModule
 
     protected function GetValue(string $Ident)
     {
-        return GetValue(IPS_GetObjectIDByIdent($Ident, $this->InstanceID));
+        $vid = IPS\ObjectManager::findObjectIDByIdent($Ident, $this->InstanceID);
+        if ($vid === false) {
+            throw new Exception(sprintf('Object with ident %s could not be found', $Ident));
+        }
+
+        return GetValue($vid);
     }
 
     protected function SetValue(string $Ident, $Value)
     {
-        return SetValue(IPS_GetObjectIDByIdent($Ident, $this->InstanceID), $Value);
+        $vid = IPS\ObjectManager::findObjectIDByIdent($Ident, $this->InstanceID);
+        if ($vid === false) {
+            throw new Exception(sprintf('Object with ident %s could not be found', $Ident));
+        }
+
+        //The kernel writes directly, so variables marked as read-only can be changed by their module
+        IPS\VariableManager::writeVariable($vid, $Value);
+        return true;
     }
 
     protected function LogMessage($Message, $Type)
     {
+        if (!in_array($Type, [KL_MESSAGE, KL_NOTIFY, KL_WARNING, KL_ERROR, KL_DEBUG])) {
+            throw new Exception('Unsupported message type');
+        }
+
         IPS\LogServer::logMessage(strval($this->InstanceID), $Message, $Type);
     }
 
@@ -778,6 +857,28 @@ class IPSModule
         ];
     }
 
+    //Mimics the kernel validating the data before it is sent through the data flow
+    private function GetDataFlowDataID($Data)
+    {
+        $json = json_decode($Data);
+        if (json_last_error() !== JSON_ERROR_NONE) {
+            throw new Exception('JSON parse error');
+        }
+        if (!is_object($json)) {
+            throw new Exception('JSON object is required');
+        }
+        if (!isset($json->DataID) || !is_string($json->DataID)) {
+            throw new Exception('Invalid DataID');
+        }
+
+        return $json->DataID;
+    }
+
+    private function IsCreating()
+    {
+        return IPS_GetInstance($this->InstanceID)['InstanceStatus'] == IS_CREATING;
+    }
+
     //Mimics the kernel translating the Buffer between the data flow encodings:
     //IPSModule uses UTF-8 (utf8_encode/utf8_decode), IPSModuleStrict uses HEX (bin2hex/hex2bin)
     private function TranslateDataFlowBuffer($Data, $Receiver)
@@ -802,6 +903,15 @@ class IPSModule
 
     private function RegisterProperty($Name, $DefaultValue, $Type)
     {
+        if (!$this->IsCreating()) {
+            throw new Exception('Property registration is only possible in the Create method');
+        }
+
+        if (isset($this->properties[$Name])) {
+            throw new Exception(sprintf('Property %s is already registered', $Name));
+        }
+
+        $DefaultValue = IPS\ValueConverter::toVariableType($DefaultValue, $Type, 'DefaultValue');
         $this->properties[$Name] = [
             'Type'    => $Type,
             'Default' => $DefaultValue,
@@ -812,6 +922,15 @@ class IPSModule
 
     private function RegisterAttribute($Name, $DefaultValue, $Type)
     {
+        if (!$this->IsCreating()) {
+            throw new Exception('Attribute registration is only possible in the Create method');
+        }
+
+        if (isset($this->attributes[$Name])) {
+            throw new Exception(sprintf('Attribute %s is already registered', $Name));
+        }
+
+        $DefaultValue = IPS\ValueConverter::toVariableType($DefaultValue, $Type, 'DefaultValue');
         $this->attributes[$Name] = [
             'Type'    => $Type,
             'Default' => $DefaultValue,
@@ -840,7 +959,7 @@ class IPSModule
         }
 
         //search for already available variables with proper ident
-        $vid = @IPS_GetObjectIDByIdent($Ident, $this->InstanceID);
+        $vid = IPS\ObjectManager::findObjectIDByIdent($Ident, $this->InstanceID);
 
         //properly update variableID
         if ($vid === false) {
@@ -849,10 +968,10 @@ class IPSModule
 
         //we have a variable with the proper ident. check if it fits
         if ($vid > 0) {
-            //check if we really have a variable
+            //check if we really have a variable. the kernel bails out without an error
             if (!IPS_VariableExists($vid)) {
-                throw new Exception('Ident with name ' . $Ident . ' is used for wrong object type');
-            } //bail out
+                return $vid;
+            }
             //check for type mismatch
             if (IPS_GetVariable($vid)['VariableType'] != $Type) {
                 //mismatch detected. delete this one. we will create a new below
@@ -871,7 +990,11 @@ class IPSModule
             IPS_SetIdent($vid, $Ident);
             IPS_SetName($vid, $Name);
             IPS_SetPosition($vid, $Position);
-            //IPS_SetReadOnly($vid, true);
+
+            //Variables of IPSModuleStrict can only be changed with $this->SetValue. IPSModule clears the flag for backwards compatibility
+            if (IPS\InstanceManager::getInstanceInterface($this->InstanceID) instanceof IPSModuleStrict) {
+                IPS\ObjectManager::setReadOnly($vid, true);
+            }
         }
 
         //update variable profile. profiles may be changed in module development.

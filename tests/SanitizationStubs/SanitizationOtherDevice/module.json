@@ -1,0 +1,15 @@
+{
+    "id": "{5C0E3E64-7A5B-4C55-9D7C-0B0F2E8A1A40}",
+    "name": "SanitizationOtherDevice",
+    "type": 3,
+    "vendor": "Symcon GmbH",
+    "aliases": [],
+    "parentRequirements": [
+        "{5C0E3E64-7A5B-4C55-9D7C-0B0F2E8A1AA2}"
+    ],
+    "childRequirements": [],
+    "implemented": [
+        "{5C0E3E64-7A5B-4C55-9D7C-0B0F2E8A1AB2}"
+    ],
+    "prefix": "SANOTH"
+}
