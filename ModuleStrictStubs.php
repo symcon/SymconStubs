@@ -123,7 +123,7 @@ class IPSModuleStrict
 
     public function ReceiveData(string $JSONString): string
     {
-        return $this->module->ReceiveData($JSONString);
+        return $this->module->ReceiveData($JSONString) ?? '';
     }
 
     public function ForwardData(string $JSONString): string
@@ -261,60 +261,65 @@ class IPSModuleStrict
 
     protected function RegisterVariableBoolean(string $Ident, string $Name, string|array $ProfileOrPresentation = '', int $Position = 0): bool
     {
-        $variableExists = (@$this->module->GetIDForIdent($Ident) !== false);
-        $this->module->RegisterVariableBoolean($Ident, $Name, $ProfileOrPresentation, $Position);
-        return !$variableExists;
+        return $this->WasCreated($Ident, function () use ($Ident, $Name, $ProfileOrPresentation, $Position)
+        {
+            $this->module->RegisterVariableBoolean($Ident, $Name, $ProfileOrPresentation, $Position);
+        });
     }
 
     protected function RegisterVariableInteger(string $Ident, string $Name, string|array $ProfileOrPresentation = '', int $Position = 0): bool
     {
-        $variableExists = (@$this->module->GetIDForIdent($Ident) !== false);
-        $this->module->RegisterVariableInteger($Ident, $Name, $ProfileOrPresentation, $Position);
-        return !$variableExists;
+        return $this->WasCreated($Ident, function () use ($Ident, $Name, $ProfileOrPresentation, $Position)
+        {
+            $this->module->RegisterVariableInteger($Ident, $Name, $ProfileOrPresentation, $Position);
+        });
     }
 
     protected function RegisterVariableFloat(string $Ident, string $Name, string|array $ProfileOrPresentation = '', int $Position = 0): bool
     {
-        $variableExists = (@$this->module->GetIDForIdent($Ident) !== false);
-        $this->module->RegisterVariableFloat($Ident, $Name, $ProfileOrPresentation, $Position);
-        return !$variableExists;
+        return $this->WasCreated($Ident, function () use ($Ident, $Name, $ProfileOrPresentation, $Position)
+        {
+            $this->module->RegisterVariableFloat($Ident, $Name, $ProfileOrPresentation, $Position);
+        });
     }
 
     protected function RegisterVariableString(string $Ident, string $Name, string|array $ProfileOrPresentation = '', int $Position = 0): bool
     {
-        $variableExists = (@$this->module->GetIDForIdent($Ident) !== false);
-        $this->module->RegisterVariableString($Ident, $Name, $ProfileOrPresentation, $Position);
-        return !$variableExists;
+        return $this->WasCreated($Ident, function () use ($Ident, $Name, $ProfileOrPresentation, $Position)
+        {
+            $this->module->RegisterVariableString($Ident, $Name, $ProfileOrPresentation, $Position);
+        });
     }
 
     protected function UnregisterVariable(string $Ident): bool
     {
-        $this->module->UnregisterVariable($Ident);
-        return true;
+        return $this->module->UnregisterVariable($Ident);
     }
 
     protected function MaintainVariable(string $Ident, string $Name, int $Type, string|array $ProfileOrPresentation, int $Position, bool $Keep): bool
     {
-        $this->module->MaintainVariable($Ident, $Name, $Type, $ProfileOrPresentation, $Position, $Keep);
-        return true;
+        if (!$Keep) {
+            return $this->module->UnregisterVariable($Ident);
+        }
+        return $this->WasCreated($Ident, function () use ($Ident, $Name, $Type, $ProfileOrPresentation, $Position)
+        {
+            $this->module->MaintainVariable($Ident, $Name, $Type, $ProfileOrPresentation, $Position, true);
+        });
     }
 
     protected function EnableAction(string $Ident): bool
     {
-        $this->module->EnableAction($Ident);
-        return true;
+        return $this->module->EnableAction($Ident);
     }
 
     protected function DisableAction(string $Ident): bool
     {
-        $this->module->DisableAction($Ident);
-        return true;
+        return $this->module->DisableAction($Ident);
     }
 
     protected function MaintainAction(string $Ident, bool $Keep): bool
     {
-        $this->module->MaintainAction($Ident, $Keep);
-        return true;
+        return $this->module->MaintainAction($Ident, $Keep);
     }
 
     protected function ReadPropertyBoolean(string $Name): bool
@@ -543,8 +548,22 @@ class IPSModuleStrict
         return true;
     }
 
+    protected function UnregisterOAuth(string $OAuthPath): bool
+    {
+        return true;
+    }
+
     protected function getTime(): int
     {
         throw new Exception('getTime needs to be implemented by module under test');
+    }
+
+    //Returns whether registering created a new variable, which is also the case if a variable of another type was replaced
+    private function WasCreated(string $Ident, callable $register): bool
+    {
+        $before = IPS\ObjectManager::findObjectIDByIdent($Ident, $this->InstanceID);
+        $register();
+        $after = IPS\ObjectManager::findObjectIDByIdent($Ident, $this->InstanceID);
+        return ($after !== false) && ($after !== $before);
     }
 }

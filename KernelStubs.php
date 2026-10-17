@@ -126,10 +126,10 @@ namespace IPS {
                 'ModuleName'         => $module['name'],
                 'ModuleType'         => $module['type'],
                 'Vendor'             => $module['vendor'],
-                'Aliases'            => $module['aliases'],
-                'ParentRequirements' => $module['parentRequirements'],
-                'ChildRequirements'  => $module['childRequirements'],
-                'Implemented'        => $module['implemented'],
+                'Aliases'            => $module['aliases'] ?? [],
+                'ParentRequirements' => $module['parentRequirements'] ?? [],
+                'ChildRequirements'  => $module['childRequirements'] ?? [],
+                'Implemented'        => $module['implemented'] ?? [],
                 'LibraryID'          => $libraryID,
                 'Prefix'             => $module['prefix'],
                 'Class'              => str_replace(' ', '', $module['name'])
@@ -171,6 +171,147 @@ namespace IPS {
                     eval($function);
                 }
             }
+        }
+    }
+
+    //Mimics the value conversions of the kernel
+    class ValueConverter
+    {
+        //Equivalent to the FETCH_*_PARAMETER macros, which are used for function parameters like the value of SetValue
+        public static function toBoolean($Value, string $Parameter = 'Value'): bool
+        {
+            if (($Value === null) || is_bool($Value)) {
+                return (bool) $Value;
+            }
+            if (is_int($Value) || is_float($Value)) {
+                return $Value != 0;
+            }
+            if (is_string($Value)) {
+                $lower = strtolower(trim($Value));
+                if ($lower === 'true') {
+                    return true;
+                }
+                if ($lower === 'false') {
+                    return false;
+                }
+                return self::roundInteger(self::parseFloat($Value, $Parameter)) != 0;
+            }
+            throw self::autoConvertError($Parameter, 'Type does not match');
+        }
+
+        public static function toInteger($Value, string $Parameter = 'Value'): int
+        {
+            if (($Value === null) || is_bool($Value) || is_int($Value)) {
+                return (int) $Value;
+            }
+            if (is_float($Value)) {
+                return self::roundInteger($Value);
+            }
+            if (is_string($Value)) {
+                return self::roundInteger(self::parseFloat($Value, $Parameter));
+            }
+            throw self::autoConvertError($Parameter, 'Type does not match');
+        }
+
+        public static function toFloat($Value, string $Parameter = 'Value'): float
+        {
+            if (($Value === null) || is_bool($Value) || is_int($Value) || is_float($Value)) {
+                return (float) $Value;
+            }
+            if (is_string($Value)) {
+                return self::parseFloat($Value, $Parameter);
+            }
+            throw self::autoConvertError($Parameter, 'Type does not match');
+        }
+
+        public static function toString($Value, string $Parameter = 'Value'): string
+        {
+            if ($Value === null) {
+                return '';
+            }
+            if (is_bool($Value)) {
+                return $Value ? 'True' : 'False';
+            }
+            if (is_int($Value) || is_float($Value)) {
+                return strval($Value);
+            }
+            if (is_string($Value)) {
+                if (!mb_check_encoding($Value, 'UTF-8')) {
+                    throw self::autoConvertError($Parameter, 'Value is not encoded as valid UTF-8!');
+                }
+                return $Value;
+            }
+            throw self::autoConvertError($Parameter, 'Type does not match');
+        }
+
+        public static function toVariableType($Value, int $VariableType, string $Parameter = 'Value')
+        {
+            switch ($VariableType) {
+                case 0: /* Boolean */
+                    return self::toBoolean($Value, $Parameter);
+                case 1: /* Integer */
+                    return self::toInteger($Value, $Parameter);
+                case 2: /* Float */
+                    return self::toFloat($Value, $Parameter);
+                case 3: /* String */
+                    return self::toString($Value, $Parameter);
+                default:
+                    throw new \Exception('Unsupported VariableType!');
+            }
+        }
+
+        //Equivalent to the ConvertValueVisitor, which is used for setting properties
+        public static function toPropertyType(string $Name, $Value, int $PropertyType)
+        {
+            try {
+                if (is_bool($Value)) {
+                    switch ($PropertyType) {
+                        case 0: return $Value;
+                        case 1: return $Value ? 1 : 0;
+                        case 2: return $Value ? 1.0 : 0.0;
+                        case 3: return $Value ? 'True' : 'False';
+                    }
+                } elseif (is_int($Value) || is_float($Value)) {
+                    switch ($PropertyType) {
+                        case 0: return $Value > 0;
+                        case 1: return (int) $Value;
+                        case 2: return (float) $Value;
+                        case 3: return strval($Value);
+                    }
+                } elseif (is_string($Value)) {
+                    switch ($PropertyType) {
+                        case 0: return $Value === 'True';
+                        case 1: return self::roundInteger(self::parseFloat($Value));
+                        case 2: return self::parseFloat($Value);
+                        case 3: return $Value;
+                    }
+                }
+                throw new \Exception('Parameter type of Value does not match');
+            } catch (\Exception $e) {
+                throw new \Exception(sprintf('Cannot set property %s: %s', $Name, $e->getMessage()));
+            }
+        }
+
+        //Equivalent to std::stod(StrTrim(FixDecimalCharacter(...))), which parses the leading number of a string
+        private static function parseFloat(string $Value, string $Parameter = ''): float
+        {
+            if (!preg_match('/^[+-]?(\d+(\.\d*)?|\.\d+)([eE][+-]?\d+)?/', trim(str_replace(',', '.', $Value)), $matches)) {
+                if ($Parameter === '') {
+                    throw new \Exception('stod');
+                }
+                throw self::autoConvertError($Parameter, 'stod');
+            }
+            return (float) $matches[0];
+        }
+
+        private static function roundInteger(float $Value): int
+        {
+            return (int) round($Value);
+        }
+
+        private static function autoConvertError(string $Parameter, string $Reason): \Exception
+        {
+            return new \Exception(sprintf('Cannot auto-convert value for parameter %s (%s)', $Parameter, $Reason));
         }
     }
 
@@ -222,7 +363,7 @@ namespace IPS {
             ];
 
             //Add to root
-            self::$objects[0]['ChildrendIDs'][] = $id;
+            self::$objects[0]['ChildrenIDs'][] = $id;
             self::$objects[0]['HasChildren'] = true;
 
             return $id;
@@ -240,7 +381,9 @@ namespace IPS {
             $ParentID = self::$objects[$ID]['ParentID'];
             if (($key = array_search($ID, self::$objects[$ParentID]['ChildrenIDs'])) !== false) {
                 unset(self::$objects[$ParentID]['ChildrenIDs'][$key]);
+                self::$objects[$ParentID]['ChildrenIDs'] = array_values(self::$objects[$ParentID]['ChildrenIDs']);
             }
+            self::$objects[$ParentID]['HasChildren'] = count(self::$objects[$ParentID]['ChildrenIDs']) > 0;
 
             //Remove object
             unset(self::$objects[$ID]);
@@ -254,16 +397,37 @@ namespace IPS {
             self::checkRoot($ID);
             self::checkObject($ID);
 
-            self::$objects[self::$objects[$ID]['ParentID']]['ChildrenIDs'] = array_diff(self::$objects[self::$objects[$ID]['ParentID']]['ChildrenIDs'], [$ID]);
+            if (self::isChild($ParentID, $ID, true)) {
+                throw new \Exception('Cannot assign a parent object to his child');
+            }
+
+            if ($ID == $ParentID) {
+                throw new \Exception('Cannot assign self as a parent object');
+            }
+
+            $OldParentID = self::$objects[$ID]['ParentID'];
+            if ($OldParentID == $ParentID) {
+                return;
+            }
+
+            if (self::$objects[$ID]['ObjectIdent'] != '') {
+                if (self::findObjectIDByIdent(self::$objects[$ID]['ObjectIdent'], $ParentID) !== false) {
+                    throw new \Exception('Ident must be unique for each category');
+                }
+            }
+
+            self::$objects[$OldParentID]['ChildrenIDs'] = array_values(array_diff(self::$objects[$OldParentID]['ChildrenIDs'], [$ID]));
+            self::$objects[$OldParentID]['HasChildren'] = count(self::$objects[$OldParentID]['ChildrenIDs']) > 0;
             self::$objects[$ID]['ParentID'] = $ParentID;
             self::$objects[$ParentID]['ChildrenIDs'][] = $ID;
+            self::$objects[$ParentID]['HasChildren'] = true;
         }
 
         public static function setIdent(int $ID, string $Ident): void
         {
             self::checkObject($ID);
 
-            if (!preg_match('/[a-zA-Z0-9_]*/', $Ident)) {
+            if (!preg_match('/^[a-zA-Z0-9_]*$/', $Ident)) {
                 throw new \Exception('Ident may contain only letters and numbers');
             }
 
@@ -303,12 +467,17 @@ namespace IPS {
         {
             self::checkObject($ID);
 
+            if (strpos($Icon, ' ') !== false) {
+                throw new \Exception('Icons must not contain spaces!');
+            }
+
             self::$objects[$ID]['ObjectIcon'] = $Icon;
         }
 
         public static function setSummary(int $ID, string $Summary): void
         {
             self::checkRoot($ID);
+            self::checkObject($ID);
 
             self::$objects[$ID]['ObjectSummary'] = $Summary;
         }
@@ -362,7 +531,7 @@ namespace IPS {
             return array_keys(self::$objects);
         }
 
-        public static function getObjectIDByName(string $Name, int $ParentID): array
+        public static function getObjectIDByName(string $Name, int $ParentID): int|false
         {
             if ($Name == '') {
                 throw new \Exception('Name cannot be empty');
@@ -376,10 +545,11 @@ namespace IPS {
                 }
             }
 
-            throw new \Exception(sprintf('Object with name %s could not be found', $Name));
+            trigger_error(sprintf('Object with name %s could not be found', $Name), E_USER_WARNING);
+            return false;
         }
 
-        public static function getObjectIDByNameEx(string $Name, int $ParentID, int $ObjectType): int
+        public static function getObjectIDByNameEx(string $Name, int $ParentID, int $ObjectType): int|false
         {
             if ($Name == '') {
                 throw new \Exception('Name cannot be empty');
@@ -395,7 +565,8 @@ namespace IPS {
                 }
             }
 
-            throw new \Exception(sprintf('Object with name %s could not be found', $Name));
+            trigger_error(sprintf('Object with name %s could not be found', $Name), E_USER_WARNING);
+            return false;
         }
 
         public static function getObjectIDByIdent(string $Ident, int $ParentID)
@@ -404,6 +575,15 @@ namespace IPS {
                 throw new \Exception('Ident cannot be empty');
             }
 
+            $id = self::findObjectIDByIdent($Ident, $ParentID);
+            if ($id === false) {
+                trigger_error(sprintf('Object with ident %s could not be found', $Ident), E_USER_WARNING);
+            }
+            return $id;
+        }
+
+        public static function findObjectIDByIdent(string $Ident, int $ParentID): int|false
+        {
             self::checkObject($ParentID);
             foreach (self::$objects[$ParentID]['ChildrenIDs'] as $ChildID) {
                 self::checkObject($ChildID);
@@ -412,8 +592,14 @@ namespace IPS {
                 }
             }
 
-            trigger_error(sprintf('Object with ident %s could not be found', $Ident));
             return false;
+        }
+
+        public static function checkNoChildren(int $ID, string $Type): void
+        {
+            if (self::objectExists($ID) && self::hasChildren($ID)) {
+                throw new \Exception(sprintf('Cannot delete %s if it has child objects', $Type));
+            }
         }
 
         public static function hasChildren(int $ID): bool
@@ -423,7 +609,20 @@ namespace IPS {
 
         public static function isChild(int $ID, int $ParentID, bool $Recursive): bool
         {
-            throw new \Exception('FIXME: Not implemented');
+            self::checkObject($ID);
+            self::checkObject($ParentID);
+
+            while ($ID != 0) {
+                $ID = self::$objects[$ID]['ParentID'];
+                if ($ID == $ParentID) {
+                    return true;
+                }
+                if (!$Recursive) {
+                    break;
+                }
+            }
+
+            return false;
         }
 
         public static function getChildrenIDs(int $ID): array
@@ -435,11 +634,15 @@ namespace IPS {
 
         public static function getName(int $ID): string
         {
+            self::checkObject($ID);
+
             return self::$objects[$ID]['ObjectName'];
         }
 
         public static function getParent(int $ID): int
         {
+            self::checkObject($ID);
+
             return self::$objects[$ID]['ParentID'];
         }
 
@@ -558,7 +761,7 @@ namespace IPS {
             self::$instances[$InstanceID] = [
                 'InstanceID'      => $InstanceID,
                 'ConnectionID'    => 0,
-                'InstanceStatus'  => 100 /* IS_CREATING */,
+                'InstanceStatus'  => 101 /* IS_CREATING */,
                 'InstanceChanged' => time(),
                 'ModuleInfo'      => [
                     'ModuleID'   => $Module['ModuleID'],
@@ -574,6 +777,11 @@ namespace IPS {
             if (($interface instanceof \IPSModule) || ($interface instanceof \IPSModuleStrict)) {
                 $interface->Create();
                 $interface->ApplyChanges();
+            }
+
+            //Apply the active status to all instances which did not use SetStatus themselves
+            if (self::$instances[$InstanceID]['InstanceStatus'] == 101 /* IS_CREATING */) {
+                self::$instances[$InstanceID]['InstanceStatus'] = 102 /* IS_ACTIVE */;
             }
         }
 
@@ -670,12 +878,61 @@ namespace IPS {
         public static function connectInstance(int $InstanceID, int $ParentID): void
         {
             self::checkInstance($InstanceID);
+
+            if (self::$instances[$InstanceID]['ConnectionID'] != 0) {
+                throw new \Exception(sprintf('Instance #%d already has a parent', $InstanceID));
+            }
+
+            self::checkInstance($ParentID);
+
+            if ($InstanceID == $ParentID) {
+                throw new \Exception('Cannot connect ourselves as a parent');
+            }
+
+            switch (self::$instances[$InstanceID]['ModuleInfo']['ModuleType']) {
+                case 0: /* Core */
+                    throw new \Exception('Core instances cannot be connected to any other instance');
+                case 1: /* I/O */
+                    throw new \Exception('I/O instance cannot be connected to any other instance');
+                case 2: /* Splitter */
+                case 3: /* Device */
+                case 4: /* Configurator */
+                case 5: /* Discovery */
+                case 6: /* Visualization */
+                    if (!in_array(self::$instances[$ParentID]['ModuleInfo']['ModuleType'], [1 /* I/O */, 2 /* Splitter */])) {
+                        throw new \Exception('Device/Configuration/Discovery/Visualization/Splitter instances can only be connected to other Splitter or I/O instances');
+                    }
+                    break;
+                default:
+                    throw new \Exception('Unknown instance module type');
+            }
+
+            $child = ModuleLoader::getModule(self::$instances[$InstanceID]['ModuleInfo']['ModuleID']);
+            $parent = ModuleLoader::getModule(self::$instances[$ParentID]['ModuleInfo']['ModuleID']);
+            if ((count(array_intersect($parent['ChildRequirements'], $child['Implemented'])) == 0) || (count(array_intersect($child['ParentRequirements'], $parent['Implemented'])) == 0)) {
+                throw new \Exception('Dataflow is incompatible');
+            }
+
+            $connectionID = self::$instances[$ParentID]['ConnectionID'];
+            while ($connectionID > 0) {
+                if ($connectionID == $InstanceID) {
+                    throw new \Exception('Building a loop is not allowed');
+                }
+                self::checkInstance($connectionID);
+                $connectionID = self::$instances[$connectionID]['ConnectionID'];
+            }
+
             self::$instances[$InstanceID]['ConnectionID'] = $ParentID;
         }
 
         public static function disconnectInstance(int $InstanceID): void
         {
             self::checkInstance($InstanceID);
+
+            if (self::$instances[$InstanceID]['ConnectionID'] == 0) {
+                throw new \Exception(sprintf('Instance #%d does not have a parent', $InstanceID));
+            }
+
             self::$instances[$InstanceID]['ConnectionID'] = 0;
         }
 
@@ -692,7 +949,7 @@ namespace IPS {
             self::$interfaces = [];
         }
 
-        private static function checkInstance(int $InstanceID): void
+        public static function checkInstance(int $InstanceID): void
         {
             if (!self::instanceExists($InstanceID)) {
                 throw new \Exception(sprintf('Instance #%d does not exist', $InstanceID));
@@ -782,14 +1039,14 @@ namespace IPS {
 
         public static function readVariableBoolean(int $VariableID): bool
         {
-            self::checkVariable($VariableID);
+            self::checkVariableType($VariableID, 0 /* Boolean */);
 
             return self::$variables[$VariableID]['VariableValue'];
         }
 
         public static function writeVariableBoolean(int $VariableID, bool $VariableValue): void
         {
-            self::checkVariable($VariableID);
+            self::checkVariableType($VariableID, 0 /* Boolean */);
 
             self::$variables[$VariableID]['VariableUpdated'] = TimeManager::getTime();
             if (self::$variables[$VariableID]['VariableValue'] != $VariableValue) {
@@ -800,14 +1057,14 @@ namespace IPS {
 
         public static function readVariableInteger(int $VariableID): int
         {
-            self::checkVariable($VariableID);
+            self::checkVariableType($VariableID, 1 /* Integer */);
 
             return self::$variables[$VariableID]['VariableValue'];
         }
 
         public static function writeVariableInteger(int $VariableID, int $VariableValue): void
         {
-            self::checkVariable($VariableID);
+            self::checkVariableType($VariableID, 1 /* Integer */);
 
             self::$variables[$VariableID]['VariableUpdated'] = TimeManager::getTime();
             if (self::$variables[$VariableID]['VariableValue'] != $VariableValue) {
@@ -818,14 +1075,18 @@ namespace IPS {
 
         public static function readVariableFloat(int $VariableID): float
         {
-            self::checkVariable($VariableID);
+            self::checkVariableType($VariableID, 2 /* Float */);
 
             return self::$variables[$VariableID]['VariableValue'];
         }
 
         public static function writeVariableFloat(int $VariableID, float $VariableValue): void
         {
-            self::checkVariable($VariableID);
+            self::checkVariableType($VariableID, 2 /* Float */);
+
+            if (!is_finite($VariableValue)) {
+                throw new \Exception('NaN/INF values are not supported');
+            }
 
             self::$variables[$VariableID]['VariableUpdated'] = TimeManager::getTime();
             if (self::$variables[$VariableID]['VariableValue'] != $VariableValue) {
@@ -836,14 +1097,22 @@ namespace IPS {
 
         public static function readVariableString(int $VariableID): string
         {
-            self::checkVariable($VariableID);
+            self::checkVariableType($VariableID, 3 /* String */);
 
             return self::$variables[$VariableID]['VariableValue'];
         }
 
         public static function writeVariableString(int $VariableID, string $VariableValue): void
         {
-            self::checkVariable($VariableID);
+            self::checkVariableType($VariableID, 3 /* String */);
+
+            if (strlen($VariableValue) > 1024 * 1024) {
+                throw new \Exception('Limit of 1024kb exceeded. Variable has not been written.');
+            }
+
+            if (!mb_check_encoding($VariableValue, 'UTF-8')) {
+                throw new \Exception('Variable value must be UTF-8 encoded since Symcon 6.3!');
+            }
 
             self::$variables[$VariableID]['VariableUpdated'] = TimeManager::getTime();
             if (self::$variables[$VariableID]['VariableValue'] != $VariableValue) {
@@ -852,9 +1121,55 @@ namespace IPS {
             self::$variables[$VariableID]['VariableValue'] = $VariableValue;
         }
 
+        //Converts the value to the type of the variable like the kernel does for SetValue
+        public static function writeVariable(int $VariableID, $VariableValue): void
+        {
+            self::checkVariable($VariableID);
+
+            switch (self::$variables[$VariableID]['VariableType']) {
+                case 0: /* Boolean */
+                    self::writeVariableBoolean($VariableID, ValueConverter::toBoolean($VariableValue));
+                    break;
+                case 1: /* Integer */
+                    self::writeVariableInteger($VariableID, ValueConverter::toInteger($VariableValue));
+                    break;
+                case 2: /* Float */
+                    self::writeVariableFloat($VariableID, ValueConverter::toFloat($VariableValue));
+                    break;
+                case 3: /* String */
+                    self::writeVariableString($VariableID, ValueConverter::toString($VariableValue));
+                    break;
+            }
+        }
+
         public static function variableExists(int $VariableID): bool
         {
             return isset(self::$variables[$VariableID]);
+        }
+
+        public static function checkNotReadOnly(int $VariableID): void
+        {
+            self::checkVariable($VariableID);
+
+            if (ObjectManager::getObject($VariableID)['ObjectIsReadOnly']) {
+                throw new \Exception('Variable is marked as read-only and cannot be changed');
+            }
+        }
+
+        public static function checkVariableType(int $VariableID, int $VariableType): void
+        {
+            self::checkVariable($VariableID);
+
+            if (self::$variables[$VariableID]['VariableType'] != $VariableType) {
+                throw new \Exception('VariableType does not match');
+            }
+        }
+
+        public static function checkVariableTypeRange(int $VariableType): void
+        {
+            if (($VariableType < 0) || ($VariableType > 3)) {
+                throw new \Exception('VariableType must be between 0 and 3');
+            }
         }
 
         public static function checkVariable(int $VariableID): void
@@ -875,7 +1190,10 @@ namespace IPS {
         {
             self::checkVariable($VariableID);
             $variable = self::getVariable($VariableID);
-            return $variable['VariableCustomPresentation'];
+            if (!empty($variable['VariableCustomPresentation'])) {
+                return $variable['VariableCustomPresentation'];
+            }
+            return $variable['VariablePresentation'];
         }
 
         public static function getVariableList(): array
@@ -886,6 +1204,13 @@ namespace IPS {
         public static function setVariableCustomProfile(int $VariableID, string $ProfileName): void
         {
             self::checkVariable($VariableID);
+
+            //The kernel still accepts the removed ~String profile and replaces it with an empty profile
+            if ($ProfileName == '~String') {
+                trigger_error(sprintf('Profile ~String is not available since Symcon 5.0. Just use an empty profile. This will be an error in future versions! Check your IPS_SetVariableCustomProfile usage for VariableID %d', $VariableID), E_USER_DEPRECATED);
+                $ProfileName = '';
+            }
+            self::checkProfileType($VariableID, $ProfileName);
 
             self::$variables[$VariableID]['VariableCustomProfile'] = $ProfileName;
 
@@ -900,12 +1225,18 @@ namespace IPS {
         {
             self::checkVariable($VariableID);
 
+            //1 is a special value, which is allowed although it is invalid
+            if ($ScriptID > 1) {
+                ScriptManager::checkScript($ScriptID);
+            }
+
             self::$variables[$VariableID]['VariableCustomAction'] = $ScriptID;
         }
 
         public static function setVariableCustomPresentation(int $VariableID, array $Presentation): void
         {
             self::checkVariable($VariableID);
+            self::checkPresentationFormat($Presentation);
 
             self::$variables[$VariableID]['VariableCustomPresentation'] = $Presentation;
         }
@@ -913,6 +1244,7 @@ namespace IPS {
         public static function setVariableProfile(int $VariableID, string $ProfileName): void
         {
             self::checkVariable($VariableID);
+            self::checkProfileType($VariableID, $ProfileName);
 
             self::$variables[$VariableID]['VariableProfile'] = $ProfileName;
 
@@ -925,6 +1257,11 @@ namespace IPS {
 
         public static function setVariableAction(int $VariableID, int $InstanceID): void
         {
+            //1 is a special value, which is allowed although it is invalid
+            if ($InstanceID > 1) {
+                InstanceManager::checkInstance($InstanceID);
+            }
+
             self::checkVariable($VariableID);
 
             self::$variables[$VariableID]['VariableAction'] = $InstanceID;
@@ -933,6 +1270,7 @@ namespace IPS {
         public static function setVariablePresentation(int $VariableID, array $Presentation): void
         {
             self::checkVariable($VariableID);
+            self::checkPresentationFormat($Presentation);
 
             self::$variables[$VariableID]['VariablePresentation'] = $Presentation;
         }
@@ -940,6 +1278,38 @@ namespace IPS {
         public static function reset()
         {
             self::$variables = [];
+        }
+
+        private static function checkProfileType(int $VariableID, string $ProfileName): void
+        {
+            //This will also check for the existence of the profile
+            if ($ProfileName !== '') {
+                if (ProfileManager::getVariableProfile($ProfileName)['ProfileType'] != self::$variables[$VariableID]['VariableType']) {
+                    throw new \Exception('Variable Type and Profile Type do not match!');
+                }
+            }
+        }
+
+        private static function checkPresentationFormat(array $Presentation): void
+        {
+            if (!isset($Presentation['PRESENTATION'])) {
+                if (empty($Presentation)) {
+                    return;
+                }
+                throw new \Exception("Non-empty presentation format is missing 'PRESENTATION' key.");
+            }
+
+            //The presentations are not loaded by the stubs. Use the well-known presentations instead
+            $known = PresentationPool::presentationExists($Presentation['PRESENTATION']);
+            foreach (get_defined_constants(true)['user'] as $name => $value) {
+                if ((strpos($name, 'VARIABLE_PRESENTATION_') === 0) && ($value === $Presentation['PRESENTATION'])) {
+                    $known = true;
+                    break;
+                }
+            }
+            if (!$known) {
+                throw new \Exception(sprintf("Presentation format contains invalid 'PRESENTATION' ID: %s", $Presentation['PRESENTATION']));
+            }
         }
     }
 
@@ -965,15 +1335,27 @@ namespace IPS {
         {
             self::checkScript($ScriptID);
             unset(self::$scripts[$ScriptID]);
+            unset(self::$content[$ScriptID]);
+        }
+
+        public static function checkScriptTypeRange(int $ScriptType): void
+        {
+            if (($ScriptType < 0) || ($ScriptType > 2)) {
+                throw new \Exception('ScriptType must be between 0 and 2');
+            }
         }
 
         public static function setScriptFile(int $ScriptID, string $FilePath): void
         {
+            self::checkScript($ScriptID);
+
             self::$scripts[$ScriptID]['ScriptFile'] = $FilePath;
         }
 
         public static function setScriptContent(int $ScriptID, string $Content): void
         {
+            self::checkScript($ScriptID);
+
             self::$content[$ScriptID] = $Content;
         }
 
@@ -1010,12 +1392,15 @@ namespace IPS {
 
         public static function getScriptContent(int $ScriptID): string
         {
+            self::checkScript($ScriptID);
+
             return self::$content[$ScriptID];
         }
 
         public static function reset()
         {
             self::$scripts = [];
+            self::$content = [];
         }
     }
 
@@ -1038,7 +1423,7 @@ namespace IPS {
             self::runScriptWaitEx($ScriptID, $Parameters);
         }
 
-        public static function IPS_RunScriptWait(int $ScriptID): string
+        public static function runScriptWait(int $ScriptID): string
         {
             return self::runScriptWaitEx($ScriptID, []);
         }
@@ -1183,6 +1568,13 @@ namespace IPS {
             return isset(self::$medias[$MediaID]);
         }
 
+        public static function checkMediaTypeRange(int $MediaType): void
+        {
+            if (($MediaType < 0) || ($MediaType > 5)) {
+                throw new \Exception('MediaType must be between 0 and 5');
+            }
+        }
+
         public static function checkMedia(int $MediaID): void
         {
             if (!self::mediaExists($MediaID)) {
@@ -1238,6 +1630,16 @@ namespace IPS {
         public static function setLinkTargetID(int $LinkID, int $TargetID)
         {
             self::checkLink($LinkID);
+
+            if ($TargetID > 0) {
+                if (!ObjectManager::objectExists($TargetID)) {
+                    throw new \Exception(sprintf('Object #%d does not exist', $TargetID));
+                }
+            }
+
+            if (self::linkExists($TargetID)) {
+                throw new \Exception('TargetID must not be another Link');
+            }
             self::$links[$LinkID]['TargetID'] = $TargetID;
         }
 
@@ -1260,6 +1662,26 @@ namespace IPS {
 
         public static function createVariableProfile(string $ProfileName, int $ProfileType): void
         {
+            if (($ProfileType < 0) || ($ProfileType > 3)) {
+                throw new \Exception('ProfileType must be between 0 and 3');
+            }
+
+            if ($ProfileName == '') {
+                throw new \Exception('Profilename cannot be empty');
+            }
+
+            if (strpos($ProfileName, ' ') !== false) {
+                throw new \Exception('Profilename cannot have spaces');
+            }
+
+            if (!preg_match('/^[a-zA-Z0-9_\-.]+$/', $ProfileName)) {
+                throw new \Exception('Profilename cannot have special chars');
+            }
+
+            if (self::variableProfileExists($ProfileName)) {
+                throw new \Exception(sprintf('Profile with name #%s already exists', $ProfileName));
+            }
+
             self::$profiles[$ProfileName] = [
                 'ProfileName'  => $ProfileName,
                 'ProfileType'  => $ProfileType,
@@ -1277,13 +1699,13 @@ namespace IPS {
 
         public static function deleteVariableProfile(string $ProfileName): void
         {
-            self::checkVariableProfile($ProfileName);
+            self::checkWriteVariableProfile($ProfileName);
             unset(self::$profiles[$ProfileName]);
         }
 
         public static function setVariableProfileText(string $ProfileName, string $Prefix, string $Suffix): void
         {
-            self::checkVariableProfile($ProfileName);
+            self::checkWriteVariableProfile($ProfileName);
 
             self::$profiles[$ProfileName]['Prefix'] = $Prefix;
             self::$profiles[$ProfileName]['Suffix'] = $Suffix;
@@ -1291,7 +1713,19 @@ namespace IPS {
 
         public static function setVariableProfileValues(string $ProfileName, float $MinValue, float $MaxValue, float $StepSize): void
         {
-            self::checkVariableProfile($ProfileName);
+            self::checkWriteVariableProfile($ProfileName);
+
+            if (self::$profiles[$ProfileName]['ProfileType'] == VARIABLETYPE_STRING) {
+                throw new \Exception('Cannot modify values for string profiles');
+            }
+
+            if ($MinValue > $MaxValue) {
+                throw new \Exception('Min value cannot be bigger than max value');
+            }
+
+            if ($StepSize < 0) {
+                throw new \Exception('Step size cannot be nagative');
+            }
 
             self::$profiles[$ProfileName]['MinValue'] = $MinValue;
             self::$profiles[$ProfileName]['MaxValue'] = $MaxValue;
@@ -1300,22 +1734,34 @@ namespace IPS {
 
         public static function setVariableProfileDigits(string $ProfileName, int $Digits): void
         {
-            self::checkVariableProfile($ProfileName);
+            self::checkWriteVariableProfile($ProfileName);
+
+            if (self::$profiles[$ProfileName]['ProfileType'] == VARIABLETYPE_STRING) {
+                throw new \Exception('Cannot modify digits for string profiles');
+            }
+
+            if (($Digits < 0) || ($Digits > 16)) {
+                throw new \Exception('Digits must be between 0 and 16');
+            }
 
             self::$profiles[$ProfileName]['Digits'] = $Digits;
         }
 
         public static function setVariableProfileIcon(string $ProfileName, string $Icon): void
         {
-            self::checkVariableProfile($ProfileName);
+            self::checkWriteVariableProfile($ProfileName);
 
             self::$profiles[$ProfileName]['Icon'] = $Icon;
         }
 
         public static function setVariableProfileAssociation(string $ProfileName, $AssociationValue, string $AssociationName, string $AssociationIcon, int $AssociationColor)
         {
-            self::checkVariableProfile($ProfileName);
+            self::checkWriteVariableProfile($ProfileName);
             if (($AssociationName == '') && ($AssociationIcon == '')) {
+                if (self::$profiles[$ProfileName]['ProfileType'] == VARIABLETYPE_BOOLEAN) {
+                    throw new \Exception('Cannot delete association for boolean profiles');
+                }
+
                 unset($keyFound);
                 foreach (self::$profiles[$ProfileName]['Associations'] as $key => $association) {
                     if ($association['Value'] == $AssociationValue) {
@@ -1328,11 +1774,11 @@ namespace IPS {
                     if (self::$profiles[$ProfileName]['ProfileType'] != VARIABLETYPE_STRING) {
                         usort(self::$profiles[$ProfileName]['Associations'], function ($a, $b)
                         {
-                            return $a['Value'] - $b['Value'];
+                            return $a['Value'] <=> $b['Value'];
                         });
                     }
                 } else {
-                    trigger_error(sprintf('Cannot find association for deletion with value %f', $AssociationValue), E_USER_WARNING);
+                    throw new \Exception(sprintf('Cannot find association for deletion with value %s', $AssociationValue));
                 }
                 return;
             }
@@ -1356,7 +1802,7 @@ namespace IPS {
             if (self::$profiles[$ProfileName]['ProfileType'] != VARIABLETYPE_STRING) {
                 usort(self::$profiles[$ProfileName]['Associations'], function ($a, $b)
                 {
-                    return $a['Value'] - $b['Value'];
+                    return $a['Value'] <=> $b['Value'];
                 });
             }
         }
@@ -1369,7 +1815,16 @@ namespace IPS {
         public static function checkVariableProfile(string $ProfileName): void
         {
             if (!self::variableProfileExists($ProfileName)) {
-                throw new \Exception(sprintf('Profile #%s does not exist', $ProfileName));
+                throw new \Exception(sprintf('Profile with name #%s does not exist', $ProfileName));
+            }
+        }
+
+        public static function checkWriteVariableProfile(string $ProfileName): void
+        {
+            self::checkVariableProfile($ProfileName);
+
+            if (self::$profiles[$ProfileName]['IsReadOnly'] ?? false) {
+                throw new \Exception(sprintf('Profile #%s has been marked as read only', $ProfileName));
             }
         }
 
@@ -1390,7 +1845,7 @@ namespace IPS {
             $result = [];
             foreach (self::$profiles as $profile) {
                 if ($profile['ProfileType'] == $ProfileType) {
-                    $result[] = $profile;
+                    $result[] = $profile['ProfileName'];
                 }
             }
 

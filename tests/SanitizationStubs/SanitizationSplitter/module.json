@@ -1,0 +1,15 @@
+{
+    "id": "{5C0E3E64-7A5B-4C55-9D7C-0B0F2E8A1A10}",
+    "name": "SanitizationSplitter",
+    "type": 2,
+    "vendor": "Symcon GmbH",
+    "aliases": [],
+    "parentRequirements": [],
+    "childRequirements": [
+        "{5C0E3E64-7A5B-4C55-9D7C-0B0F2E8A1AB1}"
+    ],
+    "implemented": [
+        "{5C0E3E64-7A5B-4C55-9D7C-0B0F2E8A1AA1}"
+    ],
+    "prefix": "SANSPL"
+}
