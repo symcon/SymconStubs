@@ -694,8 +694,8 @@ class IPSModule
 
     protected function SetBuffer($Name, $Data)
     {
-        //The kernel accepts scalar values for IPSModule and stores them as string
-        $Data = strval($Data);
+        //The kernel converts scalar values to a string (e.g. true becomes 'True') and rejects everything else
+        $Data = IPS\ValueConverter::toRawString($Data, 'Data');
         if ($Data === '') {
             unset($this->buffer[$Name]);
             return;

@@ -230,6 +230,15 @@ namespace IPS {
 
         public static function toString($Value, string $Parameter = 'Value'): string
         {
+            if (is_string($Value) && !mb_check_encoding($Value, 'UTF-8')) {
+                throw self::autoConvertError($Parameter, 'Value is not encoded as valid UTF-8!');
+            }
+            return self::toRawString($Value, $Parameter);
+        }
+
+        //Equivalent to the FETCH_STRING_PARAMETER_RAW macro, which accepts binary data like the data of SetBuffer
+        public static function toRawString($Value, string $Parameter = 'Value'): string
+        {
             if ($Value === null) {
                 return '';
             }
@@ -240,9 +249,6 @@ namespace IPS {
                 return strval($Value);
             }
             if (is_string($Value)) {
-                if (!mb_check_encoding($Value, 'UTF-8')) {
-                    throw self::autoConvertError($Parameter, 'Value is not encoded as valid UTF-8!');
-                }
                 return $Value;
             }
             throw self::autoConvertError($Parameter, 'Type does not match');
