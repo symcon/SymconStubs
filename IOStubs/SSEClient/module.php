@@ -7,7 +7,8 @@ class SSECLient extends VirtualIO
 {
     public function Create()
     {
-        parent::Create();
+        //The SSE Client of the kernel does not have the Open property of the Virtual IO
+        IPSModule::Create();
 
         $this->RegisterPropertyBoolean('Active', false);
         $this->RegisterPropertyString('URL', '');
