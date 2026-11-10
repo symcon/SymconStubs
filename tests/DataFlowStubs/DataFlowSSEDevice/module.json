@@ -1,0 +1,15 @@
+{
+    "id": "{FB646C9C-CA6F-7756-501D-1D3D33193416}",
+    "name": "DataFlowSSEDevice",
+    "type": 3,
+    "vendor": "Symcon GmbH",
+    "aliases": [],
+    "parentRequirements": [
+        "{79827379-F36E-4ADA-8A95-5F8D1DC92FA9}"
+    ],
+    "childRequirements": [],
+    "implemented": [
+        "{5A709184-B602-D394-227F-207611A33BDF}"
+    ],
+    "prefix": "DFSSE"
+}

@@ -1,0 +1,15 @@
+{
+    "id": "{89572185-1E80-0442-578E-FC4EE4CE5341}",
+    "name": "DataFlowStrictDevice",
+    "type": 3,
+    "vendor": "Symcon GmbH",
+    "aliases": [],
+    "parentRequirements": [
+        "{8E4D9B23-E0F2-1E05-41D8-C21EA53B8706}"
+    ],
+    "childRequirements": [],
+    "implemented": [
+        "{9082C662-7864-D5CA-863F-53999200D897}"
+    ],
+    "prefix": "DFSTR"
+}

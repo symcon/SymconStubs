@@ -112,7 +112,8 @@ namespace IPS {
             $modules = glob($folder . '/*', GLOB_ONLYDIR);
             $filter = ['libs', 'docs', 'imgs', 'tests', 'actions'];
             foreach ($modules as $module) {
-                if (!in_array(basename($module), $filter)) {
+                //The kernel skips folders without a module.json (e.g. tools or scripts)
+                if (!in_array(basename($module), $filter) && file_exists($module . '/module.json')) {
                     self::loadModule($module, $libraryID);
                 }
             }
@@ -229,6 +230,15 @@ namespace IPS {
 
         public static function toString($Value, string $Parameter = 'Value'): string
         {
+            if (is_string($Value) && !mb_check_encoding($Value, 'UTF-8')) {
+                throw self::autoConvertError($Parameter, 'Value is not encoded as valid UTF-8!');
+            }
+            return self::toRawString($Value, $Parameter);
+        }
+
+        //Equivalent to the FETCH_STRING_PARAMETER_RAW macro, which accepts binary data like the data of SetBuffer
+        public static function toRawString($Value, string $Parameter = 'Value'): string
+        {
             if ($Value === null) {
                 return '';
             }
@@ -239,9 +249,6 @@ namespace IPS {
                 return strval($Value);
             }
             if (is_string($Value)) {
-                if (!mb_check_encoding($Value, 'UTF-8')) {
-                    throw self::autoConvertError($Parameter, 'Value is not encoded as valid UTF-8!');
-                }
                 return $Value;
             }
             throw self::autoConvertError($Parameter, 'Type does not match');
@@ -1878,6 +1885,9 @@ namespace IPS {
                         {
                             return $a['Value'] <=> $b['Value'];
                         });
+                    } else {
+                        //Keep a list like the kernel, GetValueFormatted accesses the associations by index
+                        self::$profiles[$ProfileName]['Associations'] = array_values(self::$profiles[$ProfileName]['Associations']);
                     }
                 } else {
                     throw new \Exception(sprintf('Cannot find association for deletion with value %s', $AssociationValue));
