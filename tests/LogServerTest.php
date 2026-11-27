@@ -30,7 +30,6 @@ class LogServerTest extends TestCase
         $module = IPS\InstanceManager::getInstanceInterface($id);
 
         $method = new ReflectionMethod($module, 'LogMessage');
-        $method->setAccessible(true);
         $method->invoke($module, 'Something failed', KL_ERROR);
         $method->invoke($module, 'Recovered', KL_NOTIFY);
 

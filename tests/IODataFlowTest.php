@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 include_once __DIR__ . '/../autoload.php';
 
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -50,9 +51,7 @@ class IODataFlowTest extends TestCase
         ];
     }
 
-    /**
-     * @dataProvider sseParents
-     */
+    #[DataProvider('sseParents')]
     public function testPushDataReachesSSEChild(string $parentModuleID): void
     {
         [$parent, $child] = $this->connect($parentModuleID, self::SSE_DEVICE);
@@ -127,9 +126,7 @@ class IODataFlowTest extends TestCase
         ]], $child->received);
     }
 
-    /**
-     * @dataProvider packetParents
-     */
+    #[DataProvider('packetParents')]
     public function testForwardServerSocketPacket(string $parentModuleID): void
     {
         [$parent, $child] = $this->connect($parentModuleID, self::PACKET_DEVICE);
@@ -151,9 +148,7 @@ class IODataFlowTest extends TestCase
         $this->assertFalse($parent->HasPacket());
     }
 
-    /**
-     * @dataProvider packetParents
-     */
+    #[DataProvider('packetParents')]
     public function testForwardUDPPacket(string $parentModuleID): void
     {
         [$parent, $child] = $this->connect($parentModuleID, self::PACKET_DEVICE);
