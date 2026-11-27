@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 include_once __DIR__ . '/../autoload.php';
 
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
 class IOStubsKernelAlignmentTest extends TestCase
@@ -53,9 +54,7 @@ class IOStubsKernelAlignmentTest extends TestCase
         ];
     }
 
-    /**
-     * @dataProvider kernelModules
-     */
+    #[DataProvider('kernelModules')]
     public function testModuleDefinitionMatchesKernel(string $moduleID, int $type, string $prefix, array $childRequirements, array $implemented): void
     {
         $module = IPS_GetModule($moduleID);

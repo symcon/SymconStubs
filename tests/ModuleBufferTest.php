@@ -62,14 +62,12 @@ class ModuleBufferTest extends TestCase
     private function setBuffer(string $name, $data): void
     {
         $setBuffer = new ReflectionMethod($this->module, 'SetBuffer');
-        $setBuffer->setAccessible(true);
         $setBuffer->invoke($this->module, $name, $data);
     }
 
     private function getBuffer(string $name): string
     {
         $getBuffer = new ReflectionMethod($this->module, 'GetBuffer');
-        $getBuffer->setAccessible(true);
         return $getBuffer->invoke($this->module, $name);
     }
 }

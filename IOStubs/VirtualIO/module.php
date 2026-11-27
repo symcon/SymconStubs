@@ -26,13 +26,13 @@ class VirtualIO extends IPSModule
 
         switch ($data['DataID']) {
             case '{79827379-F36E-4ADA-8A95-5F8D1DC92FA9}': /* VIO_TX_String */
-                $this->textQueue[] = utf8_decode($data['Buffer']);
+                $this->textQueue[] = mb_convert_encoding($data['Buffer'], 'ISO-8859-1', 'UTF-8');
                 return;
 
             case '{C8792760-65CF-4C53-B5C7-A30FCC84FEFE}': /* SSCK_TX_Packet */
                 $this->packetQueue[] = [
                     'Type'       => isset($data['Type']) ? $data['Type'] : 0 /* Data */,
-                    'Buffer'     => utf8_decode($data['Buffer']),
+                    'Buffer'     => mb_convert_encoding($data['Buffer'], 'ISO-8859-1', 'UTF-8'),
                     'ClientIP'   => $data['ClientIP'],
                     'ClientPort' => $data['ClientPort']
                 ];
@@ -41,7 +41,7 @@ class VirtualIO extends IPSModule
             case '{8E4D9B23-E0F2-1E05-41D8-C21EA53B8706}': /* USCK_TX_Packet */
                 $this->packetQueue[] = [
                     'Type'       => 0 /* Data */,
-                    'Buffer'     => utf8_decode($data['Buffer']),
+                    'Buffer'     => mb_convert_encoding($data['Buffer'], 'ISO-8859-1', 'UTF-8'),
                     'ClientIP'   => $data['ClientIP'],
                     'ClientPort' => $data['ClientPort'],
                     //The kernel still accepts the boolean, which was used before the broadcast modes were introduced
@@ -89,7 +89,7 @@ class VirtualIO extends IPSModule
     {
         $this->SendDataToChildren(json_encode([
             'DataID' => '{018EF6B5-AB94-40C6-AA53-46943E824ACF}',
-            'Buffer' => utf8_encode($Text)
+            'Buffer' => mb_convert_encoding($Text, 'UTF-8', 'ISO-8859-1')
         ]));
     }
 
@@ -195,7 +195,7 @@ class VirtualIO extends IPSModule
 
                 $child = IPS\InstanceManager::getInstanceInterface($id);
                 //IPSModule uses UTF-8 and IPSModuleStrict uses HEX for the Buffer
-                $packet['Buffer'] = ($child instanceof IPSModuleStrict) ? bin2hex($packet['Buffer']) : utf8_encode($packet['Buffer']);
+                $packet['Buffer'] = ($child instanceof IPSModuleStrict) ? bin2hex($packet['Buffer']) : mb_convert_encoding($packet['Buffer'], 'UTF-8', 'ISO-8859-1');
                 $data = json_encode($packet);
                 if (preg_match('/' . $child->GetReceiveDataFilter() . '/', $data) == 1) {
                     $child->ReceiveData($data);
