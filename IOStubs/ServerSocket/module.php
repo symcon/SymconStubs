@@ -12,7 +12,7 @@ class ServerSocketBase extends VirtualIO
         $this->SendDataToChildren(json_encode([
             'DataID'     => '{7A1272A4-CBDB-46EF-BFC6-DCF4A53D2FC7}',
             'Type'       => 0 /* Data */,
-            'Buffer'     => utf8_encode($Text),
+            'Buffer'     => mb_convert_encoding($Text, 'UTF-8', 'ISO-8859-1'),
             'ClientIP'   => $ClientIP,
             'ClientPort' => $ClientPort
         ]));

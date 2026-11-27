@@ -894,7 +894,7 @@ class IPSModule
     }
 
     //Mimics the kernel translating the Buffer between the data flow encodings:
-    //IPSModule uses UTF-8 (utf8_encode/utf8_decode), IPSModuleStrict uses HEX (bin2hex/hex2bin)
+    //IPSModule uses UTF-8 (ISO-8859-1 <-> UTF-8 via mb_convert_encoding), IPSModuleStrict uses HEX (bin2hex/hex2bin)
     private function TranslateDataFlowBuffer($Data, $Receiver)
     {
         $senderStrict = IPS\InstanceManager::getInstanceInterface($this->InstanceID) instanceof IPSModuleStrict;
@@ -909,8 +909,8 @@ class IPSModule
             return $Data;
         }
 
-        $binary = $senderStrict ? hex2bin($json['Buffer']) : utf8_decode($json['Buffer']);
-        $json['Buffer'] = $receiverStrict ? bin2hex($binary) : utf8_encode($binary);
+        $binary = $senderStrict ? hex2bin($json['Buffer']) : mb_convert_encoding($json['Buffer'], 'ISO-8859-1', 'UTF-8');
+        $json['Buffer'] = $receiverStrict ? bin2hex($binary) : mb_convert_encoding($binary, 'UTF-8', 'ISO-8859-1');
 
         return json_encode($json);
     }
